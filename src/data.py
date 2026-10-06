@@ -90,7 +90,15 @@ def load_history(div: str, seasons: list[str], cache_dir: str | Path,
 
 
 def load_fixtures(divs: list[str], cache_dir: str | Path) -> pd.DataFrame:
-    """Upcoming fixtures with pre-match odds for the given leagues."""
+    """Upcoming fixtures with pre-match odds for the given leagues.
+
+    football-data.co.uk states the schedule: fixtures and odds are collected
+    "Friday afternoons for weekend fixtures, and on Tuesday afternoons for
+    midweek games". So the file is republished twice a week and covers only
+    the next few days — and during an international break, when there are no
+    league fixtures to publish, it is not updated at all. A file several days
+    old is the normal state, not a fault.
+    """
     content = fetch(f"{BASE_URL}/fixtures.csv", Path(cache_dir) / "fixtures.csv", 3)
     df = standardize(parse_csv(content))
     return df[df["div"].isin(divs)].reset_index(drop=True)

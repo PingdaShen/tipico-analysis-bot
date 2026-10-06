@@ -358,3 +358,5 @@ def test_stale_fixture_feed_says_how_stale(cfg, tmp_path):
     note = next(n for n in notes if "fixtures.csv" in n)
     assert "2026-10-05" in note and "4 天前" in note
     assert "manual_fixtures.csv" in note
+    # the feed is on a published twice-weekly schedule, not broken — say so
+    assert "周五下午" in note and "周二下午" in note

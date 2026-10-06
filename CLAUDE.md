@@ -296,13 +296,18 @@ python -m src.aliases suggest              # 给出候选匹配供人工确认
 
 ## 已知限制
 
-- **`fixtures.csv` 不可靠，这是目前最大的实际障碍。** 2026-10-06 抓取时 Last-Modified
-  是 10-02，里面只有 10-02 至 10-05 的比赛（全是过期的），22 个配置联赛里只覆盖 7 个
-  （E2 E3 EC SC1 SC2 SC3 SP2）——德甲、西甲、法甲、荷甲、葡超、英超一个都没有。
-  `fixtures.xlsx` 时间戳相同，没有替代源。
+- **`fixtures.csv` 每周只发布两次，窗口很短。** 站方在 data.php 上写明：
+  *"Fixtures and betting odds for upcoming games are collected Friday afternoons
+  for weekend fixtures, and on Tuesday afternoons for midweek games."*
+  所以它只覆盖未来几天，而且**国际比赛周没有联赛可发就不会更新**——
+  2026-10-06（周三）抓到的还是 10-02（周五）那份，内容是 10-02 至 10-05、
+  只含 7 个低级别联赛。**这是正常节奏，不是故障**（早先版本的文档把它判断成
+  「源不可靠」，不准确）。
   报告的备注会写出这个源最新一场的日期、落后天数和覆盖的联赛。
-  **绕开办法：联赛比赛也可以填进 `manual_fixtures.csv`**（`comp` 写联赛代码），
+  **等不及的话联赛比赛也可以填进 `manual_fixtures.csv`**（`comp` 写联赛代码），
   照样用该联赛自己的 Dixon-Coles 定价，而且因为赛果有源，能自动结算并算出真实 CLV。
+- 站方同时说明所有数据文件 *"at least updated twice weekly (Sunday nights and
+  Wednesday nights)"*，和 `load_history` 当前赛季缓存 12 小时的设定是匹配的。
 - **`fixtures.csv` 没有 Pinnacle 赔率**（没有 `PSH/PSD/PSA`），所以未来比赛的市场锚
   永远是市场平均 `Avg*`。代码里的 fallback 已经覆盖，但去水后的概率会比用 Pinnacle 差一些。
 - 开球时间可能是英国时间。

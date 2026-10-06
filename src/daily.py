@@ -67,7 +67,8 @@ def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader
                 f"fixtures.csv 最新的一场是 {pd.Timestamp(feed_latest):%Y-%m-%d}")
         note += f"（已经是 {lag} 天前）" if lag > 0 else ""
         note += f"，只覆盖 {len(covered)} 个联赛：{'、'.join(covered)}。" if covered else "。"
-        note += "这个源的更新不可靠；联赛比赛也可以用 manual_fixtures.csv 手填。"
+        note += ("football-data.co.uk 的赛程是周五下午发布周末场次、周二下午发布周中场次，"
+                 "国际比赛周没有联赛可发就不会更新。等不及可以用 manual_fixtures.csv 手填。")
         return [], [note]
 
     rows, notes = [], []

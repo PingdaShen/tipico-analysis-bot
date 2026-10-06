@@ -60,9 +60,11 @@ python -m src.manual result --comp INT --date 2026-09-29 \
     --home Finland --away Belarus --hg 0 --ag 0 --tournament "UEFA Nations League"
 ```
 
-**联赛比赛没出现在报告里？** `fixtures.csv` 经常过期或漏联赛（2026-10-06 时它 4 天
-没更新，22 个联赛只覆盖 7 个），报告备注会写明。这种情况下联赛比赛也可以手填——
-`comp` 直接写联赛代码：
+**联赛比赛没出现在报告里？** 先看日子。football-data.co.uk 的赛程是
+**周五下午**发布周末场次、**周二下午**发布周中场次，只覆盖未来几天；
+国际比赛周没有联赛可发就不更新。报告备注会写出这个源最新一场是哪天。
+
+等不及（或者那一批没覆盖你要的联赛）的话，联赛比赛也可以手填——`comp` 直接写联赛代码：
 
 ```bash
 python -m src.manual add --comp D1 --date 2026-10-10 --home Dortmund \
