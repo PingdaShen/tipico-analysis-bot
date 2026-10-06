@@ -237,3 +237,51 @@ def test_report_warns_that_uefa_results_lag_a_season(cfg, tmp_path, world):
         intl_loader=lambda c, cache, today=None, **kw: pd.DataFrame(),
     )
     assert any("欧战" in n and "模型还没看到" in n for n in notes)
+
+
+# --- the report has to surface the pick IDs ------------------------------------
+
+def _report_for(cfg, tmp_path, world):
+    domestic, cup, today, truth = world
+    pool = pd.concat([domestic, cup], ignore_index=True)
+    _manual_file(tmp_path, f"CL,{today:%Y-%m-%d},21:00,{truth['teams'][0]},"
+                           f"{truth['teams'][-1]},0,3.00,3.60,2.40,3.20,3.70,2.50,,,,")
+    all_df, picks, notes = _run(cfg, tmp_path, today, pool=pool)
+    assert not picks.empty
+    return daily.render_report(today, picks, all_df, notes, cfg), picks
+
+
+def test_pick_ids_are_findable_outside_a_shell_command(cfg, tmp_path, world):
+    """They are needed twice per bet in web forms, not in a terminal."""
+    report, picks = _report_for(cfg, tmp_path, world)
+    pick_id = picks.iloc[0]["pick_id"]
+    assert "## 投注 ID" in report
+    # on its own line in a fenced block, so GitHub renders a copy button
+    assert f"\n```\n{pick_id}\n```\n" in report
+    assert picks.iloc[0]["label"] in report
+
+
+def test_report_tells_you_to_record_the_closing_odds(cfg, tmp_path, world):
+    """For a hand-entered competition it is the only route to a CLV."""
+    report, _ = _report_for(cfg, tmp_path, world)
+    assert "record-close" in report
+    assert "开球前" in report
+
+
+def test_terminal_commands_are_collapsed_not_removed(cfg, tmp_path, world):
+    report, picks = _report_for(cfg, tmp_path, world)
+    assert "<details>" in report and "</details>" in report
+    assert f"python -m src.ledger add {picks.iloc[0]['pick_id']}" in report
+    assert f"python -m src.ledger close {picks.iloc[0]['pick_id']}" in report
+
+
+def test_league_only_picks_skip_the_closing_step(cfg, tmp_path):
+    """Leagues get their closing odds automatically; do not ask for them."""
+    league = make_league(div="E0", n_teams=12, seasons=3, seed=1)
+    cfg["value"]["min_edge"] = -0.5
+    all_df, picks, notes = _run(cfg, tmp_path, league[2], league=league)
+    assert not picks.empty and not picks["manual"].any()
+    report = daily.render_report(league[2], picks, all_df, notes, cfg)
+    assert "## 投注 ID" in report
+    assert "record-close" not in report
+    assert "ledger close" not in report

@@ -243,6 +243,68 @@ def _pick_table(picks: pd.DataFrame, start: int = 0) -> list[str]:
     return lines
 
 
+def _manual_picks(picks: pd.DataFrame) -> pd.Series:
+    if "manual" in picks.columns:
+        return picks["manual"].astype(bool)
+    return pd.Series(False, index=picks.index)
+
+
+def _id_section(picks: pd.DataFrame) -> list[str]:
+    """The pick IDs, on their own and easy to copy.
+
+    They used to appear only inside a shell command, which is the one way the
+    user does not record bets: record-bet and record-close are web forms, so
+    the ID is needed on a phone — twice per bet when the closing odds have to
+    be entered too. Each ID gets its own fenced block, which GitHub renders
+    with a copy button.
+    """
+    if picks.empty:
+        return []
+    forms = "record-bet 和 record-close" if _manual_picks(picks).any() else "record-bet"
+    lines = ["## 投注 ID", "",
+             f"{forms} 表单要填这个（点代码块右上角可直接复制）：", ""]
+    for i, (_, p) in enumerate(picks.iterrows(), start=1):
+        lines += [f"**{i}. {p['home']} vs {p['away']} — {p['label']}**",
+                  "", "```", str(p["pick_id"]), "```", ""]
+    return lines
+
+
+def _how_to_section(picks: pd.DataFrame) -> list[str]:
+    manual_flag = _manual_picks(picks)
+    lines = [
+        "## 怎么用",
+        "",
+        "1. 在 Tipico App 里找到比赛和对应选项。",
+        "2. **只有 Tipico 赔率 ≥ 最低赔率时才下注**，否则跳过这一注。",
+        "3. 下注后在 Actions 页面跑 **record-bet**，填 ID、实际赔率、注额。",
+    ]
+    if bool(manual_flag.any()):
+        lines += [
+            "4. **开球前几分钟**在 Actions 页面跑 **record-close**，填那一刻的市场赔率"
+            "（有 Pinnacle 用 Pinnacle）。",
+            "   欧战和国家队没有收盘赔率源，不记就永远算不出 CLV，这些推荐也就无从检验。"
+            "联赛不用管，收盘价会自动取。",
+        ]
+    lines += [
+        "",
+        "<details><summary>用终端的话</summary>",
+        "",
+        "```bash",
+    ]
+    for _, p in picks.iterrows():
+        lines.append(f"python -m src.ledger add {p['pick_id']} --odds <Tipico赔率> "
+                     f"--stake {p['stake']:.2f}")
+    if bool(manual_flag.any()):
+        lines.append("# 开球前：")
+        for _, p in picks[manual_flag].iterrows():
+            lines.append(f"python -m src.ledger close {p['pick_id']} "
+                         f"--close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>")
+    lines += ["```", "", "</details>", "",
+              "「可得赔率」带 * 的是市场最高赔率（只说明这个价格在市场上存在，",
+              "不一定在 Tipico）；不带 * 的是你自己填进来的 Tipico 赔率。", ""]
+    return lines
+
+
 def _combo_section(picks: pd.DataFrame, all_df: pd.DataFrame, cfg: dict) -> list[str]:
     """Minimum odds for same-match combinations on the matches already picked.
 
@@ -306,20 +368,8 @@ def render_report(today, picks: pd.DataFrame, all_df: pd.DataFrame,
                 "欧战的跨联赛实力值本身也比联赛模型不确定得多。请当作次要参考。",
                 "",
             ] + _pick_table(other_picks, start=len(league_picks)) + [""]
-        lines += [
-            "## 怎么用",
-            "1. 在 Tipico App 里找到比赛和对应选项。",
-            "2. **只有 Tipico 赔率 ≥ 最低赔率时才下注**，否则跳过这一注。",
-            "3. 下注后记录（把 ID 和实际赔率填进去）：",
-            "",
-            "```",
-        ]
-        for _, p in picks.iterrows():
-            lines.append(f"python -m src.ledger add {p['pick_id']} --odds <Tipico赔率> "
-                         f"--stake {p['stake']:.2f}")
-        lines += ["```", "",
-                  "「可得赔率」带 * 的是市场最高赔率（只说明这个价格在市场上存在，",
-                  "不一定在 Tipico）；不带 * 的是你自己填进来的 Tipico 赔率。", ""]
+        lines += _id_section(picks)
+        lines += _how_to_section(picks)
         lines += _combo_section(picks, all_df, cfg)
     if notes:
         lines += ["## 备注", *[f"- {n}" for n in notes], ""]
