@@ -307,10 +307,16 @@ def format_summary(name: str, d: dict) -> str:
     extra = ""
     if d["no_clv"]:
         extra += f"，{d['no_clv']} 注还没有收盘赔率"
+    # the Pinnacle breakdown only when such bets exist: league bets get that
+    # line automatically from football-data.co.uk, but hand-entered ones
+    # cannot — oddsportal filters Pinnacle out for German visitors — so the
+    # figure would otherwise sit there permanently empty
+    sharp = (f"，其中对 Pinnacle 收盘 {pct(d['sharp_clv'])}（{d['sharp_n']} 注）"
+             if d["sharp_n"] else "")
     return (f"{name}：已结算 {d['settled']} 注，未结算 {d['open']} 注，"
             f"投入 €{d['staked']:.2f}，盈亏 €{d['pnl']:+.2f}，ROI {pct(d['roi'])}，"
             f"命中率 {hit}，去水 CLV {pct(d['clv_novig'])}（{d['novig_n']} 注）"
-            f"，其中对 Pinnacle 收盘 {pct(d['sharp_clv'])}（{d['sharp_n']} 注）{extra}")
+            f"{sharp}{extra}")
 
 
 def main() -> None:

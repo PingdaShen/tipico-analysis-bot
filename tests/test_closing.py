@@ -176,3 +176,17 @@ def test_settle_fills_the_novig_clv_too(cfg, tmp_path):
     out = ledger.load(path).iloc[0]
     assert pd.notna(out["clv_novig"])
     assert out["clv_novig"] < out["clv"]
+
+
+def test_summary_hides_the_pinnacle_line_when_there_is_none(cfg, tmp_path):
+    """oddsportal filters Pinnacle out for German visitors; don't show an empty slot."""
+    path = _write(cfg, tmp_path, True, [_row(odds=4.23)])
+    set_closing("p1", {"close_h": 3.94, "close_d": 3.25, "close_a": 1.99},
+                cfg, tmp_path, source="average")
+    text = ledger.format_summary("模拟投注", summarize(ledger.load(path)))
+    assert "去水 CLV" in text
+    assert "Pinnacle" not in text
+
+    set_closing("p1", {"close_h": 3.94, "close_d": 3.25, "close_a": 1.99},
+                cfg, tmp_path, source="pinnacle")
+    assert "Pinnacle" in ledger.format_summary("模拟投注", summarize(ledger.load(path)))
