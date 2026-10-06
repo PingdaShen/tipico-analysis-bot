@@ -26,6 +26,7 @@ def cfg(tmp_path):
         c["paths"][k] = str(tmp_path / k)
     c["paths"]["ledger"] = str(tmp_path / "bets/ledger.csv")
     c["paths"]["paper_ledger"] = str(tmp_path / "bets/paper_ledger.csv")
+    c["paths"]["manual_fixtures"] = str(tmp_path / "manual_fixtures.csv")
     return c
 
 
@@ -75,7 +76,7 @@ def test_stake_rules(cfg):
 
 def test_candidate_logic(cfg):
     class Fake:
-        def predict(self, h, a):
+        def predict(self, h, a, neutral=False):
             return {"H": 0.55, "D": 0.25, "A": 0.20, "O25": 0.5, "U25": 0.5}
 
     row = pd.Series({"div": "E0", "date": pd.Timestamp("2026-10-06"), "home": "A", "away": "B",

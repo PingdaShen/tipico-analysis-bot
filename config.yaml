@@ -1,19 +1,166 @@
 # 所有可调参数都放在这里，代码里不要写死数值。
 
-leagues:                 # football-data.co.uk 的联赛代码
-  E0: Premier League
-  SP1: La Liga
-  D1: Bundesliga
-  I1: Serie A
-  F1: Ligue 1
+# ---------------------------------------------------------------------------
+# 国内联赛：football-data.co.uk 的 mmz4281 代码。
+# 这些联赛有赛前赔率，也在 fixtures.csv 里，所以能直接出推荐。
+# ---------------------------------------------------------------------------
+leagues:
+  E0: 英超
+  E1: 英冠
+  E2: 英甲
+  E3: 英乙
+  EC: 英格兰国家联赛
+  SC0: 苏超
+  SC1: 苏冠
+  SC2: 苏甲
+  SC3: 苏乙
+  D1: 德甲
+  D2: 德乙
+  I1: 意甲
+  I2: 意乙
+  SP1: 西甲
+  SP2: 西乙
+  F1: 法甲
+  F2: 法乙
+  N1: 荷甲
+  B1: 比甲
+  P1: 葡超
+  T1: 土超
+  G1: 希超
 
-history_seasons: 3       # 拟合模型用的赛季数（含当前赛季）
+# ---------------------------------------------------------------------------
+# 额外国家：football-data.co.uk 的 new/ 目录。
+# 只有赛果和收盘赔率，没有赛前赔率，也不在 fixtures.csv 里，
+# 所以它们自己不出推荐，只作为欧战跨联赛模型的训练数据。
+# ---------------------------------------------------------------------------
+extra_countries:
+  AUT: 奥超
+  DNK: 丹超
+  FIN: 芬超
+  IRL: 爱超
+  NOR: 挪超
+  POL: 波兰甲
+  ROU: 罗甲
+  RUS: 俄超
+  SWE: 瑞典超
+  SWZ: 瑞士超
+
+# 联赛代码 -> UEFA 三字国家代码。欧战队名归一时用来限定候选范围，
+# 避免把不同国家的同名球队匹配到一起。
+div_country:
+  E0: ENG
+  E1: ENG
+  E2: ENG
+  E3: ENG
+  EC: ENG
+  SC0: SCO
+  SC1: SCO
+  SC2: SCO
+  SC3: SCO
+  D1: GER
+  D2: GER
+  I1: ITA
+  I2: ITA
+  SP1: ESP
+  SP2: ESP
+  F1: FRA
+  F2: FRA
+  N1: NED
+  B1: BEL
+  P1: POR
+  T1: TUR
+  G1: GRE
+  AUT: AUT
+  DNK: DEN
+  FIN: FIN
+  IRL: IRL
+  NOR: NOR
+  POL: POL
+  ROU: ROU
+  RUS: RUS
+  SWE: SWE
+  SWZ: SUI
+
+history_seasons: 3       # 国内联赛拟合用的赛季数（含当前赛季）
 
 model:
   xi: 0.0019             # 时间衰减（每天），半衰期约 1 年
   max_goals: 10
   min_team_matches: 8    # 球队在训练窗口内少于这么多场就不出推荐（升班马）
   ridge: 0.001
+
+# ---------------------------------------------------------------------------
+# 欧战（欧冠、欧联、欧协联）：跨联赛合并模型。
+# 国内联赛之间从不交手，所以单独拟合出来的实力值不在同一个尺度上，
+# 直接比较没有意义。欧战比赛是唯一把各联赛连起来的链接，
+# 因此这里把所有国内比赛和欧战比赛放进同一个 Dixon-Coles 一起拟合。
+# 赛果来自 openfootball/champions-league（只有欧冠正赛 + 三项赛事的资格赛）。
+# ---------------------------------------------------------------------------
+uefa:
+  enabled: true
+  history_seasons: 6     # 欧战链接用的赛季数，比国内联赛长：链接本来就少
+  divs: [CL, CLQ, ELQ, CONFQ]
+  min_team_matches: 10   # 合并模型里推荐门槛更高（跨联赛本身更不确定）
+  xi: 0.0006             # 衰减比联赛模型慢，否则跨联赛链接几乎没有权重
+  # 合并模型有 ~900 支球队、~1800 个参数，但跨联赛链接只有几百场，
+  # 所以正则化必须比单联赛模型强得多。用 2022-2024 赛季选参、2025 赛季验证：
+  #   ridge=0.001 样本外 log loss 1.046（基准频率 1.056，几乎没有优势）
+  #   ridge=0.4   样本外 log loss 1.003
+  # 详见 README 的「欧战模型的已知偏差」。
+  ridge: 0.4
+
+# ---------------------------------------------------------------------------
+# 国家队（欧国联、世预赛、欧洲杯等）。
+# 赛果来自 martj42/international_results，没有任何赔率。
+# ---------------------------------------------------------------------------
+international:
+  enabled: true
+  history_years: 12      # 国家队比赛本来就少，窗口要比联赛长得多
+  xi: 0.0004             # 对应半衰期约 4.7 年
+  ridge: 0.05            # 这个模型对 ridge 不敏感（0.001-0.2 样本外表现基本持平）
+  min_team_matches: 10
+  # 2021-2024 选参、2025-2026 验证的样本外表现：
+  #   log loss 0.767，基准赛果频率 1.045（好 27%）
+  # 比欧战合并模型可靠得多：国家队之间实力差距大，结果更可预测。
+  # 只用这些赛事拟合。友谊赛阵容和态度差别太大，默认不计入。
+  # 名称必须和 martj42/international_results 的 tournament 列完全一致，
+  # 写错的名字只会被静默忽略，所以改动后跑一次 tests/test_international.py。
+  tournaments:
+    - UEFA Nations League
+    - UEFA Euro
+    - UEFA Euro qualification
+    - FIFA World Cup
+    - FIFA World Cup qualification
+    - Copa América
+    - African Cup of Nations
+    - African Cup of Nations qualification
+    - AFC Asian Cup
+    - AFC Asian Cup qualification
+    - CONCACAF Nations League
+    - CONCACAF Nations League qualification
+    - Gold Cup
+
+# ---------------------------------------------------------------------------
+# 手填赔率的赛事。赔率来自 manual_fixtures.csv，模型由 model 字段指定：
+#   uefa          -> 跨联赛合并模型（上面的 uefa 段）
+#   international -> 国家队模型（上面的 international 段）
+# 注意：这些赛事没有收盘赔率，所以无法计算 CLV——而 CLV 是本项目的主要
+# 评估指标。欧联和欧协联正赛连赛果源都没有（openfootball 只有资格赛），
+# 球队评分只能来自国内联赛和欧冠的链接。
+# ---------------------------------------------------------------------------
+manual_competitions:
+  CL:
+    name: 欧冠
+    model: uefa
+  EL:
+    name: 欧联
+    model: uefa
+  UECL:
+    name: 欧协联
+    model: uefa
+  INT:
+    name: 国家队
+    model: international
 
 blend:
   model_weight: 0.3      # 最终概率 = w * 模型 + (1 - w) * 市场去水概率
@@ -40,3 +187,4 @@ paths:
   reports: reports
   ledger: bets/ledger.csv
   paper_ledger: bets/paper_ledger.csv
+  manual_fixtures: manual_fixtures.csv

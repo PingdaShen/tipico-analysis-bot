@@ -1,0 +1,169 @@
+# UEFA（openfootball）队名 -> football-data.co.uk 队名。
+#
+# 这是人工维护的数据文件，不是运行时猜出来的：猜错会把两家俱乐部
+# 合并成一个，悄悄污染双方的实力评分，比直接丢掉这场比赛更糟。
+#
+# 新赛季出现没见过的队名时跑：
+#     python -m src.aliases check      # 列出还没覆盖的队名
+#     python -m src.aliases suggest    # 给出候选匹配供人工确认
+# 没进表的队名会被当成一支独立球队（仍然起到连接联赛的作用，
+# 但因为 min_team_matches 不会被推荐）。
+#
+# 当前覆盖 156 个队名。
+aliases:
+  1. FC Heidenheim 1846: Heidenheim
+  1. FC Union Berlin: Union Berlin
+  1. FSV Mainz 05: Mainz
+  Aberdeen FC: Aberdeen
+  AC Milan: Milan
+  ACF Fiorentina: Fiorentina
+  AEK Athen: AEK
+  AFC Ajax: Ajax
+  AIK Solna: AIK
+  Aris Saloniki: Aris
+  Arsenal FC: Arsenal
+  Aston Villa FC: Aston Villa
+  Atalanta: Atalanta
+  Atalanta BC: Atalanta
+  Athletic Club: Ath Bilbao
+  Atlético Madrid: Ath Madrid
+  Austria Wien: Austria Vienna
+  AZ Alkmaar: AZ Alkmaar
+  Bayer 04 Leverkusen: Leverkusen
+  Bayer Leverkusen: Leverkusen
+  Bayern München: Bayern Munich
+  Beşiktaş: Besiktas
+  BK Häcken: Hacken
+  Bologna FC 1909: Bologna
+  Borussia Dortmund: Dortmund
+  Brøndby IF: Brondby
+  BSC Young Boys: Young Boys
+  CD Santa Clara: Santa Clara
+  Celtic FC: Celtic
+  Cercle Brugge: Cercle Brugge
+  CFR Cluj: CFR Cluj
+  Chelsea FC: Chelsea
+  Club Atlético de Madrid: Ath Madrid
+  Club Brugge KV: Club Brugge
+  Crystal Palace: Crystal Palace
+  CS Universitatea Craiova: Univ. Craiova
+  Derry City: Derry City
+  Djurgårdens IF: Djurgarden
+  Dundee United: Dundee United
+  Eintracht Frankfurt: Ein Frankfurt
+  FC Barcelona: Barcelona
+  FC Basel 1893: Basel
+  FC Bayern München: Bayern Munich
+  FC Corvinul Hunedoara: Corvinul
+  FC Internazionale Milano: Inter
+  FC København: FC Copenhagen
+  FC Lausanne-Sport: Lausanne
+  FC Lugano: Lugano
+  FC Midtjylland: Midtjylland
+  FC Porto: Porto
+  FC Red Bull Salzburg: Salzburg
+  FC St. Gallen: St. Gallen
+  FC Twente: Twente
+  FC Utrecht: Utrecht
+  FC Zürich: Zurich
+  FCSB: FCSB
+  Fenerbahçe: Fenerbahce
+  Feyenoord: Feyenoord
+  Feyenoord Rotterdam: Feyenoord
+  FK Bodø/Glimt: Bodo/Glimt
+  Fredrikstad FK: Fredrikstad
+  Galatasaray: Galatasaray
+  Galatasaray SK: Galatasaray
+  Girona FC: Girona
+  Go Ahead Eagles: Go Ahead Eagles
+  Hammarby IF: Hammarby
+  Heart of Midlothian: Hearts
+  Hibernian FC: Hibernian
+  HJK Helsinki: HJK
+  IF Elfsborg: Elfsborg
+  Ilves Tampere: Ilves
+  Inter: Inter
+  İstanbul Başakşehir: Buyuksehyr
+  Jagiellonia Białystok: Jagiellonia
+  Juventus: Juventus
+  Juventus FC: Juventus
+  KAA Gent: Gent
+  Kilmarnock FC: Kilmarnock
+  KRC Genk: Genk
+  Kuopion PS: KuPS
+  LASK: LASK
+  Lech Poznań: Lech Poznan
+  Legia Warszawa: Legia
+  Lille OSC: Lille
+  Liverpool FC: Liverpool
+  Malmö FF: Malmo FF
+  Manchester City: Man City
+  Manchester City FC: Man City
+  Manchester United: Man United
+  Manchester United FC: Man United
+  Molde FK: Molde
+  Newcastle United FC: Newcastle
+  OGC Nice: Nice
+  Olympique de Marseille: Marseille
+  Olympique Marseille: Marseille
+  PAE Olympiakos SFP: Olympiakos
+  Panathinaikos: Panathinaikos
+  PAOK Saloniki: PAOK
+  Paris Saint-Germain: Paris SG
+  Paris Saint-Germain FC: Paris SG
+  PSV: PSV Eindhoven
+  Racing Club de Lens: Lens
+  Raków Częstochowa: Rakow
+  Rangers FC: Rangers
+  Rapid Wien: SK Rapid
+  Rayo Vallecano: Vallecano
+  RB Leipzig: RB Leipzig
+  RB Salzburg: Salzburg
+  RC Lens: Lens
+  RC Strasbourg: Strasbourg
+  Real Betis: Betis
+  Real Madrid: Real Madrid
+  Real Madrid CF: Real Madrid
+  Real Sociedad de Fútbol: Sociedad
+  Rosenborg BK: Rosenborg
+  Royal Antwerp FC: Antwerp
+  Royale Union Saint-Gilloise: St. Gilloise
+  RSC Anderlecht: Anderlecht
+  Samsunspor: Samsunspor
+  Servette FC: Servette
+  Sevilla FC: Sevilla
+  Shamrock Rovers: Shamrock Rovers
+  Shelbourne FC: Shelbourne
+  Silkeborg IF: Silkeborg
+  SJK Seinäjoki: SJK
+  SK Brann: Brann
+  SK Sturm Graz: Sturm Graz
+  SL Benfica: Benfica
+  Sport Lisboa e Benfica: Benfica
+  Sporting Braga: Sp Braga
+  Sporting Charleroi: Charleroi
+  Sporting Clube de Braga: Sp Braga
+  Sporting Clube de Portugal: Sp Lisbon
+  Sporting CP: Sp Lisbon
+  SS Lazio: Lazio
+  SSC Napoli: Napoli
+  St Patrick's Athletic: St. Patricks
+  St. Mirren FC: St Mirren
+  Stade Brestois 29: Brest
+  Sturm Graz: Sturm Graz
+  Tottenham Hotspur: Tottenham
+  Tottenham Hotspur FC: Tottenham
+  Trabzonspor: Trabzonspor
+  Tromsø IL: Tromso
+  Union Saint-Gilloise: St. Gilloise
+  Universitatea Cluj: U. Cluj
+  Vaasan PS: VPS
+  VfB Stuttgart: Stuttgart
+  VfL Wolfsburg: Wolfsburg
+  Viking FK: Viking
+  Villarreal CF: Villarreal
+  Vitória Guimarães: Guimaraes
+  Wisła Kraków: Wisla
+  Wolfsberger AC: Wolfsberger AC
+  Zenit St. Petersburg: Zenit
+  Śląsk Wrocław: Slask Wroclaw

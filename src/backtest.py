@@ -53,27 +53,49 @@ def backtest_league(history: pd.DataFrame, cfg: dict, test_start: pd.Timestamp,
                         if p_model[o] <= p_mkt[o] or p_final[o] * odds < 1 + v["min_edge"]:
                             continue
                         won = outcome_won(o, int(g["hg"]), int(g["ag"]))
-                        close = closing_odds(g, market, o)
+                        close, close_source = closing_odds(g, market, o)
                         bets.append({
                             "date": g["date"], "div": g["div"], "home": g["home"],
                             "away": g["away"], "market": market, "outcome": o,
                             "odds": odds, "p_final": p_final[o], "won": won,
                             "pnl": odds - 1 if won else -1.0,
                             "clv": odds / close - 1 if close else None,
+                            "close_source": close_source,
                         })
         ref += pd.Timedelta(days=refit_days)
     return bets
 
 
+def _sharp_clv(s: pd.DataFrame) -> float:
+    """Average CLV counting only bets priced against Pinnacle's closing line."""
+    sharp = s.loc[s["close_source"] == "pinnacle", "clv"].dropna()
+    return float(sharp.mean()) if not sharp.empty else float("nan")
+
+
+def _sharp_n(s: pd.DataFrame) -> int:
+    return int((s["close_source"] == "pinnacle").sum())
+
+
 def summarize(bets: pd.DataFrame) -> pd.DataFrame:
+    """Per-league and overall summary.
+
+    sharp_clv is the number to look at: avg_clv mixes Pinnacle's closing line
+    with the much softer market average, which flatters it badly. See
+    market.closing_odds.
+    """
     if bets.empty:
         return pd.DataFrame()
-    g = bets.groupby("div").agg(bets=("pnl", "size"), pnl=("pnl", "sum"),
-                                hit_rate=("won", "mean"), avg_clv=("clv", "mean"))
-    total = pd.DataFrame({"bets": [len(bets)], "pnl": [bets["pnl"].sum()],
-                          "hit_rate": [bets["won"].mean()], "avg_clv": [bets["clv"].mean()]},
-                         index=["ALL"])
-    out = pd.concat([g, total])
+    if "close_source" not in bets.columns:
+        bets = bets.assign(close_source=None)
+    rows = {}
+    for div, s in bets.groupby("div"):
+        rows[div] = {"bets": len(s), "pnl": s["pnl"].sum(), "hit_rate": s["won"].mean(),
+                     "avg_clv": s["clv"].mean(), "sharp_n": _sharp_n(s),
+                     "sharp_clv": _sharp_clv(s)}
+    rows["ALL"] = {"bets": len(bets), "pnl": bets["pnl"].sum(),
+                   "hit_rate": bets["won"].mean(), "avg_clv": bets["clv"].mean(),
+                   "sharp_n": _sharp_n(bets), "sharp_clv": _sharp_clv(bets)}
+    out = pd.DataFrame.from_dict(rows, orient="index")
     out["roi"] = out["pnl"] / out["bets"]
     return out
 

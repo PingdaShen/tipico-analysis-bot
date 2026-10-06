@@ -1,4 +1,17 @@
-"""Daily run: fit one model per league, evaluate upcoming fixtures, write the report.
+"""Daily run: fit the models, evaluate upcoming fixtures, write the report.
+
+Three sources of fixtures, because the data behind them is different:
+
+* Domestic leagues come from football-data.co.uk with pre-match odds attached,
+  and each league gets its own Dixon-Coles. This is the only part that works
+  without any manual input.
+* European club competitions use the pooled cross-league model (see pool.py).
+* National teams use the international model (see intl.py).
+
+The last two have no free fixture-and-odds feed, so their fixtures and prices
+are read from manual_fixtures.csv. They also have no closing odds, which
+means picks there cannot be scored by CLV — the project's main metric — so
+the report keeps them clearly separated from the league picks.
 
 Usage: python -m src.daily [--date YYYY-MM-DD]
 """
@@ -11,10 +24,12 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-from . import ledger
+from . import intl, ledger, manual
+from .aliases import load_table
 from .config import ROOT, load_config
 from .data import load_fixtures, load_history, recent_seasons
 from .model import DixonColes
+from .pool import fit_pool, load_pool
 from .value import evaluate_fixture
 
 
@@ -24,17 +39,28 @@ def fit_model(history: pd.DataFrame, cfg: dict, ref_date) -> DixonColes:
                       min_team_matches=m["min_team_matches"]).fit(history, ref_date)
 
 
-def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_fixtures,
-            root: Path = ROOT) -> tuple[pd.DataFrame, pd.DataFrame, list[str]]:
-    today = pd.Timestamp(today).normalize()
-    cache = Path(root) / cfg["paths"]["cache"]
+def competition_names(cfg: dict) -> dict[str, str]:
+    """Code -> display name, across leagues and hand-entered competitions."""
+    names = dict(cfg["leagues"])
+    for code, spec in (cfg.get("manual_competitions") or {}).items():
+        names[code] = (spec or {}).get("name", code)
+    return names
+
+
+def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader
+                ) -> tuple[list[dict], list[str]]:
+    """Evaluate league fixtures from the football-data.co.uk feed."""
     try:
         fixtures = fixtures_loader(list(cfg["leagues"]), cache)
     except requests.RequestException as e:
-        empty = pd.DataFrame()
-        return empty, empty, [f"赛程数据源无法访问：{e}"]
+        return [], [f"赛程数据源无法访问：{e}"]
+    stale = ["赛程源里没有未来几天的联赛比赛（fixtures.csv 的更新频率不稳定）。"]
+    if fixtures.empty:
+        return [], stale
     end = today + pd.Timedelta(days=cfg["value"]["horizon_days"])
     fixtures = fixtures[(fixtures["date"] >= today) & (fixtures["date"] < end)]
+    if fixtures.empty:
+        return [], stale
 
     rows, notes = [], []
     seasons = recent_seasons(cfg["history_seasons"], today.date())
@@ -50,17 +76,124 @@ def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_
             if not ev:
                 notes.append(f"{fx['home']} vs {fx['away']}：球队数据不足（可能是升班马），跳过")
             rows.extend(ev)
+    return rows, notes
+
+
+def manual_rows(cfg: dict, today, cache: Path, root: Path,
+                pool_loader=load_pool, intl_loader=intl.load, manual_loader=manual.load
+                ) -> tuple[list[dict], list[str]]:
+    """Evaluate the hand-entered European and international fixtures."""
+    comps = cfg.get("manual_competitions") or {}
+    if not comps:
+        return [], []
+    path = Path(root) / cfg["paths"]["manual_fixtures"]
+    try:
+        entered = manual_loader(path)
+    except (ValueError, OSError) as e:
+        return [], [f"读不了手填赛程 {path.name}：{e}"]
+    fixtures = manual.to_fixture_rows(entered)
+    if fixtures.empty:
+        return [], []
+    end = today + pd.Timedelta(days=cfg["value"]["horizon_days"])
+    fixtures = fixtures[(fixtures["date"] >= today) & (fixtures["date"] < end)]
+    if fixtures.empty:
+        return [], []
+
+    aliases = load_table(root)
+    models: dict[str, DixonColes | None] = {}
+    rows, notes = [], []
+
+    def model_for(kind: str) -> DixonColes | None:
+        """Fit a pooled/international model at most once per run."""
+        if kind in models:
+            return models[kind]
+        models[kind] = None
+        try:
+            if kind == "uefa":
+                if not cfg["uefa"].get("enabled", True):
+                    notes.append("欧战模型在 config.yaml 里是关闭的。")
+                    return None
+                pool, info = pool_loader(cfg, cache, today=today)
+                models[kind] = fit_pool(pool, cfg, today)
+                if info.get("uefa", 0) == 0:
+                    notes.append("没有欧战赛果，跨联赛的实力值无法校准，欧战推荐不可信。")
+            elif kind == "international":
+                if not cfg["international"].get("enabled", True):
+                    notes.append("国家队模型在 config.yaml 里是关闭的。")
+                    return None
+                models[kind] = intl.fit(intl_loader(cfg, cache, today=today), cfg, today)
+        except (ValueError, requests.RequestException) as e:
+            notes.append(f"{kind} 模型拟合失败：{e}")
+        return models[kind]
+
+    for div, group in fixtures.groupby("div"):
+        spec = comps.get(div)
+        if spec is None:
+            notes.append(f"手填赛程里的 {div} 不在 config.yaml 的 manual_competitions 里，跳过。")
+            continue
+        model = model_for(spec.get("model", "uefa"))
+        if model is None:
+            continue
+        for _, fx in group.iterrows():
+            fx = fx.copy()
+            bad = False
+            for side in ("home", "away"):
+                name, hint = manual.resolve_team(fx[side], set(model.teams), aliases)
+                if name is None:
+                    tip = f"，最接近的是「{hint}」" if hint else ""
+                    notes.append(f"手填赛程里的球队「{fx[side]}」模型不认识{tip}，这场跳过。")
+                    bad = True
+                else:
+                    fx[side] = name
+            if bad:
+                continue
+            ev = evaluate_fixture(fx, model, cfg, neutral=bool(fx.get("neutral", False)))
+            if not ev:
+                notes.append(f"{fx['home']} vs {fx['away']}：球队比赛数不够"
+                             f"（门槛 min_team_matches），跳过")
+            rows.extend(ev)
+    return rows, notes
+
+
+def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_fixtures,
+            root: Path = ROOT, pool_loader=load_pool, intl_loader=intl.load,
+            manual_loader=manual.load) -> tuple[pd.DataFrame, pd.DataFrame, list[str]]:
+    today = pd.Timestamp(today).normalize()
+    cache = Path(root) / cfg["paths"]["cache"]
+
+    rows, notes = league_rows(cfg, today, cache, fixtures_loader, history_loader)
+    mrows, mnotes = manual_rows(cfg, today, cache, root,
+                                pool_loader, intl_loader, manual_loader)
+    rows += mrows
+    notes += mnotes
 
     all_df = pd.DataFrame(rows)
     if all_df.empty:
         return all_df, all_df, notes
-    all_df["league"] = all_df["div"].map(cfg["leagues"])
+    all_df["league"] = all_df["div"].map(competition_names(cfg)).fillna(all_df["div"])
+    all_df["manual"] = all_df["div"].isin(cfg.get("manual_competitions") or {})
     picks = (all_df[all_df["is_candidate"]]
              .sort_values("edge_best", ascending=False)
              .drop_duplicates(subset=["date", "home", "away"])   # 每场比赛最多一注
              .head(cfg["value"]["max_picks"])
              .reset_index(drop=True))
     return all_df, picks, notes
+
+
+def _pick_table(picks: pd.DataFrame, start: int = 0) -> list[str]:
+    lines = [
+        "| # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for i, (_, p) in enumerate(picks.iterrows(), start=start + 1):
+        t = f" {p['time']}" if isinstance(p["time"], str) and p["time"] else ""
+        src = "" if p.get("price_source") == "tipico" else "*"
+        lines.append(
+            f"| {i} | {p['home']} vs {p['away']} | {p['league']} | "
+            f"{pd.Timestamp(p['date']):%m-%d}{t} | {p['label']} | {p['fair_odds']:.2f} | "
+            f"**{p['min_odds']:.2f}** | {p['best_odds']:.2f}{src} | €{p['stake']:.2f} |"
+        )
+    return lines
 
 
 def render_report(today, picks: pd.DataFrame, all_df: pd.DataFrame,
@@ -77,19 +210,19 @@ def render_report(today, picks: pd.DataFrame, all_df: pd.DataFrame,
     if picks.empty:
         lines += ["**今天没有符合条件的投注。** 不下注也是策略的一部分。", ""]
     else:
+        manual_flag = picks["manual"] if "manual" in picks.columns else pd.Series(False, index=picks.index)
+        league_picks = picks[~manual_flag]
+        other_picks = picks[manual_flag]
+        if not league_picks.empty:
+            lines += ["## 联赛", ""] + _pick_table(league_picks) + [""]
+        if not other_picks.empty:
+            lines += [
+                "## 欧战 / 国家队（手填赔率）", "",
+                "这些赛事没有收盘赔率，**无法计算 CLV**，所以不能用主要指标检验；",
+                "欧战的跨联赛实力值本身也比联赛模型不确定得多。请当作次要参考。",
+                "",
+            ] + _pick_table(other_picks, start=len(league_picks)) + [""]
         lines += [
-            "| # | 比赛 | 联赛 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 市场最高 | 注额 |",
-            "|---|---|---|---|---|---|---|---|---|",
-        ]
-        for i, p in picks.iterrows():
-            t = f" {p['time']}" if isinstance(p["time"], str) and p["time"] else ""
-            lines.append(
-                f"| {i + 1} | {p['home']} vs {p['away']} | {p['league']} | "
-                f"{pd.Timestamp(p['date']):%m-%d}{t} | {p['label']} | {p['fair_odds']:.2f} | "
-                f"**{p['min_odds']:.2f}** | {p['best_odds']:.2f} | €{p['stake']:.2f} |"
-            )
-        lines += [
-            "",
             "## 怎么用",
             "1. 在 Tipico App 里找到比赛和对应选项。",
             "2. **只有 Tipico 赔率 ≥ 最低赔率时才下注**，否则跳过这一注。",
@@ -100,7 +233,9 @@ def render_report(today, picks: pd.DataFrame, all_df: pd.DataFrame,
         for _, p in picks.iterrows():
             lines.append(f"python -m src.ledger add {p['pick_id']} --odds <Tipico赔率> "
                          f"--stake {p['stake']:.2f}")
-        lines += ["```", ""]
+        lines += ["```", "",
+                  "「可得赔率」带 * 的是市场最高赔率（只说明这个价格在市场上存在，",
+                  "不一定在 Tipico）；不带 * 的是你自己填进来的 Tipico 赔率。", ""]
     if notes:
         lines += ["## 备注", *[f"- {n}" for n in notes], ""]
     lines += [

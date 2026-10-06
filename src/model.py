@@ -1,8 +1,13 @@
 """Dixon-Coles football model with exponential time decay.
 
-log(lambda_home) = home + attack[h] + defence[a]
+log(lambda_home) = home * hv + attack[h] + defence[a]
 log(mu_away)     = attack[a] + defence[h]
 plus the Dixon-Coles low-score correction tau(x, y; rho).
+
+hv is 1 for a normal home game and 0 when the match is played at a neutral
+venue (international tournaments, European finals). Matches carry it in an
+optional boolean "neutral" column; without that column everything is a home
+game, which is how the domestic league models behave.
 """
 from __future__ import annotations
 
@@ -42,6 +47,13 @@ def _tau_terms(x, y, lam, mu, rho):
     return np.maximum(tau, 1e-10), d_l, d_m, d_r
 
 
+def _home_vector(df: pd.DataFrame) -> np.ndarray:
+    """1 for a real home game, 0 at a neutral venue."""
+    if "neutral" not in df.columns:
+        return np.ones(len(df))
+    return 1.0 - df["neutral"].fillna(False).astype(bool).to_numpy(dtype=float)
+
+
 class DixonColes:
     def __init__(self, xi: float = 0.0019, ridge: float = 1e-3,
                  max_goals: int = 10, min_team_matches: int = 8):
@@ -67,6 +79,7 @@ class DixonColes:
         x = df["hg"].to_numpy(dtype=float)
         y = df["ag"].to_numpy(dtype=float)
         w = np.exp(-self.xi * (ref_date - df["date"]).dt.days.to_numpy(dtype=float))
+        hv = _home_vector(df)
         self.counts = pd.concat([df["home"], df["away"]]).value_counts().to_dict()
         ridge = self.ridge
 
@@ -74,7 +87,7 @@ class DixonColes:
             att = p[:n] - p[:n].mean()
             dfn = p[n:2 * n]
             home, rho = p[2 * n], p[2 * n + 1]
-            log_l = home + att[h] + dfn[a]
+            log_l = home * hv + att[h] + dfn[a]
             log_m = att[a] + dfn[h]
             lam, mu = np.exp(log_l), np.exp(log_m)
             tau, d_l, d_m, d_r = _tau_terms(x, y, lam, mu, rho)
@@ -88,7 +101,8 @@ class DixonColes:
             g_def = np.bincount(a, g_l, n) + np.bincount(h, g_m, n)
 
             f = -ll.sum() + ridge * (att @ att + dfn @ dfn)
-            grad = -np.concatenate([g_att, g_def, [g_l.sum(), np.sum(w * d_r / tau)]])
+            grad = -np.concatenate([g_att, g_def,
+                                    [float(g_l @ hv), np.sum(w * d_r / tau)]])
             grad[:n] += 2 * ridge * att
             grad[n:2 * n] += 2 * ridge * dfn
             return f, grad
@@ -107,17 +121,17 @@ class DixonColes:
     def has_team(self, team: str) -> bool:
         return team in self.teams and self.counts.get(team, 0) >= self.min_team_matches
 
-    def rates(self, home: str, away: str) -> tuple[float, float]:
+    def rates(self, home: str, away: str, neutral: bool = False) -> tuple[float, float]:
         i, j = self.teams[home], self.teams[away]
-        lam = np.exp(self.home_adv + self.attack[i] + self.defence[j])
+        lam = np.exp((0.0 if neutral else self.home_adv) + self.attack[i] + self.defence[j])
         mu = np.exp(self.attack[j] + self.defence[i])
         return float(lam), float(mu)
 
-    def predict(self, home: str, away: str) -> dict | None:
+    def predict(self, home: str, away: str, neutral: bool = False) -> dict | None:
         """Outcome probabilities, or None if either team lacks data."""
         if not (self.has_team(home) and self.has_team(away)):
             return None
-        lam, mu = self.rates(home, away)
+        lam, mu = self.rates(home, away, neutral)
         g = np.arange(self.max_goals + 1)
         mat = np.outer(poisson.pmf(g, lam), poisson.pmf(g, mu))
         mat[0, 0] *= 1 - lam * mu * self.rho

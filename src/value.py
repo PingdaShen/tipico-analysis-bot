@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 import re
 
-from .market import AVG_PRE, MAX_PRE, OUTCOMES, market_probs, odds_dict
+from .market import AVG_PRE, MAX_PRE, OUTCOMES, TIPICO_PRE, market_probs, odds_dict
 
 
 def blend(p_model: dict, p_market: dict, w: float) -> dict:
@@ -39,10 +39,23 @@ def stake_for(p: float, odds: float, staking: dict) -> float:
     return round(max(s, staking["min_stake"]), 2)
 
 
-def evaluate_fixture(row, model, cfg: dict) -> list[dict]:
+def available_odds(row, market: str) -> tuple[dict, str]:
+    """The price the user can actually take, and where it came from.
+
+    A hand-entered row carries Tipico's own price, which is exactly the number
+    the rules are about. League fixtures only have the market best (Max*),
+    which is a proxy: it says the price exists somewhere, not at Tipico.
+    """
+    tip = odds_dict(row, TIPICO_PRE, market)
+    if tip:
+        return tip, "tipico"
+    return odds_dict(row, MAX_PRE, market) or {}, "market_max"
+
+
+def evaluate_fixture(row, model, cfg: dict, neutral: bool = False) -> list[dict]:
     """Evaluate every outcome of one fixture; each row carries an is_candidate flag."""
     vcfg, w = cfg["value"], cfg["blend"]["model_weight"]
-    p_model = model.predict(row["home"], row["away"])
+    p_model = model.predict(row["home"], row["away"], neutral=neutral)
     if p_model is None:
         return []
 
@@ -52,7 +65,7 @@ def evaluate_fixture(row, model, cfg: dict) -> list[dict]:
         if p_market is None:
             continue
         p_final = blend(p_model, p_market, w)
-        best = odds_dict(row, MAX_PRE, market) or {}
+        best, price_source = available_odds(row, market)
         avg = odds_dict(row, AVG_PRE, market) or {}
         for o in OUTCOMES[market]:
             p = p_final[o]
@@ -80,6 +93,7 @@ def evaluate_fixture(row, model, cfg: dict) -> list[dict]:
                 "p_market": p_market[o],
                 "p_final": p,
                 "market_source": source,
+                "price_source": price_source,
                 "fair_odds": 1 / p,
                 "min_odds": min_odds,
                 "best_odds": best_o,

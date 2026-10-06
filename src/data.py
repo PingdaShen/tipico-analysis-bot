@@ -94,3 +94,84 @@ def load_fixtures(divs: list[str], cache_dir: str | Path) -> pd.DataFrame:
     content = fetch(f"{BASE_URL}/fixtures.csv", Path(cache_dir) / "fixtures.csv", 3)
     df = standardize(parse_csv(content))
     return df[df["div"].isin(divs)].reset_index(drop=True)
+
+
+# --------------------------------------------------------------------------
+# football-data.co.uk "new/" files: extra countries, a different layout.
+# Columns: Country,League,Season,Date,Time,Home,Away,HG,AG,Res + closing odds
+# only (PSCH/MaxC*/AvgC*/B365C*). No pre-match odds and no over/under market,
+# so these leagues cannot produce picks on their own — they are training data
+# that links smaller European leagues into the cross-league European model.
+# --------------------------------------------------------------------------
+
+EXTRA_URL = f"{BASE_URL}/new/{{country}}.csv"
+
+
+def standardize_extra(df: pd.DataFrame, country: str) -> pd.DataFrame:
+    df = df.rename(columns={"Home": "home", "Away": "away",
+                            "HG": "hg", "AG": "ag"}).copy()
+    df["div"] = country
+    df["date"] = pd.to_datetime(df["Date"], dayfirst=True, format="mixed", errors="coerce")
+    df = df.dropna(subset=["date", "home", "away"])
+    df["home"] = df["home"].astype(str).str.strip()
+    df["away"] = df["away"].astype(str).str.strip()
+    return df
+
+
+def load_extra_history(country: str, cache_dir: str | Path, today: date | None = None,
+                       fresh: bool = False) -> pd.DataFrame:
+    """Played matches for one extra country (all seasons the file covers)."""
+    url = EXTRA_URL.format(country=country)
+    try:
+        content = fetch(url, Path(cache_dir) / f"extra_{country}.csv", 1 if fresh else 12)
+    except requests.RequestException as e:
+        print(f"[warn] {url}: {e}")
+        return pd.DataFrame(columns=BASE_COLUMNS)
+    df = standardize_extra(parse_csv(content), country)
+    df = df.dropna(subset=["hg", "ag"])
+    df["hg"] = df["hg"].astype(int)
+    df["ag"] = df["ag"].astype(int)
+    return df.sort_values("date").reset_index(drop=True)
+
+
+# --------------------------------------------------------------------------
+# National teams: martj42/international_results (public domain CSV on GitHub).
+# Results only — it carries no odds at all, so international picks need the
+# manually entered prices in manual_fixtures.csv.
+# --------------------------------------------------------------------------
+
+INTERNATIONAL_URL = ("https://raw.githubusercontent.com/martj42/international_results"
+                     "/master/results.csv")
+
+
+def standardize_international(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.rename(columns={"home_team": "home", "away_team": "away",
+                            "home_score": "hg", "away_score": "ag",
+                            "tournament": "tournament"}).copy()
+    df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d", errors="coerce")
+    df = df.dropna(subset=["date", "home", "away", "hg", "ag"])
+    df["home"] = df["home"].astype(str).str.strip()
+    df["away"] = df["away"].astype(str).str.strip()
+    df["neutral"] = df["neutral"].astype(str).str.upper().isin(("TRUE", "1", "YES"))
+    df["div"] = "INT"
+    df["hg"] = df["hg"].astype(int)
+    df["ag"] = df["ag"].astype(int)
+    return df.sort_values("date").reset_index(drop=True)
+
+
+def load_international(cache_dir: str | Path, since: date | None = None,
+                       tournaments: list[str] | None = None,
+                       fresh: bool = False) -> pd.DataFrame:
+    """National-team results, optionally limited to a start date and tournaments."""
+    try:
+        content = fetch(INTERNATIONAL_URL, Path(cache_dir) / "international_results.csv",
+                        1 if fresh else 12)
+    except requests.RequestException as e:
+        print(f"[warn] {INTERNATIONAL_URL}: {e}")
+        return pd.DataFrame(columns=[*BASE_COLUMNS, "neutral", "tournament"])
+    df = standardize_international(parse_csv(content))
+    if since is not None:
+        df = df[df["date"] >= pd.Timestamp(since)]
+    if tournaments:
+        df = df[df["tournament"].isin(tournaments)]
+    return df.reset_index(drop=True)

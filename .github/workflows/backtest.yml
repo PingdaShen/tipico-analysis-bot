@@ -1,0 +1,69 @@
+name: backtest
+
+# 手动跑滚动回测。结果只作为运行摘要和构件输出，不写进仓库。
+on:
+  workflow_dispatch:
+    inputs:
+      seasons:
+        description: "回测最近几个完整赛季"
+        required: false
+        default: "2"
+        type: string
+      leagues:
+        description: "联赛代码，空格分隔，例如 E0 D1（留空 = config.yaml 里全部）"
+        required: false
+        default: ""
+        type: string
+      model_weight:
+        description: "覆盖 blend.model_weight，例如 0.3（留空 = 用 config.yaml）"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - uses: actions/cache@v4
+        with:
+          path: data/cache
+          key: football-data-${{ github.run_id }}
+          restore-keys: football-data-
+
+      - name: 跑回测
+        env:
+          SEASONS: ${{ inputs.seasons }}
+          LEAGUES: ${{ inputs.leagues }}
+          MODEL_WEIGHT: ${{ inputs.model_weight }}
+        run: |
+          set -o pipefail
+          args=(--seasons "${SEASONS:-2}")
+          if [ -n "$MODEL_WEIGHT" ]; then args+=(--model-weight "$MODEL_WEIGHT"); fi
+          # 故意不加引号：把 "E0 D1" 拆成多个参数
+          if [ -n "$LEAGUES" ]; then args+=(--leagues $LEAGUES); fi
+          {
+            echo '## 回测结果'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          python -m src.backtest "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backtest-bets
+          path: reports/backtest_bets.csv
+          if-no-files-found: warn

@@ -11,6 +11,11 @@ AVG_PRE = {"1X2": ["AvgH", "AvgD", "AvgA"], "OU25": ["Avg>2.5", "Avg<2.5"]}
 AVG_CLOSE = {"1X2": ["AvgCH", "AvgCD", "AvgCA"], "OU25": ["AvgC>2.5", "AvgC<2.5"]}
 MAX_PRE = {"1X2": ["MaxH", "MaxD", "MaxA"], "OU25": ["Max>2.5", "Max<2.5"]}
 SOFT_PRE = {"1X2": ["B365H", "B365D", "B365A"], "OU25": ["B365>2.5", "B365<2.5"]}
+# Tipico's own price, only ever present on hand-entered rows (see manual.py).
+# When it is there it beats Max*: it is the price actually available to the
+# user, not the best price some book somewhere happened to show.
+TIPICO_PRE = {"1X2": ["TipicoH", "TipicoD", "TipicoA"],
+              "OU25": ["Tipico>2.5", "Tipico<2.5"]}
 
 
 def get_odds(row, cols: list[str]) -> list[float] | None:
@@ -46,12 +51,22 @@ def market_probs(row, market: str) -> tuple[dict | None, str | None]:
     return None, None
 
 
-def closing_odds(row, market: str, outcome: str) -> float | None:
-    for table in (SHARP_CLOSE, AVG_CLOSE):
+def closing_odds(row, market: str, outcome: str) -> tuple[float | None, str | None]:
+    """Closing odds and which line they came from.
+
+    The source matters and must not be thrown away. Pinnacle's closing line
+    carries about a 2% margin; the market average carries 4-6%. Beating the
+    average close by 3% says almost nothing, while beating Pinnacle's close at
+    all is the real test. Mixing the two silently makes CLV — the project's
+    main metric — read far better than it is: in the 22-league backtest the
+    bets that fell back to the average close showed CLV +3.3%, while the ones
+    priced against Pinnacle's close showed -0.6%.
+    """
+    for table, name in ((SHARP_CLOSE, "pinnacle"), (AVG_CLOSE, "average")):
         d = odds_dict(row, table, market)
         if d:
-            return d[outcome]
-    return None
+            return d[outcome], name
+    return None, None
 
 
 def outcome_won(outcome: str, hg: int, ag: int) -> bool:
