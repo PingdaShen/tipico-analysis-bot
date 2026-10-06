@@ -54,13 +54,21 @@ def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader
         fixtures = fixtures_loader(list(cfg["leagues"]), cache)
     except requests.RequestException as e:
         return [], [f"赛程数据源无法访问：{e}"]
-    stale = ["赛程源里没有未来几天的联赛比赛（fixtures.csv 的更新频率不稳定）。"]
+    fixtures_all_divs = sorted(set(fixtures["div"])) if not fixtures.empty else []
     if fixtures.empty:
-        return [], stale
+        return [], ["赛程源 fixtures.csv 是空的，今天没有联赛可以分析。"]
+    feed_latest = fixtures["date"].max()
     end = today + pd.Timedelta(days=cfg["value"]["horizon_days"])
     fixtures = fixtures[(fixtures["date"] >= today) & (fixtures["date"] < end)]
     if fixtures.empty:
-        return [], stale
+        lag = (today.normalize() - pd.Timestamp(feed_latest).normalize()).days
+        covered = sorted(set(fixtures_all_divs) & set(cfg["leagues"])) if fixtures_all_divs else []
+        note = (f"赛程源里没有 {today:%m-%d} 起 {cfg['value']['horizon_days']} 天内的联赛比赛。"
+                f"fixtures.csv 最新的一场是 {pd.Timestamp(feed_latest):%Y-%m-%d}")
+        note += f"（已经是 {lag} 天前）" if lag > 0 else ""
+        note += f"，只覆盖 {len(covered)} 个联赛：{'、'.join(covered)}。" if covered else "。"
+        note += "这个源的更新不可靠；联赛比赛也可以用 manual_fixtures.csv 手填。"
+        return [], [note]
 
     rows, notes = [], []
     seasons = recent_seasons(cfg["history_seasons"], today.date())
@@ -103,12 +111,19 @@ def freshness_note(label: str, latest, today, stale_days: int = STALE_DAYS) -> s
 
 
 def manual_rows(cfg: dict, today, cache: Path, root: Path,
-                pool_loader=load_pool, intl_loader=intl.load, manual_loader=manual.load
-                ) -> tuple[list[dict], list[str]]:
-    """Evaluate the hand-entered European and international fixtures."""
+                pool_loader=load_pool, intl_loader=intl.load, manual_loader=manual.load,
+                history_loader=load_history) -> tuple[list[dict], list[str]]:
+    """Evaluate hand-entered fixtures.
+
+    Covers the European and international competitions, which have no feed at
+    all, and also plain league matches: fixtures.csv is unreliable — on
+    2026-10-06 it had not been regenerated since 10-02, listed only past dates
+    and covered 7 of the 22 configured leagues — so typing a league match in by
+    hand has to be possible. A league entered this way is priced by its own
+    Dixon-Coles, exactly as a fixture from the feed would be, and settles
+    automatically with a real CLV because its results do have a source.
+    """
     comps = cfg.get("manual_competitions") or {}
-    if not comps:
-        return [], []
     path = Path(root) / cfg["paths"]["manual_fixtures"]
     try:
         entered = manual_loader(path)
@@ -125,6 +140,19 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path,
     aliases = load_table(root)
     models: dict[str, DixonColes | None] = {}
     rows, notes = [], []
+    seasons = recent_seasons(cfg["history_seasons"], today.date())
+
+    def league_model(div: str) -> DixonColes | None:
+        """The per-league model, fitted at most once per run."""
+        if div in models:
+            return models[div]
+        models[div] = None
+        try:
+            models[div] = fit_model(history_loader(div, seasons, cache, today=today.date()),
+                                    cfg, today)
+        except ValueError as e:
+            notes.append(f"{cfg['leagues'][div]}：跳过手填的比赛（{e}）")
+        return models[div]
 
     def model_for(kind: str) -> DixonColes | None:
         """Fit a pooled/international model at most once per run."""
@@ -171,11 +199,14 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path,
         return models[kind]
 
     for div, group in fixtures.groupby("div"):
-        spec = comps.get(div)
-        if spec is None:
-            notes.append(f"手填赛程里的 {div} 不在 config.yaml 的 manual_competitions 里，跳过。")
+        if div in cfg["leagues"]:
+            model = league_model(div)
+        elif div in comps:
+            model = model_for((comps[div] or {}).get("model", "uefa"))
+        else:
+            known = "、".join([*cfg["leagues"], *comps])
+            notes.append(f"手填赛程里的 {div} 不是已知的赛事代码，跳过。可用的有：{known}")
             continue
-        model = model_for(spec.get("model", "uefa"))
         if model is None:
             continue
         for _, fx in group.iterrows():
@@ -209,8 +240,8 @@ def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_
     cache = Path(root) / cfg["paths"]["cache"]
 
     rows, notes = league_rows(cfg, today, cache, fixtures_loader, history_loader)
-    mrows, mnotes = manual_rows(cfg, today, cache, root,
-                                pool_loader, intl_loader, manual_loader)
+    mrows, mnotes = manual_rows(cfg, today, cache, root, pool_loader, intl_loader,
+                                manual_loader, history_loader)
     rows += mrows
     notes += mnotes
 

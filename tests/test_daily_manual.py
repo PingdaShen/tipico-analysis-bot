@@ -285,3 +285,76 @@ def test_league_only_picks_skip_the_closing_step(cfg, tmp_path):
     assert "## 投注 ID" in report
     assert "record-close" not in report
     assert "ledger close" not in report
+
+
+# --- hand-entered league fixtures ---------------------------------------------
+
+def test_a_league_match_can_be_entered_by_hand(cfg, tmp_path):
+    """fixtures.csv is unreliable, so the feed must not be the only way in.
+
+    On 2026-10-06 it had not been regenerated since 10-02, listed only past
+    dates and covered 7 of the 22 configured leagues, so a weekend of
+    Bundesliga / La Liga / Ligue 1 fixtures produced no report at all.
+    """
+    league = make_league(div="E0", n_teams=12, seasons=3, seed=1)
+    hist_raw, fix_raw, today, _ = league
+    hl, _ = loaders(hist_raw, fix_raw)
+    _manual_file(tmp_path, f"E0,{today:%Y-%m-%d},15:00,Team00,Team01,0,"
+                           f"2.00,3.80,4.60,2.15,3.90,4.80,,,,")
+
+    all_df, picks, notes = daily.analyze(
+        cfg, today, root=tmp_path, history_loader=hl,
+        fixtures_loader=lambda *a, **k: pd.DataFrame(),       # feed is down
+        pool_loader=lambda c, cache, today=None: (pd.DataFrame(), {}),
+        intl_loader=lambda c, cache, today=None, **kw: pd.DataFrame(),
+    )
+    assert not all_df.empty, "手填的联赛比赛应当被评估"
+    row = all_df.iloc[0]
+    assert row["div"] == "E0"
+    assert row["price_source"] == "tipico"
+    # a league stays a league: it settles automatically and gets a real CLV,
+    # so it must not be filed under the hand-entered section
+    assert not all_df["manual"].any()
+    assert not any("不是已知的赛事代码" in n for n in notes)
+
+
+def test_hand_entered_league_uses_its_own_model(cfg, tmp_path):
+    league = make_league(div="E0", n_teams=12, seasons=3, seed=1)
+    hist_raw, fix_raw, today, _ = league
+    hl, _ = loaders(hist_raw, fix_raw)
+    _manual_file(tmp_path, f"E0,{today:%Y-%m-%d},15:00,Team00,Team01,0,"
+                           f"2.00,3.80,4.60,2.15,3.90,4.80,,,,")
+    all_df, _, _ = daily.analyze(
+        cfg, today, root=tmp_path, history_loader=hl,
+        fixtures_loader=lambda *a, **k: pd.DataFrame(),
+        pool_loader=lambda c, cache, today=None: (pd.DataFrame(), {}),
+        intl_loader=lambda c, cache, today=None, **kw: pd.DataFrame())
+    from src.daily import fit_model
+    expected = fit_model(hl("E0", [], None, today=today.date()), cfg, today)
+    p = expected.predict("Team00", "Team01")
+    assert all_df[all_df["outcome"] == "H"]["p_model"].iloc[0] == pytest.approx(p["H"])
+
+
+def test_unknown_competition_code_lists_what_is_valid(cfg, tmp_path):
+    today = pd.Timestamp("2026-10-06")
+    _manual_file(tmp_path, f"ZZZ,{today:%Y-%m-%d},21:00,A,B,0,2.0,3.5,4.0,2.1,3.6,4.1,,,,")
+    _, _, notes = _run(cfg, tmp_path, today)
+    note = next(n for n in notes if "ZZZ" in n)
+    assert "不是已知的赛事代码" in note
+    assert "E0" in note and "CL" in note
+
+
+def test_stale_fixture_feed_says_how_stale(cfg, tmp_path):
+    """The old note just called the feed unreliable; say the actual lag."""
+    today = pd.Timestamp("2026-10-09")
+    feed = pd.DataFrame({"div": ["E2", "SC3"],
+                         "date": [pd.Timestamp("2026-10-05")] * 2,
+                         "home": ["a", "c"], "away": ["b", "d"]})
+    _, _, notes = daily.analyze(
+        cfg, today, root=tmp_path, history_loader=lambda *a, **k: pd.DataFrame(),
+        fixtures_loader=lambda *a, **k: feed,
+        pool_loader=lambda c, cache, today=None: (pd.DataFrame(), {}),
+        intl_loader=lambda c, cache, today=None, **kw: pd.DataFrame())
+    note = next(n for n in notes if "fixtures.csv" in n)
+    assert "2026-10-05" in note and "4 天前" in note
+    assert "manual_fixtures.csv" in note

@@ -50,6 +50,18 @@ python -m src.manual result --comp INT --date 2026-09-29 \
     --home Finland --away Belarus --hg 0 --ag 0 --tournament "UEFA Nations League"
 ```
 
+**联赛比赛没出现在报告里？** `fixtures.csv` 经常过期或漏联赛（2026-10-06 时它 4 天
+没更新，22 个联赛只覆盖 7 个），报告备注会写明。这种情况下联赛比赛也可以手填——
+`comp` 直接写联赛代码：
+
+```bash
+python -m src.manual add --comp D1 --date 2026-10-10 --home Dortmund \
+    --away "Bayern Munich" --ref-h 3.40 --ref-d 4.10 --ref-a 1.95 \
+    --tip-h 3.50 --tip-d 4.20 --tip-a 2.00
+```
+
+手填的联赛比赛照样用该联赛自己的模型定价，而且赛果有源，能自动结算、算出真实 CLV。
+
 想让欧战或国家队比赛进入分析，先用 Actions 的 **add-fixture** 填一场的赔率：
 参考市场赔率（Pinnacle 优先）+ Tipico 自己的赔率。不要在参考赔率里填 Tipico 的价格，
 否则等于拿 Tipico 和自己比，算不出任何优势。

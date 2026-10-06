@@ -54,6 +54,8 @@ ODDS_MAP = {
 TEMPLATE = (
     "# 手填赛程和赔率：欧战和国家队没有免费的赔率源，这些价格只能你自己填。\n"
     "# comp: CL=欧冠 EL=欧联 UECL=欧协联 INT=国家队（见 config.yaml 的 manual_competitions）\n"
+    "#       也可以填联赛代码（E0 D1 SP1 …）：fixtures.csv 经常过期或漏联赛，\n"
+    "#       手填的联赛比赛照样用该联赛自己的模型定价，而且能自动结算、算出 CLV。\n"
     "# date: YYYY-MM-DD  neutral: 中立场填 1，主客场填 0\n"
     "# ref_*: 参考市场赔率（有 Pinnacle 用 Pinnacle，否则用市场平均）——不要填 Tipico 自己的价格，\n"
     "#        否则等于拿 Tipico 和自己比，算不出任何优势。\n"
@@ -323,7 +325,8 @@ def main() -> None:
     r.add_argument("--neutral", default="0", help="中立场填 1")
     r.add_argument("--tournament", default="", help="仅 INT 需要，如 UEFA Nations League")
     a = sub.add_parser("add", help="追加一场比赛")
-    a.add_argument("--comp", required=True, help="CL / EL / UECL / INT")
+    a.add_argument("--comp", required=True,
+                   help="CL / EL / UECL / INT，或联赛代码如 E0 D1 SP1")
     a.add_argument("--date", required=True, help="YYYY-MM-DD")
     a.add_argument("--home", required=True)
     a.add_argument("--away", required=True)
