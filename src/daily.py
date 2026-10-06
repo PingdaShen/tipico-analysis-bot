@@ -30,7 +30,7 @@ from .config import ROOT, load_config
 from .data import load_fixtures, load_history, recent_seasons
 from .model import DixonColes
 from .pool import fit_pool, load_pool
-from .value import evaluate_fixture
+from .value import evaluate_combos, evaluate_fixture
 
 
 def fit_model(history: pd.DataFrame, cfg: dict, ref_date) -> DixonColes:
@@ -76,6 +76,8 @@ def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader
             if not ev:
                 notes.append(f"{fx['home']} vs {fx['away']}：球队数据不足（可能是升班马），跳过")
             rows.extend(ev)
+            if cfg["value"].get("combos"):
+                rows.extend(evaluate_combos(fx, model, cfg))
     return rows, notes
 
 
@@ -189,11 +191,14 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path,
                     fx[side] = name
             if bad:
                 continue
-            ev = evaluate_fixture(fx, model, cfg, neutral=bool(fx.get("neutral", False)))
+            neutral = bool(fx.get("neutral", False))
+            ev = evaluate_fixture(fx, model, cfg, neutral=neutral)
             if not ev:
                 notes.append(f"{fx['home']} vs {fx['away']}：球队比赛数不够"
                              f"（门槛 min_team_matches），跳过")
             rows.extend(ev)
+            if cfg["value"].get("combos"):
+                rows.extend(evaluate_combos(fx, model, cfg, neutral=neutral))
     return rows, notes
 
 
@@ -238,6 +243,43 @@ def _pick_table(picks: pd.DataFrame, start: int = 0) -> list[str]:
     return lines
 
 
+def _combo_section(picks: pd.DataFrame, all_df: pd.DataFrame, cfg: dict) -> list[str]:
+    """Minimum odds for same-match combinations on the matches already picked.
+
+    No feed quotes combination odds, so these can never be checked against a
+    real price here — the report gives the threshold and the user compares it
+    in the app. They are listed only where the model sits above the market, and
+    only for matches that already produced a pick, to keep the report short.
+    """
+    if not cfg["value"].get("combos") or all_df.empty or picks.empty:
+        return []
+    combos = all_df[all_df["market"] == "1X2+OU25"]
+    if combos.empty:
+        return []
+    key = ["date", "home", "away"]
+    combos = combos.merge(picks[key].drop_duplicates(), on=key, how="inner")
+    combos = combos[combos["p_model"] > combos["p_market"]]
+    if combos.empty:
+        return []
+    lines = [
+        "## 同场组合参考（胜负 + 大小球）",
+        "",
+        "没有数据源报组合赔率，所以这些**不是推荐**，只是阈值：",
+        "在 Tipico 的组合投注里找到对应选项，**赔率 ≥ 最低赔率才值得下**。",
+        "注意组合的公平赔率不等于两个盘口相乘——平局和大球强烈负相关。",
+        "",
+        "| 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |",
+        "|---|---|---|---|---|",
+    ]
+    for (_, _, _), g in combos.groupby(key, sort=False):
+        g = g.sort_values("min_odds").head(cfg["value"].get("max_combo_rows", 4))
+        for _, c in g.iterrows():
+            naive = f"{c['naive_odds']:.2f}" if pd.notna(c.get("naive_odds")) else "—"
+            lines.append(f"| {c['home']} vs {c['away']} | {c['label']} | "
+                         f"{c['fair_odds']:.2f} | **{c['min_odds']:.2f}** | {naive} |")
+    return lines + [""]
+
+
 def render_report(today, picks: pd.DataFrame, all_df: pd.DataFrame,
                   notes: list[str], cfg: dict) -> str:
     v, s = cfg["value"], cfg["staking"]
@@ -278,6 +320,7 @@ def render_report(today, picks: pd.DataFrame, all_df: pd.DataFrame,
         lines += ["```", "",
                   "「可得赔率」带 * 的是市场最高赔率（只说明这个价格在市场上存在，",
                   "不一定在 Tipico）；不带 * 的是你自己填进来的 Tipico 赔率。", ""]
+        lines += _combo_section(picks, all_df, cfg)
     if notes:
         lines += ["## 备注", *[f"- {n}" for n in notes], ""]
     lines += [
