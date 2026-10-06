@@ -153,6 +153,19 @@ football-data.co.uk 完全没有欧战和国家队数据（`mmz4281/2627/CL.csv`
 涨幅比 Belarus 大。所以 `manual_results.csv` 要按**比赛窗口整体**录入，
 不要只补你关心的那支球队。
  
+## 手录收盘赔率
+ 
+欧战和国家队没有任何收盘赔率源，所以 `python -m src.ledger close` 让用户在开球前
+手工记一次，真实账本和模拟账本一起更新并重算 CLV。
+ 
+- 收盘线只在开球那一刻存在，必须当时记。事后可以在 oddsportal / betexplorer 查。
+- `--source` 声明记的是哪条线。只有 `pinnacle` 计入 `sharp_clv`——
+  打赢 4-6% 水位的市场平均收盘线说明不了问题（见 `market.closing_odds`）。
+- 可以只给这个选项的一个数（`--close`），也可以把整个盘口填上
+  （`--close-h/-d/-a`），后者会额外显示去水后的收盘概率。
+- 国内联赛不需要手录：`settle` 会从 football-data.co.uk 自动取，而且自动值是权威的，
+  会覆盖手录值。
+ 
 ## 手录赛果
  
 `manual_results.csv` 用来补数据源还没收录的比赛，经 `manual.apply_results`
@@ -180,6 +193,9 @@ football-data.co.uk 完全没有欧战和国家队数据（`mmz4281/2627/CL.csv`
 ## 评估标准
  
 - **主要指标是 CLV**（实际赔率 / 收盘赔率 − 1），不是短期盈亏。至少几百注后再判断模型是否有效。
+- CLV 在开球那一刻就确定了，和比赛结果无关，所以汇总按**所有有收盘价的注**统计，
+  不等结算——等结算就放弃了 CLV 比盈亏更早给出信号这个唯一优势。
+  ROI 和命中率仍然只统计已结算的注。
 - **只看对锐价收盘线的 CLV**（`sharp_clv`，即 Pinnacle 收盘 `PSC*`/`PC>2.5`）。
   Pinnacle 收盘约 2% 水位，市场平均收盘 4-6%；打赢市场平均几乎说明不了问题。
   约 20% 的比赛没有 Pinnacle 收盘，`closing_odds` 会逐场退回市场平均，
@@ -211,6 +227,8 @@ python -m src.daily --date 2026-10-10      # 指定日期
 python -m src.backtest --seasons 2         # 回测最近 2 个完整赛季（只有国内联赛）
 python -m src.ledger add <ID> --odds 2.10 --stake 1
 python -m src.ledger settle                # 自动结算已结束的比赛
+# 开球前记一次收盘赔率（欧战/国家队唯一的 CLV 来源）
+python -m src.ledger close <ID> --close-h 4.20 --close-d 3.25 --close-a 1.92
 python -m src.ledger summary               # 真实/模拟投注汇总
 
 # 欧战 / 国家队
@@ -242,8 +260,8 @@ python -m src.aliases suggest              # 给出候选匹配供人工确认
   永远是市场平均 `Avg*`。代码里的 fallback 已经覆盖，但去水后的概率会比用 Pinnacle 差一些。
 - 开球时间可能是英国时间。
 - Tipico 的最低注额、奖金条款需要用户在 App 里确认后写进 `config.yaml`。
-- **欧战和国家队的推荐无法用 CLV 检验**，因为两个赛果源都没有收盘赔率。
-  这意味着本项目的主要评估指标对它们不适用，只能看长期盈亏（噪声大得多）。
+- **欧战和国家队没有自动的收盘赔率源**，要用 `python -m src.ledger close` 在开球前
+  手工记一次才能算 CLV。不记的话这些推荐只能看长期盈亏（噪声大得多）。
 - **欧联和欧协联正赛没有赛果源**，openfootball 只有资格赛。这两项赛事的球队评分
   只能来自国内联赛和欧冠的链接。
 - **openfootball 晚一个赛季发布**：当前赛季的欧战赛果拿不到，所以跨联赛链接最新到上个赛季，
