@@ -142,7 +142,7 @@ class DixonColes:
         mat /= mat.sum()
         total = g[:, None] + g[None, :]
         over = float(mat[total >= 3].sum())
-        return {
+        out = {
             "H": float(np.tril(mat, -1).sum()),
             "D": float(np.trace(mat)),
             "A": float(np.triu(mat, 1).sum()),
@@ -151,3 +151,17 @@ class DixonColes:
             "lam": lam,
             "mu": mu,
         }
+        # Joint probabilities for same-match combinations. These cannot be had
+        # by multiplying the two markets: a draw is usually low scoring, so
+        # "draw and over 2.5" is far rarer than P(draw) * P(over 2.5) suggests
+        # — about 65% rarer on a typical fixture. The score matrix has the
+        # dependence in it already, so read the cells off directly.
+        n = len(g)
+        result_masks = {"H": np.tril(np.ones((n, n), dtype=bool), -1),
+                        "D": np.eye(n, dtype=bool),
+                        "A": np.triu(np.ones((n, n), dtype=bool), 1)}
+        goal_masks = {"O25": total >= 3, "U25": total <= 2}
+        for r, rm in result_masks.items():
+            for o, om in goal_masks.items():
+                out[f"{r}&{o}"] = float(mat[rm & om].sum())
+        return out

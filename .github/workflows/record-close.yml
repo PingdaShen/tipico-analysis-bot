@@ -1,0 +1,94 @@
+name: record-close
+
+# 录入收盘赔率。开球前几分钟看一眼 Pinnacle（或你能看到的市场价）填进来。
+# 欧战和国家队没有任何收盘赔率源，这是让这些推荐能用 CLV 检验的唯一办法。
+on:
+  workflow_dispatch:
+    inputs:
+      pick_id:
+        description: "报告里的 ID（直接复制）"
+        required: true
+        type: string
+      close:
+        description: "这个选项的收盘赔率（只填这一个也行）"
+        required: false
+        default: ""
+        type: string
+      close_h:
+        description: "收盘 主胜（或整个盘口都填，自动取对应选项）"
+        required: false
+        default: ""
+        type: string
+      close_d:
+        description: "收盘 平局"
+        required: false
+        default: ""
+        type: string
+      close_a:
+        description: "收盘 客胜"
+        required: false
+        default: ""
+        type: string
+      source:
+        description: "你记的是哪条线（只有 pinnacle 计入 sharp_clv）"
+        required: false
+        default: "pinnacle"
+        type: choice
+        options: [pinnacle, average]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ledger-write
+  cancel-in-progress: false
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: 录入收盘赔率
+        env:
+          PICK_ID: ${{ inputs.pick_id }}
+          CLOSE: ${{ inputs.close }}
+          CLOSE_H: ${{ inputs.close_h }}
+          CLOSE_D: ${{ inputs.close_d }}
+          CLOSE_A: ${{ inputs.close_a }}
+          SOURCE: ${{ inputs.source }}
+        run: |
+          set -o pipefail
+          args=("$PICK_ID" --source "$SOURCE")
+          if [ -n "$CLOSE" ];   then args+=(--close "$CLOSE"); fi
+          if [ -n "$CLOSE_H" ]; then args+=(--close-h "$CLOSE_H"); fi
+          if [ -n "$CLOSE_D" ]; then args+=(--close-d "$CLOSE_D"); fi
+          if [ -n "$CLOSE_A" ]; then args+=(--close-a "$CLOSE_A"); fi
+          python -m src.ledger close "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
+          {
+            echo
+            echo '## 投注汇总'
+            echo '```'
+            python -m src.ledger summary
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 提交
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bets
+          if git diff --staged --quiet; then
+            echo "没有变化，不提交。"
+            exit 0
+          fi
+          git commit -m "收盘赔率 ${{ inputs.pick_id }}"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

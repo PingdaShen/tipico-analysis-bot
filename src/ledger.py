@@ -17,7 +17,7 @@ from . import intl, manual
 from .aliases import load_table
 from .config import ROOT, load_config
 from .data import current_season_start, load_history, recent_seasons
-from .market import closing_odds, outcome_won
+from .market import closing_odds, devig, outcome_won
 from .openfootball import load_uefa_history
 
 COLUMNS = ["id", "created", "date", "div", "home", "away", "market", "outcome", "label",
@@ -135,6 +135,93 @@ def results_for_div(div: str, cfg: dict, cache: Path, today=None,
     return merged
 
 
+# --------------------------------------------------------------------------
+# Closing odds entered by hand.
+#
+# CLV is the project's main metric, and for European and international
+# competitions nothing supplies a closing line: football-data.co.uk has no
+# such matches, and the two results feeds carry results only. Without it those
+# picks can only ever be judged on profit and loss, which is far too noisy to
+# say anything at the volumes involved here.
+#
+# The closing line only exists at kick-off, so it has to be written down then.
+# One number per bet is enough; the whole market is accepted too because it is
+# easier to copy three prices than to pick out the right one.
+# --------------------------------------------------------------------------
+
+MARKET_FLAGS = {"1X2": {"H": "close_h", "D": "close_d", "A": "close_a"},
+                "OU25": {"O25": "close_o25", "U25": "close_u25"}}
+
+
+def closing_for_outcome(market: str, outcome: str, values: dict) -> float | None:
+    """Pick the closing price for one outcome out of a whole market."""
+    if values.get("close") is not None:
+        return float(values["close"])
+    flag = MARKET_FLAGS.get(market, {}).get(outcome)
+    v = values.get(flag) if flag else None
+    return float(v) if v is not None else None
+
+
+def devigged_close(values: dict) -> dict | None:
+    """De-vigged closing probabilities, for whichever market was given in full.
+
+    Shown back to the user so they can see what the closing line actually
+    implied, which is more informative than the CLV percentage on its own.
+    """
+    for flags in MARKET_FLAGS.values():
+        odds = [values.get(f) for f in flags.values()]
+        if any(o is None for o in odds):
+            continue
+        try:
+            odds = [float(o) for o in odds]
+        except (TypeError, ValueError):
+            continue
+        if any(o <= 1.0 for o in odds):
+            continue
+        return dict(zip(flags, devig(odds)))
+    return None
+
+
+def set_closing(pick_id: str, values: dict, cfg: dict, root: Path = ROOT,
+                source: str = "pinnacle") -> int:
+    """Record closing odds for one pick in both ledgers and recompute its CLV."""
+    touched = 0
+    for paper, name in ((False, "真实投注"), (True, "模拟投注")):
+        path = ledger_path(cfg, root, paper)
+        df = load(path)
+        if df.empty:
+            continue
+        hit = df.index[df["id"] == pick_id]
+        if hit.empty:
+            continue
+        for idx in hit:
+            row = df.loc[idx]
+            close = closing_for_outcome(row["market"], row["outcome"], values)
+            if close is None:
+                raise SystemExit(f"没给出 {row['label']} 的收盘赔率。"
+                                 f"用 --close，或把整个盘口都填上。")
+            if close <= 1.0:
+                raise SystemExit(f"收盘赔率 {close} 不合理。")
+            old = row["close_odds"]
+            clv = round(float(row["odds"]) / close - 1, 4)
+            df.loc[idx, "close_odds"] = close
+            df.loc[idx, "clv"] = clv
+            df.loc[idx, "close_source"] = source
+            was = f"（原来是 {old:.2f}，已覆盖）" if pd.notna(old) else ""
+            print(f"{name}：{row['label']} 下注 {row['odds']:.2f} / 收盘 {close:.2f} "
+                  f"-> CLV {clv:+.1%}{was}")
+            touched += 1
+        save(df, path)
+    if not touched:
+        raise SystemExit(f"两个账本里都找不到 ID {pick_id}。")
+    fair = devigged_close(values)
+    if fair:
+        pct = "  ".join(f"{k} {v:.1%}" for k, v in fair.items())
+        print(f"去水后的收盘概率：{pct}")
+    return touched
+
+
+
 def settle(cfg: dict, root: Path = ROOT, history_loader=load_history, today=None,
            **loaders) -> None:
     cache = Path(root) / cfg["paths"]["cache"]
@@ -179,9 +266,12 @@ def summarize(df: pd.DataFrame) -> dict:
     s = df[df["status"] == "settled"]
     staked = float(s["stake"].sum()) if not s.empty else 0.0
     pnl = float(pd.to_numeric(s["pnl"]).sum()) if not s.empty else 0.0
-    clv = pd.to_numeric(s["clv"], errors="coerce").dropna() if not s.empty else pd.Series(dtype=float)
-    sharp = (pd.to_numeric(s.loc[s["close_source"] == "pinnacle", "clv"], errors="coerce").dropna()
-             if not s.empty else pd.Series(dtype=float))
+    # CLV is fixed the moment the match kicks off and does not depend on the
+    # result, so it counts every bet that has a closing price — waiting for
+    # settlement would throw away the one advantage the metric has over P&L.
+    clv = pd.to_numeric(df["clv"], errors="coerce").dropna()
+    sharp = pd.to_numeric(df.loc[df["close_source"] == "pinnacle", "clv"],
+                          errors="coerce").dropna()
     return {
         "settled": len(s),
         "open": int((df["status"] == "open").sum()),
@@ -192,7 +282,7 @@ def summarize(df: pd.DataFrame) -> dict:
         "avg_clv": float(clv.mean()) if not clv.empty else None,
         "sharp_clv": float(sharp.mean()) if not sharp.empty else None,
         "sharp_n": int(len(sharp)),
-        "no_clv": int(len(s) - len(clv)),
+        "no_clv": int(len(df) - len(clv)),
     }
 
 
@@ -202,7 +292,7 @@ def format_summary(name: str, d: dict) -> str:
     hit = "—" if d["hit_rate"] is None else f"{d['hit_rate']:.0%}"
     extra = ""
     if d["no_clv"]:
-        extra += f"，{d['no_clv']} 注没有收盘赔率（欧战/国家队）"
+        extra += f"，{d['no_clv']} 注还没有收盘赔率"
     return (f"{name}：已结算 {d['settled']} 注，未结算 {d['open']} 注，"
             f"投入 €{d['staked']:.2f}，盈亏 €{d['pnl']:+.2f}，ROI {pct(d['roi'])}，"
             f"命中率 {hit}，对锐价收盘的 CLV {pct(d['sharp_clv'])}"
@@ -218,10 +308,22 @@ def main() -> None:
     a.add_argument("--stake", type=float, required=True)
     sub.add_parser("settle")
     sub.add_parser("summary")
+    c = sub.add_parser("close", help="录入收盘赔率（欧战/国家队唯一的 CLV 来源）")
+    c.add_argument("pick_id", help="报告里的 ID")
+    c.add_argument("--close", type=float, help="这个选项的收盘赔率")
+    c.add_argument("--close-h", dest="close_h", type=float, help="收盘 主胜")
+    c.add_argument("--close-d", dest="close_d", type=float, help="收盘 平局")
+    c.add_argument("--close-a", dest="close_a", type=float, help="收盘 客胜")
+    c.add_argument("--close-o25", dest="close_o25", type=float, help="收盘 大 2.5")
+    c.add_argument("--close-u25", dest="close_u25", type=float, help="收盘 小 2.5")
+    c.add_argument("--source", choices=["pinnacle", "average"], default="pinnacle",
+                   help="你记的是哪条线。只有 pinnacle 计入 sharp_clv")
     args = ap.parse_args()
     cfg = load_config()
     if args.cmd == "add":
         add(args.pick_id, args.odds, args.stake, cfg)
+    elif args.cmd == "close":
+        set_closing(args.pick_id, vars(args), cfg, source=args.source)
     elif args.cmd == "settle":
         settle(cfg)
         print("结算完成。")
