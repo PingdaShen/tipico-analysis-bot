@@ -15,3 +15,4 @@ comp,date,time,home,away,neutral,ref_h,ref_d,ref_a,tip_h,tip_d,tip_a,ref_o25,ref
 # INT,2026-11-14,20:45,Germany,Netherlands,0,2.10,3.40,3.30,2.20,3.50,3.40,,,,
 INT,2026-10-06,20:45,England,Czech,0,1.10,9.36,20.57,1.08,11,23,,,,
 INT,2026-10-06,20:45,Belarus,Finland,0,4.09,3.19,1.97,4.5,3.1,1.9,,,,
+INT,2026-10-06,20:45,Scotland,Slovenia,0,1.83,3.29,4.56,1.77,3.4,5.00,,,,
