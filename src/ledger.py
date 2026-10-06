@@ -17,12 +17,12 @@ from . import intl, manual
 from .aliases import load_table
 from .config import ROOT, load_config
 from .data import current_season_start, load_history, recent_seasons
-from .market import closing_odds, devig, outcome_won
+from .market import closing_odds, closing_probs, devig, outcome_won
 from .openfootball import load_uefa_history
 
 COLUMNS = ["id", "created", "date", "div", "home", "away", "market", "outcome", "label",
            "odds", "stake", "p_final", "status", "result", "pnl", "close_odds", "clv",
-           "close_source"]
+           "clv_novig", "close_source"]
 
 
 def ledger_path(cfg: dict, root: Path, paper: bool) -> Path:
@@ -31,7 +31,7 @@ def ledger_path(cfg: dict, root: Path, paper: bool) -> Path:
 
 TEXT_COLUMNS = ["id", "created", "div", "home", "away", "market", "outcome", "label",
                 "status", "result", "close_source"]
-NUM_COLUMNS = ["odds", "stake", "p_final", "pnl", "close_odds", "clv"]
+NUM_COLUMNS = ["odds", "stake", "p_final", "pnl", "close_odds", "clv", "clv_novig"]
 
 
 def load(path: Path) -> pd.DataFrame:
@@ -62,7 +62,7 @@ def _row_from_pick(p, odds: float, stake: float, today) -> dict:
         "odds": round(float(odds), 2), "stake": float(stake),
         "p_final": round(float(p["p_final"]), 4), "status": "open",
         "result": "", "pnl": None, "close_odds": None, "clv": None,
-        "close_source": "",
+        "clv_novig": None, "close_source": "",
     }
 
 
@@ -207,9 +207,15 @@ def set_closing(pick_id: str, values: dict, cfg: dict, root: Path = ROOT,
             df.loc[idx, "close_odds"] = close
             df.loc[idx, "clv"] = clv
             df.loc[idx, "close_source"] = source
+            fair = devigged_close(values)
+            novig = None
+            if fair and row["outcome"] in fair:
+                novig = round(float(row["odds"]) * fair[row["outcome"]] - 1, 4)
+            df.loc[idx, "clv_novig"] = novig
             was = f"（原来是 {old:.2f}，已覆盖）" if pd.notna(old) else ""
+            extra = f"，去水后 {novig:+.1%}" if novig is not None else "（只给了一个赔率，算不了去水 CLV）"
             print(f"{name}：{row['label']} 下注 {row['odds']:.2f} / 收盘 {close:.2f} "
-                  f"-> CLV {clv:+.1%}{was}")
+                  f"-> CLV {clv:+.1%}{extra}{was}")
             touched += 1
         save(df, path)
     if not touched:
@@ -246,6 +252,7 @@ def settle(cfg: dict, root: Path = ROOT, history_loader=load_history, today=None
                 g = m.iloc[0]
                 won = outcome_won(r["outcome"], int(g["hg"]), int(g["ag"]))
                 close, close_source = closing_odds(g, r["market"], r["outcome"])
+                cp, _ = closing_probs(g, r["market"])
                 df.loc[idx, "status"] = "settled"
                 df.loc[idx, "result"] = f"{int(g['hg'])}-{int(g['ag'])} {'赢' if won else '输'}"
                 df.loc[idx, "pnl"] = round(r["stake"] * (r["odds"] - 1) if won else -r["stake"], 2)
@@ -253,15 +260,19 @@ def settle(cfg: dict, root: Path = ROOT, history_loader=load_history, today=None
                     df.loc[idx, "close_odds"] = close
                     df.loc[idx, "clv"] = round(r["odds"] / close - 1, 4)
                     df.loc[idx, "close_source"] = close_source
+                    if cp:
+                        df.loc[idx, "clv_novig"] = round(r["odds"] * cp[r["outcome"]] - 1, 4)
         save(df, path)
 
 
 def summarize(df: pd.DataFrame) -> dict:
     """Totals for one ledger.
 
-    sharp_clv counts only bets measured against Pinnacle's closing line. That
-    is the honest number: a CLV computed against the market average close is
-    beating a 4-6% margin line and means much less. See market.closing_odds.
+    clv_novig is the headline: it divides by a de-vigged closing probability,
+    so a bet priced against a soft line means the same as one priced against
+    Pinnacle. The raw avg_clv does not — the two lines differ by about 3
+    points of margin across these leagues. sharp_clv keeps the raw formula but
+    counts only Pinnacle-priced bets. See market.closing_probs.
     """
     s = df[df["status"] == "settled"]
     staked = float(s["stake"].sum()) if not s.empty else 0.0
@@ -270,6 +281,7 @@ def summarize(df: pd.DataFrame) -> dict:
     # result, so it counts every bet that has a closing price — waiting for
     # settlement would throw away the one advantage the metric has over P&L.
     clv = pd.to_numeric(df["clv"], errors="coerce").dropna()
+    novig = pd.to_numeric(df["clv_novig"], errors="coerce").dropna()
     sharp = pd.to_numeric(df.loc[df["close_source"] == "pinnacle", "clv"],
                           errors="coerce").dropna()
     return {
@@ -280,6 +292,8 @@ def summarize(df: pd.DataFrame) -> dict:
         "roi": pnl / staked if staked else None,
         "hit_rate": float((pd.to_numeric(s["pnl"]) > 0).mean()) if not s.empty else None,
         "avg_clv": float(clv.mean()) if not clv.empty else None,
+        "clv_novig": float(novig.mean()) if not novig.empty else None,
+        "novig_n": int(len(novig)),
         "sharp_clv": float(sharp.mean()) if not sharp.empty else None,
         "sharp_n": int(len(sharp)),
         "no_clv": int(len(df) - len(clv)),
@@ -295,8 +309,8 @@ def format_summary(name: str, d: dict) -> str:
         extra += f"，{d['no_clv']} 注还没有收盘赔率"
     return (f"{name}：已结算 {d['settled']} 注，未结算 {d['open']} 注，"
             f"投入 €{d['staked']:.2f}，盈亏 €{d['pnl']:+.2f}，ROI {pct(d['roi'])}，"
-            f"命中率 {hit}，对锐价收盘的 CLV {pct(d['sharp_clv'])}"
-            f"（{d['sharp_n']} 注）{extra}")
+            f"命中率 {hit}，去水 CLV {pct(d['clv_novig'])}（{d['novig_n']} 注）"
+            f"，其中对 Pinnacle 收盘 {pct(d['sharp_clv'])}（{d['sharp_n']} 注）{extra}")
 
 
 def main() -> None:

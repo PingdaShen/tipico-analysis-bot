@@ -56,7 +56,7 @@ def _ledger(rows):
 def test_ledger_summary_separates_sharp_clv():
     base = dict(id="x", created="2026-01-01", date="2026-01-02", div="E0", home="A",
                 away="B", market="1X2", outcome="H", label="l", odds=2.0, stake=1.0,
-                p_final=0.5, status="settled", result="1-0 赢", pnl=1.0)
+                p_final=0.5, status="settled", result="1-0 赢", pnl=1.0, clv_novig=None)
     df = _ledger([
         {**base, "id": "a", "close_odds": 2.02, "clv": -0.01, "close_source": "pinnacle"},
         {**base, "id": "b", "close_odds": 1.90, "clv": 0.05, "close_source": "average"},
@@ -71,8 +71,8 @@ def test_ledger_summary_separates_sharp_clv():
     assert d["no_clv"] == 1
 
     text = format_summary("模拟投注", d)
-    assert "对锐价收盘的 CLV" in text and "-1.0%" in text
-    assert "没有收盘赔率" in text
+    assert "对 Pinnacle 收盘 -1.0%" in text
+    assert "还没有收盘赔率" in text
 
 
 def test_ledger_summary_with_no_clv_at_all():
@@ -96,3 +96,32 @@ def test_ledger_load_tolerates_a_missing_column(tmp_path):
     df = ledger.load(p)
     assert "close_source" in df.columns
     assert summarize(df)["settled"] == 1
+
+
+def test_closing_probs_devigs_and_names_the_line():
+    from src.market import closing_probs
+    p, src = closing_probs(SHARP, "1X2")
+    assert src == "pinnacle" and sum(p.values()) == pytest.approx(1.0)
+    assert p["H"] < 1 / 2.00                      # margin removed
+    p2, src2 = closing_probs(AVG_ONLY, "1X2")
+    assert src2 == "average"
+    assert closing_probs(pd.Series({"x": 1}), "1X2") == (None, None)
+
+
+def test_backtest_summary_reports_novig_clv():
+    bets = pd.DataFrame({
+        "div": ["E0"] * 2,
+        "pnl": [1.0, -1.0], "won": [True, False],
+        "clv": [0.05, 0.05], "clv_novig": [-0.01, 0.01],
+        "close_source": ["average", "average"],
+    })
+    out = bt_summarize(bets)
+    assert out.loc["ALL", "avg_clv"] == pytest.approx(0.05)
+    assert out.loc["ALL", "clv_novig"] == pytest.approx(0.0)
+
+
+def test_backtest_summary_without_the_novig_column():
+    bets = pd.DataFrame({"div": ["E0"], "pnl": [1.0], "won": [True], "clv": [0.01],
+                         "close_source": ["pinnacle"]})
+    out = bt_summarize(bets)
+    assert np.isnan(out.loc["ALL", "clv_novig"])

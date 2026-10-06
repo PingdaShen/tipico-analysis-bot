@@ -16,7 +16,8 @@ import pandas as pd
 from .config import ROOT, load_config
 from .daily import fit_model
 from .data import current_season_start, load_history, season_code
-from .market import OUTCOMES, SOFT_PRE, closing_odds, market_probs, odds_dict, outcome_won
+from .market import (OUTCOMES, SOFT_PRE, closing_odds, closing_probs, market_probs,
+                     odds_dict, outcome_won)
 from .value import blend
 
 
@@ -54,12 +55,15 @@ def backtest_league(history: pd.DataFrame, cfg: dict, test_start: pd.Timestamp,
                             continue
                         won = outcome_won(o, int(g["hg"]), int(g["ag"]))
                         close, close_source = closing_odds(g, market, o)
+                        cp, _ = closing_probs(g, market)
                         bets.append({
                             "date": g["date"], "div": g["div"], "home": g["home"],
                             "away": g["away"], "market": market, "outcome": o,
                             "odds": odds, "p_final": p_final[o], "won": won,
                             "pnl": odds - 1 if won else -1.0,
                             "clv": odds / close - 1 if close else None,
+                            # comparable across closing lines of different margin
+                            "clv_novig": odds * cp[o] - 1 if cp else None,
                             "close_source": close_source,
                         })
         ref += pd.Timedelta(days=refit_days)
@@ -79,22 +83,26 @@ def _sharp_n(s: pd.DataFrame) -> int:
 def summarize(bets: pd.DataFrame) -> pd.DataFrame:
     """Per-league and overall summary.
 
-    sharp_clv is the number to look at: avg_clv mixes Pinnacle's closing line
-    with the much softer market average, which flatters it badly. See
-    market.closing_odds.
+    clv_novig is the number to look at: it divides by a de-vigged closing
+    probability, so a bet priced against the market average means the same as
+    one priced against Pinnacle. avg_clv keeps the raw formula and is not
+    comparable between the two. See market.closing_probs.
     """
     if bets.empty:
         return pd.DataFrame()
     if "close_source" not in bets.columns:
         bets = bets.assign(close_source=None)
-    rows = {}
-    for div, s in bets.groupby("div"):
-        rows[div] = {"bets": len(s), "pnl": s["pnl"].sum(), "hit_rate": s["won"].mean(),
-                     "avg_clv": s["clv"].mean(), "sharp_n": _sharp_n(s),
-                     "sharp_clv": _sharp_clv(s)}
-    rows["ALL"] = {"bets": len(bets), "pnl": bets["pnl"].sum(),
-                   "hit_rate": bets["won"].mean(), "avg_clv": bets["clv"].mean(),
-                   "sharp_n": _sharp_n(bets), "sharp_clv": _sharp_clv(bets)}
+    if "clv_novig" not in bets.columns:
+        bets = bets.assign(clv_novig=None)
+
+    def row_for(s):
+        return {"bets": len(s), "pnl": s["pnl"].sum(), "hit_rate": s["won"].mean(),
+                "clv_novig": pd.to_numeric(s["clv_novig"], errors="coerce").mean(),
+                "avg_clv": s["clv"].mean(), "sharp_n": _sharp_n(s),
+                "sharp_clv": _sharp_clv(s)}
+
+    rows = {div: row_for(s) for div, s in bets.groupby("div")}
+    rows["ALL"] = row_for(bets)
     out = pd.DataFrame.from_dict(rows, orient="index")
     out["roi"] = out["pnl"] / out["bets"]
     return out

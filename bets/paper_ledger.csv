@@ -1,3 +1,3 @@
-id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,result,pnl,close_odds,clv,close_source
-20261006-INT-Belarus-Finland-H,2026-10-06,2026-10-06,INT,Belarus,Finland,1X2,H,主胜 Belarus,4.23,1.0,0.2433,settled,1-0 赢,3.23,,,
-20261006-INT-Scotland-Slovenia-A,2026-10-06,2026-10-06,INT,Scotland,Slovenia,1X2,A,客胜 Slovenia,4.88,1.0,0.2112,settled,1-2 赢,3.88,,,
+id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,result,pnl,close_odds,clv,clv_novig,close_source
+20261006-INT-Belarus-Finland-H,2026-10-06,2026-10-06,INT,Belarus,Finland,1X2,H,主胜 Belarus,4.23,1.0,0.2433,settled,1-0 赢,3.23,3.94,0.0736,0.009,average
+20261006-INT-Scotland-Slovenia-A,2026-10-06,2026-10-06,INT,Scotland,Slovenia,1X2,A,客胜 Slovenia,4.88,1.0,0.2112,settled,1-2 赢,3.88,4.15,0.1759,0.0998,average

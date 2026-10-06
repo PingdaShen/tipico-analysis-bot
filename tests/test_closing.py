@@ -26,7 +26,8 @@ def _row(pick_id="p1", outcome="H", market="1X2", odds=4.23, label="主胜 A", s
     return {"id": pick_id, "created": "2026-10-06", "date": pd.Timestamp("2026-10-06"),
             "div": "INT", "home": "A", "away": "B", "market": market, "outcome": outcome,
             "label": label, "odds": odds, "stake": 1.0, "p_final": 0.24, "status": status,
-            "result": "", "pnl": None, "close_odds": None, "clv": None, "close_source": ""}
+            "result": "", "pnl": None, "close_odds": None, "clv": None, "clv_novig": None,
+            "close_source": ""}
 
 
 def _write(cfg, tmp_path, paper, rows):
@@ -89,7 +90,7 @@ def test_clv_counts_before_the_match_is_settled(cfg, tmp_path):
     d = summarize(ledger.load(path))
     assert d["settled"] == 0 and d["open"] == 1
     assert d["sharp_n"] == 1 and d["sharp_clv"] == pytest.approx(round(4.23 / 4.00 - 1, 4))
-    assert "对锐价收盘的 CLV" in ledger.format_summary("模拟投注", d)
+    assert "对 Pinnacle 收盘" in ledger.format_summary("模拟投注", d)
 
 
 def test_overwriting_an_earlier_entry(cfg, tmp_path):
@@ -125,3 +126,53 @@ def test_settling_a_league_bet_still_overrides_a_hand_entry(cfg, tmp_path):
                   uefa_loader=lambda *a, **k: pd.DataFrame())
     out = ledger.load(path).iloc[0]
     assert out["close_odds"] == 4.00 and out["close_source"] == "pinnacle"
+
+
+# --- de-vigged CLV ------------------------------------------------------------
+
+def test_novig_clv_is_recorded_when_the_market_is_complete(cfg, tmp_path):
+    """Comparable across closing lines; the raw CLV is not."""
+    path = _write(cfg, tmp_path, True, [_row(odds=4.23)])
+    set_closing("p1", {"close_h": 3.94, "close_d": 3.25, "close_a": 1.99},
+                cfg, tmp_path, source="average")
+    row = ledger.load(path).iloc[0]
+    assert row["clv"] == pytest.approx(round(4.23 / 3.94 - 1, 4))
+    # the soft line carries ~6.5% margin, so de-vigging costs most of that
+    assert row["clv_novig"] == pytest.approx(0.009, abs=0.002)
+    assert row["clv_novig"] < row["clv"] - 0.05
+
+
+def test_novig_clv_is_absent_when_only_one_price_is_given(cfg, tmp_path):
+    path = _write(cfg, tmp_path, True, [_row(odds=4.23)])
+    set_closing("p1", {"close": 3.94}, cfg, tmp_path)
+    row = ledger.load(path).iloc[0]
+    assert pd.notna(row["clv"]) and pd.isna(row["clv_novig"])
+
+
+def test_novig_makes_two_lines_agree(cfg, tmp_path):
+    """Same implied probability, different margin: raw CLV differs, no-vig does not."""
+    sharp = {"close_h": 4.04, "close_d": 3.33, "close_a": 2.04}      # ~2% margin
+    soft = {"close_h": 3.94, "close_d": 3.25, "close_a": 1.99}       # ~6.5% margin
+    out = []
+    for i, market in enumerate((sharp, soft)):
+        path = _write(cfg, tmp_path, True, [_row(pick_id=f"p{i}", odds=4.23)])
+        set_closing(f"p{i}", market, cfg, tmp_path)
+        out.append(ledger.load(path).iloc[0])
+    assert abs(out[0]["clv"] - out[1]["clv"]) > 0.02
+    assert abs(out[0]["clv_novig"] - out[1]["clv_novig"]) < 0.015
+
+
+def test_settle_fills_the_novig_clv_too(cfg, tmp_path):
+    row = _row(status="open")
+    row["div"] = "E0"
+    path = _write(cfg, tmp_path, True, [row])
+    played = pd.DataFrame([{"div": "E0", "date": pd.Timestamp("2026-10-06"), "home": "A",
+                            "away": "B", "hg": 2, "ag": 1,
+                            "PSCH": 4.00, "PSCD": 3.50, "PSCA": 1.95}])
+    ledger.settle(cfg, root=tmp_path, today=pd.Timestamp("2026-10-07").date(),
+                  history_loader=lambda *a, **k: played,
+                  intl_loader=lambda *a, **k: pd.DataFrame(),
+                  uefa_loader=lambda *a, **k: pd.DataFrame())
+    out = ledger.load(path).iloc[0]
+    assert pd.notna(out["clv_novig"])
+    assert out["clv_novig"] < out["clv"]
