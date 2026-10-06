@@ -85,7 +85,9 @@ def load_pool(cfg: dict, cache: str | Path, today=None, root: Path | None = None
 
     domestic = load_domestic(cfg, cache, today, history_loader, extra_loader)
     uefa = uefa_loader(pool_seasons(cfg, today), cache)
-    info = {"domestic": len(domestic), "uefa": len(uefa), "unresolved": []}
+    info = {"domestic": len(domestic), "uefa": len(uefa), "unresolved": [],
+            "uefa_latest": uefa["date"].max() if not uefa.empty else None,
+            "domestic_latest": domestic["date"].max() if not domestic.empty else None}
     if uefa.empty:
         return domestic, info
 

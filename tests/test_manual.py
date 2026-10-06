@@ -115,7 +115,7 @@ def test_resolve_team():
     # a different spelling still resolves through normalization
     assert resolve_team("bayern munich", known, aliases)[0] == "Bayern Munich"
     name, hint = resolve_team("Real Madrdi", known, aliases)
-    assert name is None and hint == "Real Madrid"
+    assert name is None and hint.startswith("Real Madrid")   # closest first
     assert resolve_team("Nowhere United", known, aliases) == (None, "")
 
 
@@ -123,3 +123,30 @@ def test_resolve_team_does_not_use_an_alias_the_model_lacks():
     known = {"Real Madrid"}
     aliases = {"Club Atlético de Madrid": "Ath Madrid"}
     assert resolve_team("Club Atlético de Madrid", known, aliases)[0] is None
+
+
+def test_short_name_resolves_when_unambiguous():
+    """"Czech" is unambiguously Czech Republic — the dataset's own spelling."""
+    known = {"Czech Republic", "Belarus", "Finland"}
+    assert resolve_team("Czech", known, {}) == ("Czech Republic", "")
+    assert resolve_team("czech", known, {}) == ("Czech Republic", "")
+
+
+def test_ambiguous_short_name_is_not_guessed():
+    """Guessing here would silently price the wrong team."""
+    known = {"South Korea", "North Korea", "Belarus"}
+    name, hint = resolve_team("Korea", known, {})
+    assert name is None
+    assert "South Korea" in hint and "North Korea" in hint
+
+
+def test_exact_name_wins_over_a_longer_one():
+    known = {"Guinea", "Guinea-Bissau", "Equatorial Guinea"}
+    assert resolve_team("Guinea", known, {}) == ("Guinea", "")
+
+
+def test_misspelling_hints_without_matching():
+    known = {"Belarus", "Finland"}
+    name, hint = resolve_team("Belarusia", known, {})
+    assert name is None and hint == "Belarus"
+    assert resolve_team("Nowhere", known, {}) == (None, "")

@@ -79,6 +79,27 @@ def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader
     return rows, notes
 
 
+STALE_DAYS = 30
+
+
+def freshness_note(label: str, latest, today, stale_days: int = STALE_DAYS) -> str | None:
+    """Warn when a results source has not caught up yet.
+
+    Both manual competitions depend on feeds that lag: openfootball publishes
+    a European season once it is over, and international_results trails the
+    most recent international window by weeks. The model is not wrong when it
+    has not seen the last window, but the user cannot tell from the numbers,
+    so the report says it outright.
+    """
+    if latest is None or pd.isna(latest):
+        return f"{label}：没有任何赛果数据。"
+    lag = (pd.Timestamp(today).normalize() - pd.Timestamp(latest).normalize()).days
+    if lag < stale_days:
+        return None
+    return (f"{label}：赛果数据最新到 {pd.Timestamp(latest):%Y-%m-%d}（距今 {lag} 天），"
+            f"这之后的比赛模型还没看到。")
+
+
 def manual_rows(cfg: dict, today, cache: Path, root: Path,
                 pool_loader=load_pool, intl_loader=intl.load, manual_loader=manual.load
                 ) -> tuple[list[dict], list[str]]:
@@ -114,14 +135,35 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path,
                     notes.append("欧战模型在 config.yaml 里是关闭的。")
                     return None
                 pool, info = pool_loader(cfg, cache, today=today)
+                pool, pn = manual.apply_results(
+                    pool, Path(root) / cfg["paths"]["manual_results"],
+                    list(cfg["uefa"]["divs"]) + list(comps), label="欧战：")
+                notes.extend(pn)
                 models[kind] = fit_pool(pool, cfg, today)
-                if info.get("uefa", 0) == 0:
+                uefa_latest = info.get("uefa_latest")
+                if info.get("uefa", 0) == 0 and not pn:
                     notes.append("没有欧战赛果，跨联赛的实力值无法校准，欧战推荐不可信。")
+                else:
+                    seen = pool[pool["div"].isin(list(cfg["uefa"]["divs"]) + list(comps))]
+                    if not seen.empty:
+                        uefa_latest = seen["date"].max()
+                    note = freshness_note("欧战", uefa_latest, today)
+                    if note:
+                        notes.append(note)
             elif kind == "international":
                 if not cfg["international"].get("enabled", True):
                     notes.append("国家队模型在 config.yaml 里是关闭的。")
                     return None
-                models[kind] = intl.fit(intl_loader(cfg, cache, today=today), cfg, today)
+                matches = intl_loader(cfg, cache, today=today)
+                matches, mn = manual.apply_results(
+                    matches, Path(root) / cfg["paths"]["manual_results"], ["INT"],
+                    tournaments=cfg["international"].get("tournaments"), label="国家队：")
+                notes.extend(mn)
+                models[kind] = intl.fit(matches, cfg, today)
+                note = freshness_note("国家队",
+                                      matches["date"].max() if not matches.empty else None, today)
+                if note:
+                    notes.append(note)
         except (ValueError, requests.RequestException) as e:
             notes.append(f"{kind} 模型拟合失败：{e}")
         return models[kind]
@@ -140,7 +182,7 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path,
             for side in ("home", "away"):
                 name, hint = manual.resolve_team(fx[side], set(model.teams), aliases)
                 if name is None:
-                    tip = f"，最接近的是「{hint}」" if hint else ""
+                    tip = f"，可能是「{hint}」" if hint else ""
                     notes.append(f"手填赛程里的球队「{fx[side]}」模型不认识{tip}，这场跳过。")
                     bad = True
                 else:

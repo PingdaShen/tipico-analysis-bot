@@ -32,6 +32,7 @@
 ```
 config.yaml              所有可调参数（不要在代码里写死数值）
 manual_fixtures.csv      手填的欧战/国家队赛程和赔率（这些赛事没有免费赔率源）
+manual_results.csv       手录赛果：补上两个赛果源还没收录的比赛（都有数周到一个赛季的滞后）
 data/uefa_aliases.yaml   欧战队名 -> football-data 队名的人工别名表
 src/data.py              下载赛果/赔率：football-data.co.uk 的 mmz4281（主联赛）、
                          new/（额外国家）和 martj42/international_results（国家队），带本地缓存
@@ -118,6 +119,53 @@ football-data.co.uk 完全没有欧战和国家队数据（`mmz4281/2627/CL.csv`
 样本外表现（2021-2024 选参、2025-2026 验证）：log loss 0.767，基准 1.045。
 比欧战合并模型可靠得多——国家队之间实力差距大，结果更可预测。
  
+### 不要为了"重视近期状态"调快衰减
+ 
+窗口固定 12 年、只变 `xi` 的扫描（dev 2021-2024 / holdout 2025-2026）：
+ 
+| `xi` | 半衰期 | dev log loss | holdout log loss |
+|---|---|---|---|
+| 0.0002 | 9.5 年 | 0.8603 | 0.7711 |
+| **0.0004（现在）** | **4.7 年** | **0.8591** | **0.7699** |
+| 0.0008 | 2.4 年 | 0.8610 | 0.7715 |
+| 0.0015 | 1.3 年 | 0.8701 | 0.7802 |
+| 0.0040 | 0.5 年 | 0.9087 | 0.8141 |
+ 
+把权重往近期挪会**显著变差**，dev 和 holdout 一致。国家队阵容更替慢、
+一年只打十场左右，长期实力比最近三场更能预测结果。看到"某队最近连败"
+就想调快衰减之前，先重跑这个扫描。
+ 
+### 数据滞后，以及为什么要补齐整个窗口
+ 
+`international_results` 落后最近一个国际比赛日数周：2026-10-06 时最新的
+正式比赛是 2026-07-19（79 天前），整个 9 月窗口都没进来。
+报告的备注里会写出数据截止日期和滞后天数（`daily.freshness_note`）。
+ 
+**缺口的影响不对称，补一半比不补更糟。** 以 2026-10-06 的 Belarus vs Finland 为例：
+ 
+| 补了什么 | 模型主胜概率 |
+|---|---|
+| 不补（现状） | 0.2755 |
+| 只补 Belarus 的 3 场 | 0.282（**升高**） |
+| 补齐 League C 全部 5 场 | 0.2591（**降低**） |
+ 
+只补 Belarus 会得到反向结论，因为 Finland 同期 7-0 圣马力诺、2-1 阿尔巴尼亚，
+涨幅比 Belarus 大。所以 `manual_results.csv` 要按**比赛窗口整体**录入，
+不要只补你关心的那支球队。
+ 
+## 手录赛果
+ 
+`manual_results.csv` 用来补数据源还没收录的比赛，经 `manual.apply_results`
+合并进国家队模型和欧战合并模型，`ledger.settle` 也会用它来结算。
+ 
+- 比分填**90 分钟**的，不要填加时或点球后的比分。
+- `tournament` 只对 INT 有意义：填了就必须在 `international.tournaments` 里，
+  否则这场被跳过并在报告里说明——避免误录一场友谊赛悄悄让模型变差。
+  留空视为刻意覆盖，强制计入。
+- 数据源追上之后重复行自动忽略（按主客队 + 日期 ±3 天匹配，两个源的日期
+  会因时区差一天），不用手工清理。
+- 欧联和欧协联正赛没有任何赛果源，这里是唯一的录入途径。
+ 
 ## 手填赔率
  
 欧战和国家队没有免费的赛程+赔率源，而本项目的框架离开市场赔率就无法运作
@@ -170,7 +218,10 @@ python -m src.manual init                  # 生成手填赛程模板
 python -m src.manual add --comp CL --date 2026-10-21 --home "Real Madrid" \
     --away Juventus --ref-h 1.75 --ref-d 3.90 --ref-a 4.60 \
     --tip-h 1.80 --tip-d 4.00 --tip-a 4.75
-python -m src.manual list                  # 看已填的赛程
+python -m src.manual list                  # 看已填的赛程和赛果
+# 数据源还没收录的比赛，手工补进来（按比赛窗口整体录，不要只补一支球队）
+python -m src.manual result --comp INT --date 2026-09-29 \
+    --home Finland --away Belarus --hg 0 --ag 0 --tournament "UEFA Nations League"
 python -m src.aliases check                # 新赛季有没有没覆盖的欧战队名
 python -m src.aliases suggest              # 给出候选匹配供人工确认
 ```
@@ -197,6 +248,8 @@ python -m src.aliases suggest              # 给出候选匹配供人工确认
   只能来自国内联赛和欧冠的链接。
 - **openfootball 晚一个赛季发布**：当前赛季的欧战赛果拿不到，所以跨联赛链接最新到上个赛季，
   刚下的欧战注也可能一段时间内结算不了。
+- **`international_results` 落后数周**：最近一个国际比赛日的结果通常还没进来。
+  两个滞后都会在报告备注里写明（超过 `daily.STALE_DAYS` 天时）。
 - `new/` 额外国家的文件只有收盘赔率、没有赛前赔率，也不在 `fixtures.csv` 里，
   所以这些联赛本身不出推荐，只作为欧战合并模型的训练数据。
 - 回测只覆盖国内联赛：欧战和国家队既没有历史赛前赔率，也没有收盘赔率。
