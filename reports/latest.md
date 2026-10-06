@@ -12,15 +12,41 @@
 | 1 | Belarus vs Finland | 国家队 | 10-06 20:45 | 主胜 Belarus | 4.20 | **4.32** | 4.50 | €1.00 |
 | 2 | Scotland vs Slovenia | 国家队 | 10-06 20:45 | 客胜 Slovenia | 4.68 | **4.82** | 5.00 | €1.00 |
 
-## 怎么用
-1. 在 Tipico App 里找到比赛和对应选项。
-2. **只有 Tipico 赔率 ≥ 最低赔率时才下注**，否则跳过这一注。
-3. 下注后记录（把 ID 和实际赔率填进去）：
+## 投注 ID
+
+record-bet 和 record-close 表单要填这个（点代码块右上角可直接复制）：
+
+**1. Belarus vs Finland — 主胜 Belarus**
 
 ```
+20261006-INT-Belarus-Finland-H
+```
+
+**2. Scotland vs Slovenia — 客胜 Slovenia**
+
+```
+20261006-INT-Scotland-Slovenia-A
+```
+
+## 怎么用
+
+1. 在 Tipico App 里找到比赛和对应选项。
+2. **只有 Tipico 赔率 ≥ 最低赔率时才下注**，否则跳过这一注。
+3. 下注后在 Actions 页面跑 **record-bet**，填 ID、实际赔率、注额。
+4. **开球前几分钟**在 Actions 页面跑 **record-close**，填那一刻的市场赔率（有 Pinnacle 用 Pinnacle）。
+   欧战和国家队没有收盘赔率源，不记就永远算不出 CLV，这些推荐也就无从检验。联赛不用管，收盘价会自动取。
+
+<details><summary>用终端的话</summary>
+
+```bash
 python -m src.ledger add 20261006-INT-Belarus-Finland-H --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261006-INT-Scotland-Slovenia-A --odds <Tipico赔率> --stake 1.00
+# 开球前：
+python -m src.ledger close 20261006-INT-Belarus-Finland-H --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
+python -m src.ledger close 20261006-INT-Scotland-Slovenia-A --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
 ```
+
+</details>
 
 「可得赔率」带 * 的是市场最高赔率（只说明这个价格在市场上存在，
 不一定在 Tipico）；不带 * 的是你自己填进来的 Tipico 赔率。
