@@ -50,6 +50,15 @@ python -m src.manual result --comp INT --date 2026-09-29 \
     --home Finland --away Belarus --hg 0 --ag 0 --tournament "UEFA Nations League"
 ```
 
+赛果源有滞后（国家队落后数周，欧战落后一个赛季），报告备注会写明数据截止到哪天。
+缺的比赛可以自己补，**但要按比赛窗口整体补，不要只补你关心的那支球队** ——
+只补一半会给出反向的结论：
+
+```bash
+python -m src.manual result --comp INT --date 2026-09-29 \
+    --home Finland --away Belarus --hg 0 --ag 0 --tournament "UEFA Nations League"
+```
+
 想让欧战或国家队比赛进入分析，先用 Actions 的 **add-fixture** 填一场的赔率：
 参考市场赔率（Pinnacle 优先）+ Tipico 自己的赔率。不要在参考赔率里填 Tipico 的价格，
 否则等于拿 Tipico 和自己比，算不出任何优势。
