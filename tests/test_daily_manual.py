@@ -1,6 +1,7 @@
 """The daily run with all three fixture sources, fully offline."""
 import copy
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -198,3 +199,41 @@ def test_settle_leaves_unknown_results_open(cfg, tmp_path, world):
                   uefa_loader=lambda *a, **k: pd.DataFrame())
     paper = ledger.load(tmp_path / cfg["paths"]["paper_ledger"])
     assert (paper["status"] == "open").all()
+
+
+# --- data freshness -----------------------------------------------------------
+
+def test_freshness_note_only_fires_when_stale():
+    today = pd.Timestamp("2026-10-06")
+    assert daily.freshness_note("国家队", pd.Timestamp("2026-10-01"), today) is None
+    note = daily.freshness_note("国家队", pd.Timestamp("2026-07-19"), today)
+    assert note is not None and "2026-07-19" in note and "79 天" in note
+    assert "没有任何赛果数据" in daily.freshness_note("欧战", None, today)
+
+
+def test_report_warns_that_international_data_is_stale(cfg, tmp_path):
+    """The September window missing is invisible in the numbers; say it."""
+    df, _ = make_neutral_series(n=900, seed=12)
+    df["date"] = pd.Timestamp("2026-07-19") - pd.to_timedelta(np.arange(len(df)) * 3, "D")
+    today = pd.Timestamp("2026-10-06")
+    _manual_file(tmp_path, f"INT,{today:%Y-%m-%d},20:45,N00,N01,0,"
+                           f"2.60,3.30,2.90,2.70,3.40,3.00,,,,")
+    _, _, notes = _run(cfg, tmp_path, today, intl_df=df)
+    assert any("国家队" in n and "2026-07-19" in n for n in notes)
+
+
+def test_report_warns_that_uefa_results_lag_a_season(cfg, tmp_path, world):
+    domestic, cup, _, truth = world
+    pool = pd.concat([domestic, cup], ignore_index=True)
+    today = pd.Timestamp(pool["date"].max()) + pd.Timedelta(days=200)
+    _manual_file(tmp_path, f"CL,{today:%Y-%m-%d},21:00,{truth['teams'][0]},"
+                           f"{truth['teams'][-1]},0,3.00,3.60,2.40,3.20,3.70,2.50,,,,")
+    _, _, notes = daily.analyze(
+        cfg, today, root=tmp_path,
+        history_loader=lambda *a, **k: pd.DataFrame(),
+        fixtures_loader=lambda *a, **k: pd.DataFrame(),
+        pool_loader=lambda c, cache, today=None: (
+            pool, {"uefa": len(cup), "uefa_latest": cup["date"].max()}),
+        intl_loader=lambda c, cache, today=None, **kw: pd.DataFrame(),
+    )
+    assert any("欧战" in n and "模型还没看到" in n for n in notes)

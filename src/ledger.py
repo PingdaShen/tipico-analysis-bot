@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from . import intl
+from . import intl, manual
 from .aliases import load_table
 from .config import ROOT, load_config
 from .data import current_season_start, load_history, recent_seasons
@@ -117,16 +117,22 @@ def results_for_div(div: str, cfg: dict, cache: Path, today=None,
         return history_loader(div, recent_seasons(2, today), cache, today=today, fresh=True)
     spec = (cfg.get("manual_competitions") or {}).get(div) or {}
     kind = spec.get("model")
+    if kind is None:
+        return pd.DataFrame(columns=["div", "date", "home", "away", "hg", "ag"])
+
     if kind == "international":
-        return intl_loader(cfg, cache, today=today, fresh=True)
-    if kind == "uefa":
+        base = intl_loader(cfg, cache, today=today, fresh=True)
+    else:
         start = current_season_start(pd.Timestamp(today).date() if today else None)
-        uefa = uefa_loader([start - 1, start], cache, fresh=True)
-        if uefa.empty:
-            return uefa
-        from .aliases import resolve_names
-        return resolve_names(uefa, load_table(root))[0]
-    return pd.DataFrame(columns=["div", "date", "home", "away", "hg", "ag"])
+        base = uefa_loader([start - 1, start], cache, fresh=True)
+        if not base.empty:
+            from .aliases import resolve_names
+            base = resolve_names(base, load_table(root))[0]
+    # a bet can only be settled from a result we have, and for these
+    # competitions the hand-entered file is often the only place it exists yet
+    merged, _ = manual.apply_results(
+        base, Path(root) / cfg["paths"]["manual_results"], [div])
+    return merged
 
 
 def settle(cfg: dict, root: Path = ROOT, history_loader=load_history, today=None,

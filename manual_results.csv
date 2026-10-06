@@ -1,0 +1,22 @@
+# 手录赛果：数据源落后时，把它还没收录的比赛补进来。
+# comp: INT=国家队  CL/EL/UECL=欧战（见 config.yaml 的 manual_competitions）
+# date: YYYY-MM-DD   hg/ag: 主队/客队进球   neutral: 中立场填 1
+# 比分用 90 分钟的，不要用加时或点球后的比分。
+#
+# tournament: 只对 INT 有意义。填了就必须是 config.yaml 的 international.tournaments
+#   里的名字，否则这场会被跳过并在报告里说明。留空表示强制计入。
+#   默认不收友谊赛：阵容和强度都不足以作为正式比赛的证据，录进来会让模型变差。
+#
+# 球队名要用模型认识的写法（国家队用英文国名如 Czech Republic；
+# 欧战用 football-data.co.uk 的写法如 Ath Madrid）。
+# 数据源追上之后，这里的重复行会自动忽略，不用手工删。
+#
+comp,date,home,away,hg,ag,neutral,tournament
+# 例（把行首的 # 去掉就会生效）：
+# INT,2026-09-26,Albania,Belarus,2,0,0,UEFA Nations League
+# INT,2026-09-29,Finland,Belarus,0,0,0,UEFA Nations League
+INT,2026-09-26,Albania,Belarus,2,0,0,UEFA Nations League
+INT,2026-09-26,San Marino,Finland,0,7,0,UEFA Nations League
+INT,2026-09-29,Finland,Belarus,0,0,0,UEFA Nations League
+INT,2026-10-03,Belarus,San Marino,4,0,0,UEFA Nations League
+INT,2026-10-03,Finland,Albania,2,1,0,UEFA Nations League
