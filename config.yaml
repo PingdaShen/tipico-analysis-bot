@@ -1,0 +1,42 @@
+# 所有可调参数都放在这里，代码里不要写死数值。
+
+leagues:                 # football-data.co.uk 的联赛代码
+  E0: Premier League
+  SP1: La Liga
+  D1: Bundesliga
+  I1: Serie A
+  F1: Ligue 1
+
+history_seasons: 3       # 拟合模型用的赛季数（含当前赛季）
+
+model:
+  xi: 0.0019             # 时间衰减（每天），半衰期约 1 年
+  max_goals: 10
+  min_team_matches: 8    # 球队在训练窗口内少于这么多场就不出推荐（升班马）
+  ridge: 0.001
+
+blend:
+  model_weight: 0.3      # 最终概率 = w * 模型 + (1 - w) * 市场去水概率
+
+value:
+  min_edge: 0.03         # Tipico 赔率至少比公平赔率高 3% 才下注
+  min_odds: 1.50         # 首存奖金流水要求的最低赔率
+  max_odds: 5.00
+  max_picks: 5
+  horizon_days: 2        # 只看今天起 N 天内开赛的比赛
+  markets: [1X2, OU25]
+
+staking:
+  bankroll: 10.0
+  mode: flat             # flat | kelly（本金很小时用 flat）
+  flat_stake: 1.0
+  kelly_fraction: 0.25
+  min_stake: 1.0         # 请在 Tipico 确认实际最低注额
+  max_stake_pct: 0.10
+  stake_step: 0.5        # 注额取整步长，避免奇怪的金额
+
+paths:
+  cache: data/cache
+  reports: reports
+  ledger: bets/ledger.csv
+  paper_ledger: bets/paper_ledger.csv
