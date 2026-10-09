@@ -8,7 +8,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
+import math
 from datetime import date
+from itertools import combinations
 from pathlib import Path
 
 import pandas as pd
@@ -22,15 +25,46 @@ from .openfootball import load_uefa_history
 
 COLUMNS = ["id", "created", "date", "div", "home", "away", "market", "outcome", "label",
            "odds", "stake", "p_final", "status", "result", "pnl", "close_odds", "clv",
-           "clv_novig", "close_source"]
+           "clv_novig", "close_source", "kind", "system_id"]
+
+# A system bet ("Systemwette", e.g. 5 aus 2 = every 2-leg combination of five
+# selections) cannot be stored as its own legs: a double only pays when both
+# legs win, so per-leg profit is not defined. Its legs are still written to the
+# ledger because CLV is a per-leg quantity and stays perfectly meaningful — but
+# they carry stake 0 and no pnl, and the money is accounted for on the system
+# row instead. See systems_path / add_system / settle.
+SYSTEM_COLUMNS = ["id", "created", "kind", "k", "legs", "stake", "status", "result", "pnl"]
+SINGLE, SYSTEM_LEG = "single", "system_leg"
 
 
 def ledger_path(cfg: dict, root: Path, paper: bool) -> Path:
     return Path(root) / cfg["paths"]["paper_ledger" if paper else "ledger"]
 
 
+def systems_path(cfg: dict, root: Path = ROOT) -> Path:
+    return Path(root) / cfg["paths"].get("systems", "bets/systems.csv")
+
+
+def load_systems(path: Path) -> pd.DataFrame:
+    if not Path(path).exists():
+        return pd.DataFrame(columns=SYSTEM_COLUMNS)
+    df = pd.read_csv(path, dtype={c: object for c in
+                                  ("id", "created", "kind", "legs", "status", "result")})
+    for c in SYSTEM_COLUMNS:
+        if c not in df.columns:
+            df[c] = None
+    for c in ("k", "stake", "pnl"):
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+    return df[SYSTEM_COLUMNS]
+
+
+def save_systems(df: pd.DataFrame, path: Path) -> None:
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    df[SYSTEM_COLUMNS].to_csv(path, index=False)
+
+
 TEXT_COLUMNS = ["id", "created", "div", "home", "away", "market", "outcome", "label",
-                "status", "result", "close_source"]
+                "status", "result", "close_source", "kind", "system_id"]
 NUM_COLUMNS = ["odds", "stake", "p_final", "pnl", "close_odds", "clv", "clv_novig"]
 
 
@@ -62,7 +96,7 @@ def _row_from_pick(p, odds: float, stake: float, today) -> dict:
         "odds": round(float(odds), 2), "stake": float(stake),
         "p_final": round(float(p["p_final"]), 4), "status": "open",
         "result": "", "pnl": None, "close_odds": None, "clv": None,
-        "clv_novig": None, "close_source": "",
+        "clv_novig": None, "close_source": "", "kind": SINGLE, "system_id": "",
     }
 
 
@@ -228,6 +262,108 @@ def set_closing(pick_id: str, values: dict, cfg: dict, root: Path = ROOT,
 
 
 
+def system_payout(k: int, stake: float, legs: list[tuple[float, bool | None]]
+                  ) -> tuple[float | None, int, int]:
+    """Payout of an n-choose-k system bet, or None while a leg is undecided.
+
+    The stake is split evenly across every combination, and a combination pays
+    only when all of its legs won — which is exactly why the money cannot be
+    attributed to individual legs.
+    """
+    if any(won is None for _, won in legs):
+        return None, 0, 0
+    combos = list(combinations(range(len(legs)), k))
+    per = stake / len(combos)
+    payout, hit = 0.0, 0
+    for c in combos:
+        if all(legs[i][1] for i in c):
+            payout += per * math.prod(legs[i][0] for i in c)
+            hit += 1
+    return payout, hit, len(combos)
+
+
+def add_system(k: int, stake: float, legs: dict[str, float], cfg: dict,
+               root: Path = ROOT, paper: bool = False, today=None) -> str:
+    """Record one system bet: the system row plus its legs, which carry no money."""
+    n = len(legs)
+    if not 1 <= k <= n:
+        raise SystemExit(f"k 必须在 1 和 {n} 之间，收到 {k}。")
+    if n < 2:
+        raise SystemExit("系统投注至少要两条腿。")
+    today = pd.Timestamp(today).date() if today is not None else date.today()
+
+    files = sorted((Path(root) / cfg["paths"]["reports"]).glob("*_picks.csv"))
+    picks = pd.concat([pd.read_csv(f) for f in files], ignore_index=True) if files else pd.DataFrame()
+    path = ledger_path(cfg, root, paper)
+    df = load(path)
+
+    rows = []
+    # hashlib, not hash(): Python randomises string hashing per process, so the
+    # id would differ between runs and the duplicate check would never fire
+    digest = hashlib.sha1(" ".join(sorted(legs)).encode()).hexdigest()[:4]
+    sid = f"SYS-{today:%Y%m%d}-{k}of{n}-{digest}"
+    if sid in set(load_systems(systems_path(cfg, root))["id"]):
+        raise SystemExit(f"系统投注 {sid} 已经记录过了。")
+    for pick_id, odds in legs.items():
+        # the same pick may legitimately appear as a single and inside a
+        # system, so leg rows are identified by (id, system_id) rather than id
+        match = picks[picks["pick_id"] == pick_id] if not picks.empty else picks
+        if match.empty:
+            raise SystemExit(f"找不到 ID {pick_id}，请从报告里复制。")
+        row = _row_from_pick(match.iloc[-1], odds, 0.0, today)
+        row.update(kind=SYSTEM_LEG, system_id=sid)
+        rows.append(row)
+    save(_append(df, rows), path)
+
+    spath = systems_path(cfg, root)
+    systems = load_systems(spath)
+    combos = math.comb(n, k)
+    systems = pd.concat([systems, pd.DataFrame([{
+        "id": sid, "created": str(today), "kind": f"{n}/{k}", "k": k,
+        "legs": " ".join(legs), "stake": float(stake), "status": "open",
+        "result": "", "pnl": None,
+    }], columns=SYSTEM_COLUMNS)], ignore_index=True)
+    save_systems(systems, spath)
+    print(f"已记录系统投注 {sid}：{n} 选 {k}，共 {combos} 注，"
+          f"总投入 €{stake:.2f}（每注 €{stake/combos:.3f}）")
+    for pick_id, odds in legs.items():
+        print(f"   {pick_id} @ {odds}")
+    return sid
+
+
+def settle_systems(cfg: dict, root: Path, paper: bool) -> None:
+    """Close out any system whose legs have all been decided."""
+    spath = systems_path(cfg, root)
+    systems = load_systems(spath)
+    if systems.empty:
+        return
+    df = load(ledger_path(cfg, root, paper))
+    if df.empty:
+        return
+    changed = False
+    for idx, sysrow in systems[systems["status"] == "open"].iterrows():
+        sid, ids = sysrow["id"], str(sysrow["legs"]).split()
+        mine = df[df["system_id"] == sid]
+        if not set(ids) <= set(mine["id"]):
+            continue                       # this ledger does not hold the system
+        legs = []
+        for i in ids:
+            r = mine[mine["id"] == i].iloc[0]
+            won = None if r["status"] != "settled" else ("赢" in str(r["result"]))
+            legs.append((float(r["odds"]), won))
+        payout, hit, combos = system_payout(int(sysrow["k"]), float(sysrow["stake"]), legs)
+        if payout is None:
+            continue
+        won_legs = sum(1 for _, w in legs if w)
+        systems.loc[idx, "status"] = "settled"
+        systems.loc[idx, "pnl"] = round(payout - float(sysrow["stake"]), 2)
+        systems.loc[idx, "result"] = (f"{len(legs)} 中 {won_legs}，{combos} 注中 {hit} 注")
+        changed = True
+    if changed:
+        save_systems(systems, spath)
+
+
+
 def settle(cfg: dict, root: Path = ROOT, history_loader=load_history, today=None,
            **loaders) -> None:
     cache = Path(root) / cfg["paths"]["cache"]
@@ -255,7 +391,9 @@ def settle(cfg: dict, root: Path = ROOT, history_loader=load_history, today=None
                 cp, _ = closing_probs(g, r["market"])
                 df.loc[idx, "status"] = "settled"
                 df.loc[idx, "result"] = f"{int(g['hg'])}-{int(g['ag'])} {'赢' if won else '输'}"
-                df.loc[idx, "pnl"] = round(r["stake"] * (r["odds"] - 1) if won else -r["stake"], 2)
+                # a system leg carries no money of its own; the system row does
+                df.loc[idx, "pnl"] = (None if r["kind"] == SYSTEM_LEG else
+                                      round(r["stake"] * (r["odds"] - 1) if won else -r["stake"], 2))
                 if close:
                     df.loc[idx, "close_odds"] = close
                     df.loc[idx, "clv"] = round(r["odds"] / close - 1, 4)
@@ -263,9 +401,10 @@ def settle(cfg: dict, root: Path = ROOT, history_loader=load_history, today=None
                     if cp:
                         df.loc[idx, "clv_novig"] = round(r["odds"] * cp[r["outcome"]] - 1, 4)
         save(df, path)
+        settle_systems(cfg, root, paper)
 
 
-def summarize(df: pd.DataFrame) -> dict:
+def summarize(df: pd.DataFrame, systems: pd.DataFrame | None = None) -> dict:
     """Totals for one ledger.
 
     clv_novig is the headline: it divides by a de-vigged closing probability,
@@ -274,9 +413,19 @@ def summarize(df: pd.DataFrame) -> dict:
     points of margin across these leagues. sharp_clv keeps the raw formula but
     counts only Pinnacle-priced bets. See market.closing_probs.
     """
-    s = df[df["status"] == "settled"]
+    singles = df[df["kind"].fillna(SINGLE) != SYSTEM_LEG]
+    s = singles[singles["status"] == "settled"]
     staked = float(s["stake"].sum()) if not s.empty else 0.0
-    pnl = float(pd.to_numeric(s["pnl"]).sum()) if not s.empty else 0.0
+    pnl = float(pd.to_numeric(s["pnl"], errors="coerce").sum()) if not s.empty else 0.0
+
+    # system bets keep their money on their own row, but their legs still carry
+    # a CLV, so they add to staked/pnl without disturbing the CLV columns
+    sys_settled = sys_open = 0
+    if systems is not None and not systems.empty:
+        done = systems[systems["status"] == "settled"]
+        sys_settled, sys_open = len(done), int((systems["status"] == "open").sum())
+        staked += float(pd.to_numeric(done["stake"], errors="coerce").sum())
+        pnl += float(pd.to_numeric(done["pnl"], errors="coerce").sum())
     # CLV is fixed the moment the match kicks off and does not depend on the
     # result, so it counts every bet that has a closing price — waiting for
     # settlement would throw away the one advantage the metric has over P&L.
@@ -286,11 +435,14 @@ def summarize(df: pd.DataFrame) -> dict:
                           errors="coerce").dropna()
     return {
         "settled": len(s),
-        "open": int((df["status"] == "open").sum()),
+        "open": int((singles["status"] == "open").sum()),
+        "systems_settled": sys_settled,
+        "systems_open": sys_open,
         "staked": staked,
         "pnl": pnl,
         "roi": pnl / staked if staked else None,
-        "hit_rate": float((pd.to_numeric(s["pnl"]) > 0).mean()) if not s.empty else None,
+        "hit_rate": float((pd.to_numeric(s["pnl"], errors="coerce") > 0).mean())
+                    if not s.empty else None,
         "avg_clv": float(clv.mean()) if not clv.empty else None,
         "clv_novig": float(novig.mean()) if not novig.empty else None,
         "novig_n": int(len(novig)),
@@ -313,6 +465,9 @@ def format_summary(name: str, d: dict) -> str:
     # figure would otherwise sit there permanently empty
     sharp = (f"，其中对 Pinnacle 收盘 {pct(d['sharp_clv'])}（{d['sharp_n']} 注）"
              if d["sharp_n"] else "")
+    if d.get("systems_settled") or d.get("systems_open"):
+        extra = (f"；系统投注已结算 {d['systems_settled']} 组、"
+                 f"未结算 {d['systems_open']} 组" + extra)
     return (f"{name}：已结算 {d['settled']} 注，未结算 {d['open']} 注，"
             f"投入 €{d['staked']:.2f}，盈亏 €{d['pnl']:+.2f}，ROI {pct(d['roi'])}，"
             f"命中率 {hit}，去水 CLV {pct(d['clv_novig'])}（{d['novig_n']} 注）"
@@ -328,6 +483,12 @@ def main() -> None:
     a.add_argument("--stake", type=float, required=True)
     sub.add_parser("settle")
     sub.add_parser("summary")
+    y = sub.add_parser("system", help="记录一次系统投注（Systemwette，如 5 选 2）")
+    y.add_argument("--k", type=int, required=True, help="每注串几层，5 对 2 就填 2")
+    y.add_argument("--stake", type=float, required=True, help="总投入（不是每注）")
+    y.add_argument("--leg", action="append", required=True, metavar="ID=赔率",
+                   help="一条腿，重复使用。例：--leg 20261009-F2-Nancy-Guingamp-A=3.80")
+    y.add_argument("--paper", action="store_true", help="记进模拟账本")
     c = sub.add_parser("close", help="录入收盘赔率（欧战/国家队唯一的 CLV 来源）")
     c.add_argument("pick_id", help="报告里的 ID")
     c.add_argument("--close", type=float, help="这个选项的收盘赔率")
@@ -342,14 +503,28 @@ def main() -> None:
     cfg = load_config()
     if args.cmd == "add":
         add(args.pick_id, args.odds, args.stake, cfg)
+    elif args.cmd == "system":
+        legs = {}
+        for item in args.leg:
+            if "=" not in item:
+                raise SystemExit(f"--leg 要写成 ID=赔率，收到 {item!r}")
+            pid, odds = item.rsplit("=", 1)
+            try:
+                legs[pid.strip()] = float(odds)
+            except ValueError:
+                raise SystemExit(f"赔率不是数字：{odds!r}")
+        add_system(args.k, args.stake, legs, cfg, paper=args.paper)
     elif args.cmd == "close":
         set_closing(args.pick_id, vars(args), cfg, source=args.source)
     elif args.cmd == "settle":
         settle(cfg)
         print("结算完成。")
     else:
+        systems = load_systems(systems_path(cfg, ROOT))
         for paper, name in ((False, "真实投注"), (True, "模拟投注")):
-            print(format_summary(name, summarize(load(ledger_path(cfg, ROOT, paper)))))
+            df = load(ledger_path(cfg, ROOT, paper))
+            mine = systems[systems["id"].isin(df["system_id"].dropna().unique())]
+            print(format_summary(name, summarize(df, mine)))
 
 
 if __name__ == "__main__":

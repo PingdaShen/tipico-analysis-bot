@@ -208,6 +208,8 @@ paths:
   reports: reports
   ledger: bets/ledger.csv
   paper_ledger: bets/paper_ledger.csv
+  # 系统投注（Systemwette）：盈亏不能摊到单条腿上，单独记一份
+  systems: bets/systems.csv
   manual_fixtures: manual_fixtures.csv
   # 数据源还没收录的比赛，手工补进来（两个赛果源都有滞后）
   manual_results: manual_results.csv

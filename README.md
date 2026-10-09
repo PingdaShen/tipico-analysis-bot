@@ -85,6 +85,17 @@ python -m src.manual add --comp D1 --date 2026-10-10 --home Dortmund \
 相乘会把「平局 + 大 2.5」算低近 3 倍。需要那场比赛同时有 1X2 和大小球的参考赔率
 才会显示。
 
+如果确实下了系统投注（Systemwette，如 5 对 2），用 `ledger system` 记录 ——
+不要拆成单注记，那样盈亏会算错（只中 1 场时系统是全输，拆成单注会记成小亏）：
+
+```bash
+python -m src.ledger system --k 2 --stake 2.00 \
+    --leg 20261009-F2-Nancy-Guingamp-A=3.80 \
+    --leg 20261009-D2-Braunschweig-HolsteinKiel-U25=2.65
+```
+
+CLV 不受影响，每条腿照常单独计算。
+
 **跨场次串关不建议。** 两注各 +7% 优势的腿串起来确实是 +14.5%，但凯利口径下串关
 该下的注只有分开下的 0.18 倍（中奖概率只有 5%），而且串关会把你对自己优势的**估计
 误差**同样放大。目前模型的 CLV 为负，放大它没有好处。
