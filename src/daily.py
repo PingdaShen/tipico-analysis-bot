@@ -39,6 +39,34 @@ def fit_model(history: pd.DataFrame, cfg: dict, ref_date) -> DixonColes:
                       min_team_matches=m["min_team_matches"]).fit(history, ref_date)
 
 
+def shift_kickoff(fixtures: pd.DataFrame, hours: int) -> pd.DataFrame:
+    """Move feed kick-off times onto the user's clock.
+
+    football-data.co.uk publishes UK times. The UK and Germany change to
+    summer time on the same dates, so the gap is a constant hour all year and
+    a plain offset is right — no timezone database needed. Only the feed is
+    shifted; a hand-entered fixture already carries the time the user typed.
+    """
+    if not hours or fixtures.empty or "Time" not in fixtures.columns:
+        return fixtures
+
+    def shift(value):
+        text = str(value).strip()
+        if not text or ":" not in text:
+            return value
+        try:
+            h, m = (int(x) for x in text.split(":")[:2])
+        except ValueError:
+            return value
+        total = h + hours
+        # a kick-off crossing midnight keeps its date here, so mark it
+        return f"{total % 24:02d}:{m:02d}" + ("(+1)" if total >= 24 else "")
+
+    fixtures = fixtures.copy()
+    fixtures["Time"] = fixtures["Time"].map(shift)
+    return fixtures
+
+
 def competition_names(cfg: dict) -> dict[str, str]:
     """Code -> display name, across leagues and hand-entered competitions."""
     names = dict(cfg["leagues"])
@@ -79,6 +107,8 @@ def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader,
                  "国际比赛周没有联赛可发就不会更新。等不及可以用 manual_fixtures.csv 手填。")
         return [], [note], leftover
 
+    fixtures = shift_kickoff(fixtures,
+                             (cfg.get("report") or {}).get("kickoff_offset_hours", 0))
     if entered is not None and not entered.empty:
         fixtures, leftover = manual.overlay(fixtures, entered)
 
@@ -263,10 +293,15 @@ def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_
         return all_df, all_df, notes
     all_df["league"] = all_df["div"].map(competition_names(cfg)).fillna(all_df["div"])
     all_df["manual"] = all_df["div"].isin(cfg.get("manual_competitions") or {})
+    # max_picks applies per match day. A Friday run covers Saturday too, and
+    # Saturday's card is ten times the size, so a global cap let tomorrow take
+    # every slot and left tonight's matches unreported.
     picks = (all_df[all_df["is_candidate"]]
              .sort_values("edge_best", ascending=False)
              .drop_duplicates(subset=["date", "home", "away"])   # 每场比赛最多一注
+             .groupby("date", group_keys=False, sort=False)
              .head(cfg["value"]["max_picks"])
+             .sort_values(["date", "edge_best"], ascending=[True, False])
              .reset_index(drop=True))
     return all_df, picks, notes
 
@@ -426,7 +461,7 @@ def render_report(today, picks: pd.DataFrame, all_df: pd.DataFrame,
         lines += ["## 备注", *[f"- {n}" for n in notes], ""]
     lines += [
         "---",
-        "开球时间来自数据源，可能是英国时间，请以 Tipico 显示为准。"
+        "开球时间已换算成德国时间（report.kickoff_offset_hours），仍请以 Tipico 显示为准。"
         "本报告是模型输出，不保证盈利；只用亏得起的钱。",
     ]
     return "\n".join(lines)

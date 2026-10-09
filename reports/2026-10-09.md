@@ -6,44 +6,79 @@
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Inverness C vs Stenhousemuir | 苏冠 | 10-10 15:00 | 客胜 Stenhousemuir | 2.88 | **2.97** | 3.86* | €1.00 |
-| 2 | Barcelona vs Getafe | 西甲 | 10-10 17:30 | 小于 2.5 球 | 3.19 | **3.29** | 3.78* | €1.00 |
-| 3 | Doncaster vs Burton | 英甲 | 10-10 15:00 | 客胜 Burton | 4.15 | **4.27** | 4.68* | €1.00 |
-| 4 | Nancy vs Guingamp | 法乙 | 10-09 19:00 | 客胜 Guingamp | 3.38 | **3.49** | 3.80 | €1.00 |
-| 5 | Shrewsbury vs Exeter | 英乙 | 10-10 15:00 | 小于 2.5 球 | 1.51 | **1.55** | 1.67* | €1.00 |
+| 1 | Nancy vs Guingamp | 法乙 | 10-09 20:00 | 客胜 Guingamp | 3.38 | **3.49** | 3.80 | €1.00 |
+| 2 | Braunschweig vs Holstein Kiel | 德乙 | 10-09 18:30 | 小于 2.5 球 | 2.45 | **2.52** | 2.65 | €1.00 |
+| 3 | Montpellier vs Grenoble | 法乙 | 10-09 20:00 | 小于 2.5 球 | 1.70 | **1.75** | 1.83 | €1.00 |
+| 4 | Dortmund vs Werder Bremen | 德甲 | 10-09 20:30 | 小于 2.5 球 | 3.00 | **3.09** | 3.20 | €1.00 |
+| 5 | Moreirense vs Gil Vicente | 葡超 | 10-09 19:45 | 主胜 Moreirense | 3.30 | **3.40** | 3.50 | €1.00 |
+| 6 | Inverness C vs Stenhousemuir | 苏冠 | 10-10 16:00 | 客胜 Stenhousemuir | 2.88 | **2.97** | 3.86* | €1.00 |
+| 7 | Barcelona vs Getafe | 西甲 | 10-10 18:30 | 小于 2.5 球 | 3.19 | **3.29** | 3.78* | €1.00 |
+| 8 | Doncaster vs Burton | 英甲 | 10-10 16:00 | 客胜 Burton | 4.15 | **4.27** | 4.68* | €1.00 |
+| 9 | Shrewsbury vs Exeter | 英乙 | 10-10 16:00 | 小于 2.5 球 | 1.51 | **1.55** | 1.67* | €1.00 |
+| 10 | Chelsea vs Bournemouth | 英超 | 10-10 16:00 | 客胜 Bournemouth | 4.17 | **4.30** | 4.53* | €1.00 |
 
 ## 投注 ID
 
 record-bet 表单要填这个（点代码块右上角可直接复制）：
 
-**1. Inverness C vs Stenhousemuir — 客胜 Stenhousemuir**
-
-```
-20261010-SC1-InvernessC-Stenhousemuir-A
-```
-
-**2. Barcelona vs Getafe — 小于 2.5 球**
-
-```
-20261010-SP1-Barcelona-Getafe-U25
-```
-
-**3. Doncaster vs Burton — 客胜 Burton**
-
-```
-20261010-E2-Doncaster-Burton-A
-```
-
-**4. Nancy vs Guingamp — 客胜 Guingamp**
+**1. Nancy vs Guingamp — 客胜 Guingamp**
 
 ```
 20261009-F2-Nancy-Guingamp-A
 ```
 
-**5. Shrewsbury vs Exeter — 小于 2.5 球**
+**2. Braunschweig vs Holstein Kiel — 小于 2.5 球**
+
+```
+20261009-D2-Braunschweig-HolsteinKiel-U25
+```
+
+**3. Montpellier vs Grenoble — 小于 2.5 球**
+
+```
+20261009-F2-Montpellier-Grenoble-U25
+```
+
+**4. Dortmund vs Werder Bremen — 小于 2.5 球**
+
+```
+20261009-D1-Dortmund-WerderBremen-U25
+```
+
+**5. Moreirense vs Gil Vicente — 主胜 Moreirense**
+
+```
+20261009-P1-Moreirense-GilVicente-H
+```
+
+**6. Inverness C vs Stenhousemuir — 客胜 Stenhousemuir**
+
+```
+20261010-SC1-InvernessC-Stenhousemuir-A
+```
+
+**7. Barcelona vs Getafe — 小于 2.5 球**
+
+```
+20261010-SP1-Barcelona-Getafe-U25
+```
+
+**8. Doncaster vs Burton — 客胜 Burton**
+
+```
+20261010-E2-Doncaster-Burton-A
+```
+
+**9. Shrewsbury vs Exeter — 小于 2.5 球**
 
 ```
 20261010-E3-Shrewsbury-Exeter-U25
+```
+
+**10. Chelsea vs Bournemouth — 客胜 Bournemouth**
+
+```
+20261010-E0-Chelsea-Bournemouth-A
 ```
 
 ## 怎么用
@@ -55,11 +90,16 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 <details><summary>用终端的话</summary>
 
 ```bash
+python -m src.ledger add 20261009-F2-Nancy-Guingamp-A --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261009-D2-Braunschweig-HolsteinKiel-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261009-F2-Montpellier-Grenoble-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261009-D1-Dortmund-WerderBremen-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261009-P1-Moreirense-GilVicente-H --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-SC1-InvernessC-Stenhousemuir-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-SP1-Barcelona-Getafe-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-E2-Doncaster-Burton-A --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261009-F2-Nancy-Guingamp-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-E3-Shrewsbury-Exeter-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261010-E0-Chelsea-Bournemouth-A --odds <Tipico赔率> --stake 1.00
 ```
 
 </details>
@@ -75,14 +115,29 @@ python -m src.ledger add 20261010-E3-Shrewsbury-Exeter-U25 --odds <Tipico赔率>
 
 | 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |
 |---|---|---|---|---|
+| Dortmund vs Werder Bremen | 主胜 Dortmund + 小于 2.5 球 | 5.66 | **5.83** | 4.18 |
+| Dortmund vs Werder Bremen | 平局 + 小于 2.5 球 | 8.52 | **8.78** | 17.58 |
+| Dortmund vs Werder Bremen | 客胜 Werder Bremen + 小于 2.5 球 | 25.66 | **26.43** | 26.97 |
+| Braunschweig vs Holstein Kiel | 平局 + 小于 2.5 球 | 5.87 | **6.05** | 9.59 |
+| Braunschweig vs Holstein Kiel | 客胜 Holstein Kiel + 小于 2.5 球 | 7.88 | **8.12** | 6.17 |
+| Braunschweig vs Holstein Kiel | 主胜 Braunschweig + 小于 2.5 球 | 8.96 | **9.23** | 7.02 |
+| Chelsea vs Bournemouth | 客胜 Bournemouth + 大于 2.5 球 | 5.93 | **6.10** | 6.69 |
+| Chelsea vs Bournemouth | 平局 + 小于 2.5 球 | 6.40 | **6.59** | 11.27 |
+| Chelsea vs Bournemouth | 平局 + 大于 2.5 球 | 12.63 | **13.01** | 6.81 |
+| Chelsea vs Bournemouth | 客胜 Bournemouth + 小于 2.5 球 | 14.09 | **14.51** | 11.07 |
 | Doncaster vs Burton | 平局 + 小于 2.5 球 | 5.29 | **5.45** | 8.03 |
 | Doncaster vs Burton | 客胜 Burton + 大于 2.5 球 | 7.11 | **7.32** | 8.24 |
 | Doncaster vs Burton | 客胜 Burton + 小于 2.5 球 | 9.97 | **10.27** | 8.37 |
 | Shrewsbury vs Exeter | 平局 + 小于 2.5 球 | 3.19 | **3.29** | 4.47 |
 | Shrewsbury vs Exeter | 主胜 Shrewsbury + 小于 2.5 球 | 5.15 | **5.30** | 4.13 |
 | Shrewsbury vs Exeter | 客胜 Exeter + 小于 2.5 球 | 6.41 | **6.61** | 5.06 |
+| Montpellier vs Grenoble | 主胜 Montpellier + 小于 2.5 球 | 3.86 | **3.98** | 3.10 |
+| Montpellier vs Grenoble | 平局 + 小于 2.5 球 | 4.30 | **4.43** | 6.31 |
+| Montpellier vs Grenoble | 客胜 Grenoble + 小于 2.5 球 | 10.39 | **10.70** | 9.42 |
 | Nancy vs Guingamp | 客胜 Guingamp + 大于 2.5 球 | 5.56 | **5.73** | 6.53 |
 | Nancy vs Guingamp | 客胜 Guingamp + 小于 2.5 球 | 8.65 | **8.91** | 7.02 |
+| Moreirense vs Gil Vicente | 主胜 Moreirense + 小于 2.5 球 | 6.44 | **6.64** | 5.51 |
+| Moreirense vs Gil Vicente | 主胜 Moreirense + 大于 2.5 球 | 6.78 | **6.99** | 8.25 |
 | Inverness C vs Stenhousemuir | 平局 + 小于 2.5 球 | 3.78 | **3.89** | 5.68 |
 | Inverness C vs Stenhousemuir | 客胜 Stenhousemuir + 大于 2.5 球 | 4.96 | **5.11** | 7.56 |
 | Inverness C vs Stenhousemuir | 客胜 Stenhousemuir + 小于 2.5 球 | 6.87 | **7.07** | 4.65 |
@@ -121,4 +176,4 @@ python -m src.ledger add 20261010-E3-Shrewsbury-Exeter-U25 --odds <Tipico赔率>
 - Alanyaspor vs Erzurumspor：球队数据不足（可能是升班马），跳过
 
 ---
-开球时间来自数据源，可能是英国时间，请以 Tipico 显示为准。本报告是模型输出，不保证盈利；只用亏得起的钱。
+开球时间已换算成德国时间（report.kickoff_offset_hours），仍请以 Tipico 显示为准。本报告是模型输出，不保证盈利；只用亏得起的钱。

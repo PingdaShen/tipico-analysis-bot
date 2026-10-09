@@ -169,6 +169,8 @@ value:
   min_edge: 0.03         # Tipico 赔率至少比公平赔率高 3% 才下注
   min_odds: 1.50         # 首存奖金流水要求的最低赔率
   max_odds: 5.00
+  # 每个比赛日最多几注——不是全局上限。周五跑的时候周六有十倍的比赛量，
+  # 全局上限会让当天的推荐被整批挤掉。
   max_picks: 5
   horizon_days: 2        # 只看今天起 N 天内开赛的比赛
   markets: [1X2, OU25]
@@ -194,6 +196,12 @@ staking:
   min_stake: 1.0         # 请在 Tipico 确认实际最低注额
   max_stake_pct: 0.10
   stake_step: 0.5        # 注额取整步长，避免奇怪的金额
+
+report:
+  # fixtures.csv 的开球时间是英国时间。英德两国夏令时切换日期相同，
+  # 所以全年恒定相差 1 小时，直接加常数即可，不需要时区库。
+  # 手填赛程里的时间按原样显示——那是你自己填的本地时间。
+  kickoff_offset_hours: 1
 
 paths:
   cache: data/cache

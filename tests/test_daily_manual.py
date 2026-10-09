@@ -419,3 +419,48 @@ def test_without_the_flags_config_is_untouched(cfg, monkeypatch):
     monkeypatch.setattr(sys, "argv", ["daily"])
     daily_mod.main()
     assert seen["horizon"] == cfg["value"]["horizon_days"]
+
+
+# --- per-day cap and kick-off times -------------------------------------------
+
+def test_max_picks_applies_per_match_day(cfg, tmp_path):
+    """A global cap let Saturday's ten-times-bigger card take every slot."""
+    league = make_league(div="E0", n_teams=12, seasons=3, seed=1)
+    hist_raw, fix_raw, today, _ = league
+    # one fixture today, the rest tomorrow
+    fix = fix_raw.copy()
+    fix["Date"] = [(today if i == 0 else today + pd.Timedelta(days=1)).strftime("%d/%m/%Y")
+                   for i in range(len(fix))]
+    hl, fl = loaders(hist_raw, fix)
+    cfg["value"]["min_edge"] = -0.5          # force plenty of candidates
+    cfg["value"]["max_picks"] = 2
+    _, picks, _ = daily.analyze(cfg, today, root=tmp_path, history_loader=hl,
+                                fixtures_loader=fl)
+    per_day = picks.groupby("date").size()
+    assert len(per_day) == 2, "两天都应该有推荐"
+    assert (per_day <= 2).all()
+    assert picks["date"].is_monotonic_increasing, "按比赛日排序，当天在前"
+
+
+def test_kickoff_times_are_shifted_to_german_time():
+    fx = pd.DataFrame({"Time": ["15:00", "19:45", "23:30", "", "tbc"]})
+    out = daily.shift_kickoff(fx, 1)["Time"].tolist()
+    assert out[:2] == ["16:00", "20:45"]
+    assert out[2] == "00:30(+1)", "跨午夜要标出来，日期没有跟着改"
+    assert out[3] == "" and out[4] == "tbc"
+
+
+def test_kickoff_shift_is_a_no_op_at_zero():
+    fx = pd.DataFrame({"Time": ["15:00"]})
+    assert daily.shift_kickoff(fx, 0)["Time"].iloc[0] == "15:00"
+    assert daily.shift_kickoff(pd.DataFrame(), 1).empty
+
+
+def test_hand_entered_times_are_not_shifted(cfg, tmp_path, world):
+    """They are already the user's own local time."""
+    domestic, cup, today, truth = world
+    pool = pd.concat([domestic, cup], ignore_index=True)
+    _manual_file(tmp_path, f"CL,{today:%Y-%m-%d},21:00,{truth['teams'][0]},"
+                           f"{truth['teams'][-1]},0,3.00,3.60,2.40,3.20,3.70,2.50,,,,")
+    all_df, _, _ = _run(cfg, tmp_path, today, pool=pool)
+    assert all_df.iloc[0]["time"] == "21:00"
