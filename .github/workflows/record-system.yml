@@ -1,0 +1,112 @@
+name: record-system
+
+# 记录一次系统投注（Systemwette，如「5 对 2」= 5 选 2 的全部 10 注 2 串 1）。
+# 不要把系统投注拆成多次 record-bet：2 串 1 必须两条腿都赢才赔，
+# 拆开记会把盈亏算错（只中 1 场时系统是全输，拆开会记成小亏）。
+on:
+  workflow_dispatch:
+    inputs:
+      k:
+        description: "每注串几层。「5 对 2」填 2，「5 对 3」填 3"
+        required: true
+        default: "2"
+        type: choice
+        options: ["2", "3", "4", "5", "6"]
+      stake:
+        description: "总投入（欧元，不是每注），例如 2"
+        required: true
+        type: string
+      leg1:
+        description: "第 1 条腿：ID=赔率，例如 20261009-F2-Nancy-Guingamp-A=3.80"
+        required: true
+        type: string
+      leg2:
+        description: "第 2 条腿：ID=赔率"
+        required: true
+        type: string
+      leg3:
+        description: "第 3 条腿：ID=赔率（可留空）"
+        required: false
+        default: ""
+        type: string
+      leg4:
+        description: "第 4 条腿：ID=赔率（可留空）"
+        required: false
+        default: ""
+        type: string
+      leg5:
+        description: "第 5 条腿：ID=赔率（可留空）"
+        required: false
+        default: ""
+        type: string
+      leg6:
+        description: "第 6 条腿：ID=赔率（可留空）"
+        required: false
+        default: ""
+        type: string
+      paper:
+        description: "记进模拟账本而不是真实账本"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ledger-write
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: 记录系统投注
+        env:
+          K: ${{ inputs.k }}
+          STAKE: ${{ inputs.stake }}
+          LEG1: ${{ inputs.leg1 }}
+          LEG2: ${{ inputs.leg2 }}
+          LEG3: ${{ inputs.leg3 }}
+          LEG4: ${{ inputs.leg4 }}
+          LEG5: ${{ inputs.leg5 }}
+          LEG6: ${{ inputs.leg6 }}
+          PAPER: ${{ inputs.paper }}
+        run: |
+          set -o pipefail
+          args=(--k "$K" --stake "$STAKE")
+          for v in "$LEG1" "$LEG2" "$LEG3" "$LEG4" "$LEG5" "$LEG6"; do
+            if [ -n "$v" ]; then args+=(--leg "$v"); fi
+          done
+          if [ "$PAPER" = "true" ]; then args+=(--paper); fi
+          python -m src.ledger system "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
+          {
+            echo
+            echo '## 投注汇总'
+            echo '```'
+            python -m src.ledger summary
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 提交
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bets
+          if git diff --staged --quiet; then
+            echo "没有变化，不提交。"
+            exit 0
+          fi
+          git commit -m "系统投注 ${{ inputs.k }} 串，总额 ${{ inputs.stake }}"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

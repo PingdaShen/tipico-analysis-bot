@@ -219,3 +219,36 @@ def test_summary_without_any_system(cfg, tmp_path):
     d = summarize(ledger.load(ledger.ledger_path(cfg, tmp_path, False)), pd.DataFrame())
     assert d["systems_settled"] == 0 and d["systems_open"] == 0
     assert "系统投注" not in ledger.format_summary("真实投注", d)
+
+
+# --- paper ledger deduplication -----------------------------------------------
+
+def test_paper_bets_are_deduped_by_match_not_by_pick_id(cfg, tmp_path):
+    """A rerun can pick a different outcome for the same fixture — changing
+    value.price_source flipped Shrewsbury vs Exeter from the draw to under 2.5
+    — and both landed in the ledger, breaking one-bet-per-match."""
+    base = {"date": pd.Timestamp("2026-10-10"), "div": "E3", "home": "Shrewsbury",
+            "away": "Exeter", "market": "1X2", "p_final": 0.33, "min_odds": 3.06,
+            "stake": 1.0}
+    first = pd.DataFrame([{**base, "pick_id": "A-D", "outcome": "D", "label": "平局"}])
+    second = pd.DataFrame([{**base, "pick_id": "A-U25", "outcome": "U25",
+                            "label": "小于 2.5 球", "market": "OU25", "min_odds": 1.55}])
+
+    assert ledger.append_paper(first, cfg, tmp_path, "2026-10-09") == 1
+    assert ledger.append_paper(second, cfg, tmp_path, "2026-10-09") == 0
+
+    df = ledger.load(ledger.ledger_path(cfg, tmp_path, True))
+    assert len(df) == 1 and df.iloc[0]["outcome"] == "D"
+
+
+def test_paper_dedup_still_allows_different_matches(cfg, tmp_path):
+    rows = pd.DataFrame([
+        {"pick_id": "X", "date": pd.Timestamp("2026-10-10"), "div": "E0", "home": "A",
+         "away": "B", "market": "1X2", "outcome": "H", "label": "主胜 A",
+         "p_final": 0.5, "min_odds": 2.0, "stake": 1.0},
+        {"pick_id": "Y", "date": pd.Timestamp("2026-10-10"), "div": "E0", "home": "C",
+         "away": "D", "market": "1X2", "outcome": "H", "label": "主胜 C",
+         "p_final": 0.5, "min_odds": 2.0, "stake": 1.0},
+    ])
+    assert ledger.append_paper(rows, cfg, tmp_path, "2026-10-09") == 2
+    assert ledger.append_paper(rows, cfg, tmp_path, "2026-10-09") == 0

@@ -108,12 +108,26 @@ def _append(df: pd.DataFrame, rows: list[dict]) -> pd.DataFrame:
 
 
 def append_paper(picks: pd.DataFrame, cfg: dict, root: Path, today) -> int:
-    """Log every recommended pick as a paper bet at its minimum acceptable odds."""
+    """Log every recommended pick as a paper bet at its minimum acceptable odds.
+
+    Deduplication is by match, not by pick id. A rerun can pick a different
+    outcome for the same fixture — changing `value.price_source` flipped
+    Shrewsbury vs Exeter from the draw to under 2.5 — and keying on the id
+    alone let both land in the ledger, breaking the one-bet-per-match rule the
+    picks themselves enforce.
+    """
     path = ledger_path(cfg, root, paper=True)
     df = load(path)
-    known = set(df["id"])
-    rows = [_row_from_pick(p, p["min_odds"], p["stake"], today)
-            for _, p in picks.iterrows() if p["pick_id"] not in known]
+    known_ids = set(df["id"])
+    played = {(pd.Timestamp(d).date(), h, a)
+              for d, h, a in zip(df["date"], df["home"], df["away"])}
+    rows = []
+    for _, p in picks.iterrows():
+        match = (pd.Timestamp(p["date"]).date(), p["home"], p["away"])
+        if p["pick_id"] in known_ids or match in played:
+            continue
+        rows.append(_row_from_pick(p, p["min_odds"], p["stake"], today))
+        played.add(match)
     save(_append(df, rows), path)
     return len(rows)
 

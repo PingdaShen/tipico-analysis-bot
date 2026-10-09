@@ -109,5 +109,6 @@ CLV 不受影响，每条腿照常单独计算。
 | `record-bet` | 表单记录一注真实投注 |
 | `add-fixture` | 表单填欧战/国家队的赛程和赔率 |
 | `record-close` | 表单记收盘赔率（开球前几分钟），算出 CLV |
+| `record-system` | 表单记系统投注（Systemwette，如 5 对 2） |
 
 本项目不保证盈利，只用亏得起的钱。

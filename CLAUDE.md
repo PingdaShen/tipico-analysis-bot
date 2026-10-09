@@ -49,7 +49,8 @@ src/ledger.py            真实/模拟投注记录：添加、自动结算、汇
 src/backtest.py          逐周滚动回测（用 Bet365 赔率代替 Tipico，只覆盖国内联赛）
 tests/                   离线测试（合成联赛数据和合成多联赛世界，不依赖网络）
 .github/workflows/       daily.yml 每天运行；backtest.yml 手动回测；
-                         record-bet.yml 记录投注；add-fixture.yml 填欧战/国家队赔率
+                         record-bet.yml 记录投注；record-close.yml 记收盘赔率；
+                         record-system.yml 记系统投注；add-fixture.yml 填欧战/国家队赔率
 reports/                 每日报告 latest.md、YYYY-MM-DD.md 及 CSV
 bets/                    ledger.csv（真实）、paper_ledger.csv（模拟）
 ```
@@ -169,6 +170,7 @@ Tipico 里除了单注和全串，还有「n 对 k」的系统投注（德语 Sy
   腿照常记录就照常算得出来。这是这个设计的核心——
   下注结构变了，可检验的指标不能跟着失效
 - 一条推荐可以既是单注又是某个系统的腿，腿按 `(id, system_id)` 区分
+- 手机上用 `record-system` 表单，最多 6 条腿，留空的腿自动跳过
 - 所有腿都结算后系统才结算，按组合规则算回款
 - 系统 ID 用 `hashlib` 而不是 `hash()`：Python 对字符串的哈希逐进程随机，
   用 `hash()` 的话 ID 每次运行都不同，重复检测会失效
@@ -305,6 +307,9 @@ Tipico 里除了单注和全串，还有「n 对 k」的系统投注（德语 Sy
   国内联赛不受影响：`settle` 从 football-data.co.uk 自动取收盘价，
   其中 Pinnacle 收盘（`PSC*`）覆盖率 77-86%，不需要任何手工操作。
 - 模拟投注按 `min_odds` 记账（假设刚好拿到最低可接受价格），这是偏保守的估计。
+  **按比赛去重，不是按 pick_id 去重**：重跑时同一场比赛可能选中不同的选项
+  （改 `value.price_source` 就让 Shrewsbury vs Exeter 从平局变成了小球），
+  只看 pick_id 会让两注都进账本，破坏「每场比赛最多一注」。
 - 如果回测和模拟投注的平均 CLV 长期 ≤ 0，应如实报告"模型没有优势"，而不是继续调参直到回测好看（避免过拟合）。
 
 ### 当前结论：模型没有优势
