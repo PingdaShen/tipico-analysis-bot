@@ -378,10 +378,17 @@ def render_report(today, picks: pd.DataFrame, all_df: pd.DataFrame,
                   notes: list[str], cfg: dict) -> str:
     v, s = cfg["value"], cfg["staking"]
     n_matches = 0 if all_df.empty else all_df[["date", "home", "away"]].drop_duplicates().shape[0]
+    today = pd.Timestamp(today)
+    # the horizon is more than one day, and on a Friday the Saturday card is
+    # ten times the size — so the picks are usually not today's matches. Say
+    # which days are covered instead of calling it "today's".
+    last = today + pd.Timedelta(days=v["horizon_days"] - 1)
+    window = f"{today:%m-%d}" if last == today else f"{today:%m-%d} 至 {last:%m-%d}"
     lines = [
-        f"# 今日投注建议 · {pd.Timestamp(today):%Y-%m-%d}",
+        f"# 投注建议 · {today:%Y-%m-%d}",
         "",
-        f"本金 €{s['bankroll']:.0f} · 最低赔率 {v['min_odds']:.2f} · 最低优势 {v['min_edge']:.0%} · "
+        f"覆盖 {window} 开赛的比赛 · 本金 €{s['bankroll']:.0f} · "
+        f"最低赔率 {v['min_odds']:.2f} · 最低优势 {v['min_edge']:.0%} · "
         f"分析了 {n_matches} 场比赛",
         "",
     ]

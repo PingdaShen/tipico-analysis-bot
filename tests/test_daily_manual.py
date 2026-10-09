@@ -360,3 +360,21 @@ def test_stale_fixture_feed_says_how_stale(cfg, tmp_path):
     assert "manual_fixtures.csv" in note
     # the feed is on a published twice-weekly schedule, not broken — say so
     assert "周五下午" in note and "周二下午" in note
+
+
+def test_header_names_the_window_not_just_today(cfg, tmp_path, world):
+    """On a Friday the Saturday card is ten times the size, so the picks are
+    usually not today's matches; the old "今日投注建议" header misled."""
+    report, _ = _report_for(cfg, tmp_path, world)
+    today = pd.Timestamp(world[2])
+    last = today + pd.Timedelta(days=cfg["value"]["horizon_days"] - 1)
+    assert f"覆盖 {today:%m-%d} 至 {last:%m-%d} 开赛的比赛" in report
+    assert "今日投注建议" not in report
+
+
+def test_single_day_horizon_reads_naturally(cfg, tmp_path, world):
+    cfg["value"]["horizon_days"] = 1
+    today = pd.Timestamp(world[2])
+    report = daily.render_report(today, pd.DataFrame(), pd.DataFrame(), [], cfg)
+    assert f"覆盖 {today:%m-%d} 开赛的比赛" in report
+    assert "至" not in report.splitlines()[2]

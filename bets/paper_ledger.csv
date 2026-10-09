@@ -6,3 +6,4 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261010-E2-Doncaster-Burton-A,2026-10-09,2026-10-10,E2,Doncaster,Burton,1X2,A,客胜 Burton,4.27,1.0,0.2409,open,,,,,,
 20261010-E3-Shrewsbury-Exeter-D,2026-10-09,2026-10-10,E3,Shrewsbury,Exeter,1X2,D,平局,3.06,1.0,0.3369,open,,,,,,
 20261010-E0-Chelsea-Bournemouth-A,2026-10-09,2026-10-10,E0,Chelsea,Bournemouth,1X2,A,客胜 Bournemouth,4.3,1.0,0.2397,open,,,,,,
+20261010-E3-Shrewsbury-Exeter-U25,2026-10-09,2026-10-10,E3,Shrewsbury,Exeter,OU25,U25,小于 2.5 球,1.55,1.0,0.6634,open,,,,,,

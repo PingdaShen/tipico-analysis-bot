@@ -1,16 +1,16 @@
-# 今日投注建议 · 2026-10-09
+# 投注建议 · 2026-10-09
 
-本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 112 场比赛
+覆盖 10-09 至 10-10 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 112 场比赛
 
 ## 联赛
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Inverness C vs Stenhousemuir | 苏冠 | 10-10 15:00 | 客胜 Stenhousemuir | 2.88 | **2.97** | 4.20* | €1.00 |
-| 2 | Barcelona vs Getafe | 西甲 | 10-10 17:30 | 小于 2.5 球 | 3.19 | **3.29** | 4.00* | €1.00 |
-| 3 | Doncaster vs Burton | 英甲 | 10-10 15:00 | 客胜 Burton | 4.15 | **4.27** | 5.00* | €1.00 |
-| 4 | Shrewsbury vs Exeter | 英乙 | 10-10 15:00 | 平局 | 2.97 | **3.06** | 3.40* | €1.00 |
-| 5 | Chelsea vs Bournemouth | 英超 | 10-10 15:00 | 客胜 Bournemouth | 4.17 | **4.30** | 4.75* | €1.00 |
+| 1 | Inverness C vs Stenhousemuir | 苏冠 | 10-10 15:00 | 客胜 Stenhousemuir | 2.88 | **2.97** | 3.86* | €1.00 |
+| 2 | Barcelona vs Getafe | 西甲 | 10-10 17:30 | 小于 2.5 球 | 3.19 | **3.29** | 3.78* | €1.00 |
+| 3 | Doncaster vs Burton | 英甲 | 10-10 15:00 | 客胜 Burton | 4.15 | **4.27** | 4.68* | €1.00 |
+| 4 | Shrewsbury vs Exeter | 英乙 | 10-10 15:00 | 小于 2.5 球 | 1.51 | **1.55** | 1.67* | €1.00 |
+| 5 | Chelsea vs Bournemouth | 英超 | 10-10 15:00 | 客胜 Bournemouth | 4.17 | **4.30** | 4.53* | €1.00 |
 
 ## 投注 ID
 
@@ -34,10 +34,10 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 20261010-E2-Doncaster-Burton-A
 ```
 
-**4. Shrewsbury vs Exeter — 平局**
+**4. Shrewsbury vs Exeter — 小于 2.5 球**
 
 ```
-20261010-E3-Shrewsbury-Exeter-D
+20261010-E3-Shrewsbury-Exeter-U25
 ```
 
 **5. Chelsea vs Bournemouth — 客胜 Bournemouth**
@@ -58,7 +58,7 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 python -m src.ledger add 20261010-SC1-InvernessC-Stenhousemuir-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-SP1-Barcelona-Getafe-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-E2-Doncaster-Burton-A --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261010-E3-Shrewsbury-Exeter-D --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261010-E3-Shrewsbury-Exeter-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-E0-Chelsea-Bournemouth-A --odds <Tipico赔率> --stake 1.00
 ```
 

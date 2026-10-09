@@ -6,7 +6,8 @@ import re
 
 import numpy as np
 
-from .market import AVG_PRE, MAX_PRE, OUTCOMES, TIPICO_PRE, market_probs, odds_dict
+from .market import (AVG_PRE, MAX_PRE, OUTCOMES, SOFT_PRE, TIPICO_PRE,
+                     market_probs, odds_dict)
 
 
 def blend(p_model: dict, p_market: dict, w: float) -> dict:
@@ -41,17 +42,39 @@ def stake_for(p: float, odds: float, staking: dict) -> float:
     return round(max(s, staking["min_stake"]), 2)
 
 
-def available_odds(row, market: str) -> tuple[dict, str]:
+PRICE_TABLES = {"max": (MAX_PRE, "market_max"), "avg": (AVG_PRE, "market_avg"),
+                "b365": (SOFT_PRE, "b365")}
+
+
+def available_odds(row, market: str, source: str = "avg") -> tuple[dict, str]:
     """The price the user can actually take, and where it came from.
 
     A hand-entered row carries Tipico's own price, which is exactly the number
-    the rules are about. League fixtures only have the market best (Max*),
-    which is a proxy: it says the price exists somewhere, not at Tipico.
+    the rules are about, and always wins.
+
+    For a league fixture the feed offers three proxies, and the choice decides
+    whether a pick is real. Across one weekend's 995 quotes the market best
+    (Max*) sat 4.0% above the market average while Bet365 sat 0.8% above it —
+    and `min_edge` is 3%. So ranking on Max* meant the entire claimed edge came
+    from holding the best price in the market, which Tipico, a soft German
+    book, will rarely be. It also put the report out of step with the backtest,
+    which prices on Bet365 and finds no edge at all. The default is therefore
+    the market average: a price a typical book is actually showing.
     """
     tip = odds_dict(row, TIPICO_PRE, market)
     if tip:
         return tip, "tipico"
-    return odds_dict(row, MAX_PRE, market) or {}, "market_max"
+    table, name = PRICE_TABLES.get(source, PRICE_TABLES["avg"])
+    odds = odds_dict(row, table, market)
+    if odds:
+        return odds, name
+    # fall back so a fixture is not dropped when that one column is missing
+    for key in ("avg", "b365", "max"):
+        table, name = PRICE_TABLES[key]
+        odds = odds_dict(row, table, market)
+        if odds:
+            return odds, name
+    return {}, "none"
 
 
 def evaluate_fixture(row, model, cfg: dict, neutral: bool = False) -> list[dict]:
@@ -67,7 +90,7 @@ def evaluate_fixture(row, model, cfg: dict, neutral: bool = False) -> list[dict]
         if p_market is None:
             continue
         p_final = blend(p_model, p_market, w)
-        best, price_source = available_odds(row, market)
+        best, price_source = available_odds(row, market, vcfg.get("price_source", "avg"))
         avg = odds_dict(row, AVG_PRE, market) or {}
         for o in OUTCOMES[market]:
             p = p_final[o]

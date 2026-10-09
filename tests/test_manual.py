@@ -150,3 +150,38 @@ def test_misspelling_hints_without_matching():
     name, hint = resolve_team("Belarusia", known, {})
     assert name is None and hint == "Belarus"
     assert resolve_team("Nowhere", known, {}) == (None, "")
+
+
+# --- which price counts as "available" ----------------------------------------
+
+def test_price_source_defaults_to_the_market_average():
+    """Max* sat 4.0% above the average over one weekend while min_edge is 3%,
+    so ranking on it sourced the whole claimed edge from holding the best
+    price in the market — which Tipico, a soft book, will rarely be."""
+    row = pd.Series({"MaxH": 2.15, "MaxD": 3.9, "MaxA": 4.8,
+                     "AvgH": 1.95, "AvgD": 3.6, "AvgA": 4.3,
+                     "B365H": 2.00, "B365D": 3.7, "B365A": 4.4})
+    assert available_odds(row, "1X2") == ({"H": 1.95, "D": 3.6, "A": 4.3}, "market_avg")
+    assert available_odds(row, "1X2", "max")[1] == "market_max"
+    assert available_odds(row, "1X2", "b365")[0]["H"] == 2.00
+    assert available_odds(row, "1X2", "nonsense")[1] == "market_avg"
+
+
+def test_hand_entered_tipico_price_always_wins():
+    row = pd.Series({"MaxH": 2.15, "MaxD": 3.9, "MaxA": 4.8,
+                     "AvgH": 1.95, "AvgD": 3.6, "AvgA": 4.3,
+                     "TipicoH": 2.05, "TipicoD": 3.8, "TipicoA": 4.5})
+    for src in ("max", "avg", "b365"):
+        assert available_odds(row, "1X2", src) == (
+            {"H": 2.05, "D": 3.8, "A": 4.5}, "tipico")
+
+
+def test_price_source_falls_back_rather_than_dropping_a_fixture():
+    row = pd.Series({"MaxH": 2.15, "MaxD": 3.9, "MaxA": 4.8})
+    odds, src = available_odds(row, "1X2", "avg")
+    assert src == "market_max" and odds["H"] == 2.15
+    assert available_odds(pd.Series({"x": 1}), "1X2") == ({}, "none")
+
+
+def test_config_ships_the_conservative_default():
+    assert load_config()["value"]["price_source"] == "avg"

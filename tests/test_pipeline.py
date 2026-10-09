@@ -83,12 +83,24 @@ def test_candidate_logic(cfg):
                      "PSH": 2.0, "PSD": 3.8, "PSA": 4.6, "MaxH": 2.15, "MaxD": 3.9, "MaxA": 4.8,
                      "AvgH": 1.95, "AvgD": 3.6, "AvgA": 4.3})
     cfg["value"]["markets"] = ["1X2"]
+
+    # the price source decides whether this is a pick at all: the market best
+    # (2.15) clears the 1.97 minimum, the market average (1.95) does not
+    cfg["value"]["price_source"] = "max"
     res = {r["outcome"]: r for r in evaluate_fixture(row, Fake(), cfg)}
     h = res["H"]
     assert h["is_candidate"]
+    assert h["price_source"] == "market_max"
     assert h["min_odds"] >= cfg["value"]["min_odds"]
     assert h["best_odds"] >= h["min_odds"]
     assert not res["A"]["is_candidate"]            # model below market
+
+    cfg["value"]["price_source"] = "avg"
+    avg = {r["outcome"]: r for r in evaluate_fixture(row, Fake(), cfg)}["H"]
+    assert avg["price_source"] == "market_avg"
+    assert avg["best_odds"] == 1.95
+    assert avg["min_odds"] == pytest.approx(h["min_odds"])
+    assert not avg["is_candidate"]
 
 
 def test_daily_end_to_end(league, cfg, tmp_path):
@@ -96,7 +108,7 @@ def test_daily_end_to_end(league, cfg, tmp_path):
     hl, fl = loaders(hist_raw, fix_raw)
     picks = daily.run(cfg, today=today, root=tmp_path, history_loader=hl, fixtures_loader=fl)
     report = (tmp_path / cfg["paths"]["reports"] / "latest.md").read_text(encoding="utf-8")
-    assert "今日投注建议" in report
+    assert "投注建议" in report
     assert len(picks) <= cfg["value"]["max_picks"]
     for _, p in picks.iterrows():
         assert p["best_odds"] >= p["min_odds"] >= cfg["value"]["min_odds"]
