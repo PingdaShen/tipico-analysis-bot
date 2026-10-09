@@ -162,7 +162,12 @@ def results_for_div(div: str, cfg: dict, cache: Path, today=None,
     late, so a recent European bet may simply stay open for a while.
     """
     if div in cfg["leagues"]:
-        return history_loader(div, recent_seasons(2, today), cache, today=today, fresh=True)
+        base = history_loader(div, recent_seasons(2, today), cache, today=today, fresh=True)
+        # a league round reaches football-data a day or two after it is played,
+        # so a hand-entered score settles the profit now; the closing odds are
+        # backfilled by a later run (see settle)
+        return manual.apply_results(
+            base, Path(root) / cfg["paths"]["manual_results"], [div])[0]
     spec = (cfg.get("manual_competitions") or {}).get(div) or {}
     kind = spec.get("model")
     if kind is None:
@@ -386,15 +391,20 @@ def settle(cfg: dict, root: Path = ROOT, history_loader=load_history, today=None
         df = load(path)
         if df.empty:
             continue
-        open_rows = df[df["status"] == "open"]
-        for div in open_rows["div"].unique():
+        # Rows still open, plus settled ones that never got a closing price.
+        # Results and closing odds do not always arrive together: a bet can be
+        # settled early from a hand-entered score while football-data has not
+        # published the round yet. Only revisiting open rows would then lose
+        # that bet's CLV for good — and CLV is the one metric that works.
+        todo = df[(df["status"] == "open") | (df["clv"].isna() & (df["status"] == "settled"))]
+        for div in todo["div"].unique():
             hist = results_for_div(div, cfg, cache, today=today,
                                    history_loader=history_loader, root=root, **loaders)
             if hist.empty:
-                n = int((open_rows["div"] == div).sum())
+                n = int((todo["div"] == div).sum())
                 print(f"[提示] {div}：找不到赛果，{n} 注先留着未结算。")
                 continue
-            for idx, r in open_rows[open_rows["div"] == div].iterrows():
+            for idx, r in todo[todo["div"] == div].iterrows():
                 m = hist[(hist["home"] == r["home"]) & (hist["away"] == r["away"])
                          & ((hist["date"] - r["date"]).abs() <= pd.Timedelta(days=3))]
                 if m.empty:
@@ -403,11 +413,13 @@ def settle(cfg: dict, root: Path = ROOT, history_loader=load_history, today=None
                 won = outcome_won(r["outcome"], int(g["hg"]), int(g["ag"]))
                 close, close_source = closing_odds(g, r["market"], r["outcome"])
                 cp, _ = closing_probs(g, r["market"])
-                df.loc[idx, "status"] = "settled"
-                df.loc[idx, "result"] = f"{int(g['hg'])}-{int(g['ag'])} {'赢' if won else '输'}"
-                # a system leg carries no money of its own; the system row does
-                df.loc[idx, "pnl"] = (None if r["kind"] == SYSTEM_LEG else
-                                      round(r["stake"] * (r["odds"] - 1) if won else -r["stake"], 2))
+                if r["status"] != "settled":
+                    df.loc[idx, "status"] = "settled"
+                    df.loc[idx, "result"] = f"{int(g['hg'])}-{int(g['ag'])} {'赢' if won else '输'}"
+                    # a system leg carries no money of its own; the system row does
+                    df.loc[idx, "pnl"] = (
+                        None if r["kind"] == SYSTEM_LEG else
+                        round(r["stake"] * (r["odds"] - 1) if won else -r["stake"], 2))
                 if close:
                     df.loc[idx, "close_odds"] = close
                     df.loc[idx, "clv"] = round(r["odds"] / close - 1, 4)

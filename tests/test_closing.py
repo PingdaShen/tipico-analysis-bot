@@ -190,3 +190,69 @@ def test_summary_hides_the_pinnacle_line_when_there_is_none(cfg, tmp_path):
     set_closing("p1", {"close_h": 3.94, "close_d": 3.25, "close_a": 1.99},
                 cfg, tmp_path, source="pinnacle")
     assert "Pinnacle" in ledger.format_summary("模拟投注", summarize(ledger.load(path)))
+
+
+def test_clv_is_backfilled_after_an_early_settlement(cfg, tmp_path):
+    """Results and closing odds do not always arrive together.
+
+    A league round can be settled from a hand-entered score the same night,
+    while football-data publishes it (with closing odds) a day or two later.
+    Revisiting only open rows would lose that bet's CLV for good.
+    """
+    row = _row(status="open")
+    row["div"] = "E0"
+    path = _write(cfg, tmp_path, True, [row])
+
+    # night one: the score is known, no closing odds anywhere
+    score_only = pd.DataFrame([{"div": "E0", "date": pd.Timestamp("2026-10-06"),
+                                "home": "A", "away": "B", "hg": 2, "ag": 1}])
+    ledger.settle(cfg, root=tmp_path, today=pd.Timestamp("2026-10-07").date(),
+                  history_loader=lambda *a, **k: score_only,
+                  intl_loader=lambda *a, **k: pd.DataFrame(),
+                  uefa_loader=lambda *a, **k: pd.DataFrame())
+    out = ledger.load(path).iloc[0]
+    assert out["status"] == "settled" and out["pnl"] > 0
+    assert pd.isna(out["clv"])
+
+    # two days later the feed catches up and carries the closing line
+    with_close = score_only.assign(PSCH=4.00, PSCD=3.50, PSCA=1.95)
+    ledger.settle(cfg, root=tmp_path, today=pd.Timestamp("2026-10-09").date(),
+                  history_loader=lambda *a, **k: with_close,
+                  intl_loader=lambda *a, **k: pd.DataFrame(),
+                  uefa_loader=lambda *a, **k: pd.DataFrame())
+    out = ledger.load(path).iloc[0]
+    assert out["clv"] == pytest.approx(round(4.23 / 4.00 - 1, 4))
+    assert pd.notna(out["clv_novig"]) and out["close_source"] == "pinnacle"
+    assert out["pnl"] > 0, "回填收盘赔率不能改动已经算好的盈亏"
+
+
+def test_backfill_does_not_resettle_or_double_count(cfg, tmp_path):
+    row = _row(status="open")
+    row["div"] = "E0"
+    path = _write(cfg, tmp_path, True, [row])
+    played = pd.DataFrame([{"div": "E0", "date": pd.Timestamp("2026-10-06"), "home": "A",
+                            "away": "B", "hg": 2, "ag": 1,
+                            "PSCH": 4.00, "PSCD": 3.50, "PSCA": 1.95}])
+    for _ in range(3):
+        ledger.settle(cfg, root=tmp_path, today=pd.Timestamp("2026-10-07").date(),
+                      history_loader=lambda *a, **k: played,
+                      intl_loader=lambda *a, **k: pd.DataFrame(),
+                      uefa_loader=lambda *a, **k: pd.DataFrame())
+    df = ledger.load(path)
+    assert len(df) == 1
+    assert df.iloc[0]["pnl"] == pytest.approx(round(1.0 * (4.23 - 1), 2))
+
+
+def test_a_league_can_be_settled_from_a_hand_entered_score(cfg, tmp_path):
+    row = _row(status="open")
+    row["div"] = "E0"
+    path = _write(cfg, tmp_path, True, [row])
+    (tmp_path / "manual_results.csv").write_text(
+        "comp,date,home,away,hg,ag,neutral,tournament\nE0,2026-10-06,A,B,2,1,0,\n",
+        encoding="utf-8")
+    cfg["paths"]["manual_results"] = "manual_results.csv"
+    ledger.settle(cfg, root=tmp_path, today=pd.Timestamp("2026-10-07").date(),
+                  history_loader=lambda *a, **k: pd.DataFrame(),
+                  intl_loader=lambda *a, **k: pd.DataFrame(),
+                  uefa_loader=lambda *a, **k: pd.DataFrame())
+    assert ledger.load(path).iloc[0]["status"] == "settled"
