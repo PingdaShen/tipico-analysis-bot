@@ -276,6 +276,9 @@ pip install -r requirements.txt
 python -m pytest -q                       # 离线测试
 python -m src.daily                        # 生成今天的报告
 python -m src.daily --date 2026-10-10      # 指定日期
+python -m src.daily --horizon 1            # 只看当天（周五跑默认 2 天时，
+                                           #   周六的比赛量是周五的十倍，会把当天挤掉）
+python -m src.daily --horizon 1 --out /tmp/x   # 写到别处，不覆盖仓库里的日报
 python -m src.backtest --seasons 2         # 回测最近 2 个完整赛季（只有国内联赛）
 python -m src.ledger add <ID> --odds 2.10 --stake 1
 python -m src.ledger settle                # 自动结算已结束的比赛

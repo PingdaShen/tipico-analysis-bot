@@ -378,3 +378,44 @@ def test_single_day_horizon_reads_naturally(cfg, tmp_path, world):
     report = daily.render_report(today, pd.DataFrame(), pd.DataFrame(), [], cfg)
     assert f"覆盖 {today:%m-%d} 开赛的比赛" in report
     assert "至" not in report.splitlines()[2]
+
+
+# --- CLI overrides ------------------------------------------------------------
+
+def test_horizon_override_narrows_the_window(cfg, tmp_path, monkeypatch):
+    """A Friday run covers Saturday too, and Saturday's card is ten times the
+    size, so --horizon 1 is how you see only tonight."""
+    import sys
+    from src import daily as daily_mod
+
+    seen = {}
+    monkeypatch.setattr(daily_mod, "load_config", lambda p=None: cfg)
+    monkeypatch.setattr(daily_mod, "run",
+                        lambda c, today=None: seen.update(horizon=c["value"]["horizon_days"],
+                                                          reports=c["paths"]["reports"]))
+    monkeypatch.setattr(sys, "argv", ["daily", "--date", "2026-10-09", "--horizon", "1",
+                                      "--out", str(tmp_path / "out")])
+    daily_mod.main()
+    assert seen["horizon"] == 1
+    assert seen["reports"] == str(tmp_path / "out")
+
+
+def test_horizon_must_be_at_least_one(cfg, monkeypatch):
+    import sys
+    from src import daily as daily_mod
+    monkeypatch.setattr(daily_mod, "load_config", lambda p=None: cfg)
+    monkeypatch.setattr(sys, "argv", ["daily", "--horizon", "0"])
+    with pytest.raises(SystemExit):
+        daily_mod.main()
+
+
+def test_without_the_flags_config_is_untouched(cfg, monkeypatch):
+    import sys
+    from src import daily as daily_mod
+    seen = {}
+    monkeypatch.setattr(daily_mod, "load_config", lambda p=None: cfg)
+    monkeypatch.setattr(daily_mod, "run",
+                        lambda c, today=None: seen.update(horizon=c["value"]["horizon_days"]))
+    monkeypatch.setattr(sys, "argv", ["daily"])
+    daily_mod.main()
+    assert seen["horizon"] == cfg["value"]["horizon_days"]

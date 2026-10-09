@@ -7,3 +7,7 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261010-E3-Shrewsbury-Exeter-D,2026-10-09,2026-10-10,E3,Shrewsbury,Exeter,1X2,D,平局,3.06,1.0,0.3369,open,,,,,,
 20261010-E0-Chelsea-Bournemouth-A,2026-10-09,2026-10-10,E0,Chelsea,Bournemouth,1X2,A,客胜 Bournemouth,4.3,1.0,0.2397,open,,,,,,
 20261010-E3-Shrewsbury-Exeter-U25,2026-10-09,2026-10-10,E3,Shrewsbury,Exeter,OU25,U25,小于 2.5 球,1.55,1.0,0.6634,open,,,,,,
+20261009-F2-Nancy-Guingamp-A,2026-10-09,2026-10-09,F2,Nancy,Guingamp,1X2,A,客胜 Guingamp,3.49,1.0,0.2955,open,,,,,,
+20261009-D2-Braunschweig-HolsteinKiel-U25,2026-10-09,2026-10-09,D2,Braunschweig,Holstein Kiel,OU25,U25,小于 2.5 球,2.52,1.0,0.4088,open,,,,,,
+20261009-F2-Montpellier-Grenoble-U25,2026-10-09,2026-10-09,F2,Montpellier,Grenoble,OU25,U25,小于 2.5 球,1.75,1.0,0.5877,open,,,,,,
+20261009-E1-WestHam-QPR-O25,2026-10-09,2026-10-09,E1,West Ham,QPR,OU25,O25,大于 2.5 球,1.5,1.0,0.6844,open,,,,,,

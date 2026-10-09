@@ -441,8 +441,20 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Daily betting report")
     ap.add_argument("--date", help="YYYY-MM-DD (default: today)")
     ap.add_argument("--config", help="path to config.yaml")
+    ap.add_argument("--horizon", type=int,
+                    help="只看未来几天开赛的比赛，覆盖 value.horizon_days。"
+                         "填 1 就是只看当天——周五跑默认的 2 天时，周六的比赛量是"
+                         "周五的十倍，会把当天的挤出推荐。")
+    ap.add_argument("--out", help="报告写到这个目录，默认是 paths.reports")
     args = ap.parse_args()
-    run(load_config(args.config), today=args.date)
+    cfg = load_config(args.config)
+    if args.horizon is not None:
+        if args.horizon < 1:
+            raise SystemExit("--horizon 至少是 1。")
+        cfg["value"]["horizon_days"] = args.horizon
+    if args.out:
+        cfg["paths"]["reports"] = args.out
+    run(cfg, today=args.date)
 
 
 if __name__ == "__main__":
