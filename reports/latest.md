@@ -9,8 +9,8 @@
 | 1 | Inverness C vs Stenhousemuir | 苏冠 | 10-10 15:00 | 客胜 Stenhousemuir | 2.88 | **2.97** | 3.86* | €1.00 |
 | 2 | Barcelona vs Getafe | 西甲 | 10-10 17:30 | 小于 2.5 球 | 3.19 | **3.29** | 3.78* | €1.00 |
 | 3 | Doncaster vs Burton | 英甲 | 10-10 15:00 | 客胜 Burton | 4.15 | **4.27** | 4.68* | €1.00 |
-| 4 | Shrewsbury vs Exeter | 英乙 | 10-10 15:00 | 小于 2.5 球 | 1.51 | **1.55** | 1.67* | €1.00 |
-| 5 | Chelsea vs Bournemouth | 英超 | 10-10 15:00 | 客胜 Bournemouth | 4.17 | **4.30** | 4.53* | €1.00 |
+| 4 | Nancy vs Guingamp | 法乙 | 10-09 19:00 | 客胜 Guingamp | 3.38 | **3.49** | 3.80 | €1.00 |
+| 5 | Shrewsbury vs Exeter | 英乙 | 10-10 15:00 | 小于 2.5 球 | 1.51 | **1.55** | 1.67* | €1.00 |
 
 ## 投注 ID
 
@@ -34,16 +34,16 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 20261010-E2-Doncaster-Burton-A
 ```
 
-**4. Shrewsbury vs Exeter — 小于 2.5 球**
+**4. Nancy vs Guingamp — 客胜 Guingamp**
+
+```
+20261009-F2-Nancy-Guingamp-A
+```
+
+**5. Shrewsbury vs Exeter — 小于 2.5 球**
 
 ```
 20261010-E3-Shrewsbury-Exeter-U25
-```
-
-**5. Chelsea vs Bournemouth — 客胜 Bournemouth**
-
-```
-20261010-E0-Chelsea-Bournemouth-A
 ```
 
 ## 怎么用
@@ -58,8 +58,8 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 python -m src.ledger add 20261010-SC1-InvernessC-Stenhousemuir-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-SP1-Barcelona-Getafe-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-E2-Doncaster-Burton-A --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261009-F2-Nancy-Guingamp-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-E3-Shrewsbury-Exeter-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261010-E0-Chelsea-Bournemouth-A --odds <Tipico赔率> --stake 1.00
 ```
 
 </details>
@@ -75,16 +75,14 @@ python -m src.ledger add 20261010-E0-Chelsea-Bournemouth-A --odds <Tipico赔率>
 
 | 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |
 |---|---|---|---|---|
-| Chelsea vs Bournemouth | 客胜 Bournemouth + 大于 2.5 球 | 5.93 | **6.10** | 6.69 |
-| Chelsea vs Bournemouth | 平局 + 小于 2.5 球 | 6.40 | **6.59** | 11.27 |
-| Chelsea vs Bournemouth | 平局 + 大于 2.5 球 | 12.63 | **13.01** | 6.81 |
-| Chelsea vs Bournemouth | 客胜 Bournemouth + 小于 2.5 球 | 14.09 | **14.51** | 11.07 |
 | Doncaster vs Burton | 平局 + 小于 2.5 球 | 5.29 | **5.45** | 8.03 |
 | Doncaster vs Burton | 客胜 Burton + 大于 2.5 球 | 7.11 | **7.32** | 8.24 |
 | Doncaster vs Burton | 客胜 Burton + 小于 2.5 球 | 9.97 | **10.27** | 8.37 |
 | Shrewsbury vs Exeter | 平局 + 小于 2.5 球 | 3.19 | **3.29** | 4.47 |
 | Shrewsbury vs Exeter | 主胜 Shrewsbury + 小于 2.5 球 | 5.15 | **5.30** | 4.13 |
 | Shrewsbury vs Exeter | 客胜 Exeter + 小于 2.5 球 | 6.41 | **6.61** | 5.06 |
+| Nancy vs Guingamp | 客胜 Guingamp + 大于 2.5 球 | 5.56 | **5.73** | 6.53 |
+| Nancy vs Guingamp | 客胜 Guingamp + 小于 2.5 球 | 8.65 | **8.91** | 7.02 |
 | Inverness C vs Stenhousemuir | 平局 + 小于 2.5 球 | 3.78 | **3.89** | 5.68 |
 | Inverness C vs Stenhousemuir | 客胜 Stenhousemuir + 大于 2.5 球 | 4.96 | **5.11** | 7.56 |
 | Inverness C vs Stenhousemuir | 客胜 Stenhousemuir + 小于 2.5 球 | 6.87 | **7.07** | 4.65 |
