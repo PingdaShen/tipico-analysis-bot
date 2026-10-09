@@ -1,0 +1,6 @@
+id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,result,pnl,close_odds,clv,clv_novig,close_source,kind,system_id
+20261009-F2-Nancy-Guingamp-A,2026-10-09,2026-10-09,F2,Nancy,Guingamp,1X2,A,客胜 Guingamp,3.8,0.0,0.2955,open,,,,,,,system_leg,SYS-20261009-3of5-7d2c
+20261009-D1-Dortmund-WerderBremen-U25,2026-10-09,2026-10-09,D1,Dortmund,Werder Bremen,OU25,U25,小于 2.5 球,3.3,0.0,0.333,open,,,,,,,system_leg,SYS-20261009-3of5-7d2c
+20261009-D2-Braunschweig-HolsteinKiel-U25,2026-10-09,2026-10-09,D2,Braunschweig,Holstein Kiel,OU25,U25,小于 2.5 球,2.65,0.0,0.4088,open,,,,,,,system_leg,SYS-20261009-3of5-7d2c
+20261009-F2-Montpellier-Grenoble-U25,2026-10-09,2026-10-09,F2,Montpellier,Grenoble,OU25,U25,小于 2.5 球,1.83,0.0,0.5877,open,,,,,,,system_leg,SYS-20261009-3of5-7d2c
+20261009-P1-Moreirense-GilVicente-H,2026-10-09,2026-10-09,P1,Moreirense,Gil Vicente,1X2,H,主胜 Moreirense,3.4,0.0,0.3026,open,,,,,,,system_leg,SYS-20261009-3of5-7d2c
