@@ -11,3 +11,5 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261009-D2-Braunschweig-HolsteinKiel-U25,2026-10-09,2026-10-09,D2,Braunschweig,Holstein Kiel,OU25,U25,小于 2.5 球,2.52,1.0,0.4088,open,,,,,,
 20261009-F2-Montpellier-Grenoble-U25,2026-10-09,2026-10-09,F2,Montpellier,Grenoble,OU25,U25,小于 2.5 球,1.75,1.0,0.5877,open,,,,,,
 20261009-E1-WestHam-QPR-O25,2026-10-09,2026-10-09,E1,West Ham,QPR,OU25,O25,大于 2.5 球,1.5,1.0,0.6844,open,,,,,,
+20261009-D1-Dortmund-WerderBremen-U25,2026-10-09,2026-10-09,D1,Dortmund,Werder Bremen,OU25,U25,小于 2.5 球,3.09,1.0,0.333,open,,,,,,
+20261009-P1-Moreirense-GilVicente-H,2026-10-09,2026-10-09,P1,Moreirense,Gil Vicente,1X2,H,主胜 Moreirense,3.4,1.0,0.3026,open,,,,,,
