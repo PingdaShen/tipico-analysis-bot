@@ -116,6 +116,39 @@ def to_fixture_rows(df: pd.DataFrame) -> pd.DataFrame:
     return out.dropna(subset=["date", "home", "away"]).reset_index(drop=True)
 
 
+MATCH_KEY = ["date", "home", "away"]
+
+
+def overlay(feed: pd.DataFrame, entered: pd.DataFrame
+            ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Merge hand-entered odds onto feed fixtures for the same match.
+
+    A league fixture already arrives from the feed with market prices, and the
+    one number the feed never has is Tipico's own. Appending the hand-entered
+    row instead would evaluate the match twice at two different prices, and the
+    pick dedup would then silently keep whichever source quoted higher.
+
+    So a hand-entered row whose match is already in the feed contributes only
+    its filled-in odds columns, overwriting what the feed had; one whose match
+    is not in the feed is returned separately and evaluated on its own.
+    """
+    if feed.empty or entered.empty:
+        return feed, entered
+    feed = feed.copy()
+    index = {tuple(r): i for i, r in zip(feed.index, feed[MATCH_KEY].to_numpy())}
+    cols = [c for c in ODDS_MAP.values() if c in entered.columns]
+    used = []
+    for i, row in entered.iterrows():
+        target = index.get(tuple(row[MATCH_KEY]))
+        if target is None:
+            continue
+        for col in cols:
+            if pd.notna(row[col]):
+                feed.loc[target, col] = row[col]
+        used.append(i)
+    return feed, entered.drop(index=used)
+
+
 def resolve_team(name: str, known: set[str], aliases: dict[str, str]) -> tuple[str | None, str]:
     """Match a hand-typed team name to a name the model knows.
 

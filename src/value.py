@@ -7,7 +7,7 @@ import re
 import numpy as np
 
 from .market import (AVG_PRE, MAX_PRE, OUTCOMES, SOFT_PRE, TIPICO_PRE,
-                     market_probs, odds_dict)
+                     get_odds, market_probs, odds_dict)
 
 
 def blend(p_model: dict, p_market: dict, w: float) -> dict:
@@ -61,20 +61,28 @@ def available_odds(row, market: str, source: str = "avg") -> tuple[dict, str]:
     which prices on Bet365 and finds no edge at all. The default is therefore
     the market average: a price a typical book is actually showing.
     """
-    tip = odds_dict(row, TIPICO_PRE, market)
-    if tip:
-        return tip, "tipico"
-    table, name = PRICE_TABLES.get(source, PRICE_TABLES["avg"])
-    odds = odds_dict(row, table, market)
-    if odds:
-        return odds, name
-    # fall back so a fixture is not dropped when that one column is missing
-    for key in ("avg", "b365", "max"):
-        table, name = PRICE_TABLES[key]
+    proxy, name = {}, "none"
+    for key in (source, "avg", "b365", "max"):
+        table, label = PRICE_TABLES.get(key, PRICE_TABLES["avg"])
         odds = odds_dict(row, table, market)
         if odds:
-            return odds, name
-    return {}, "none"
+            proxy, name = odds, label
+            break
+
+    # Tipico's price is taken outcome by outcome rather than as a whole market:
+    # the check only compares one outcome against min_odds, so demanding all
+    # three would silently fall back to the proxy for a row where the user
+    # entered just the side they care about.
+    tipico = {}
+    for outcome, col in zip(OUTCOMES[market], TIPICO_PRE[market]):
+        v = get_odds(row, [col])
+        if v:
+            tipico[outcome] = v[0]
+    if not tipico:
+        return proxy, name
+    if len(tipico) == len(OUTCOMES[market]):
+        return tipico, "tipico"
+    return {**proxy, **tipico}, "tipico_partial" if proxy else "tipico"
 
 
 def evaluate_fixture(row, model, cfg: dict, neutral: bool = False) -> list[dict]:

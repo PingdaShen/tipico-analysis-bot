@@ -73,8 +73,14 @@ football-data.co.uk 完全没有欧战和国家队数据（`mmz4281/2627/CL.csv`
 3. **最终概率**：`p_final = w * p_model + (1 - w) * p_market`，`w = blend.model_weight`。市场是锚，模型只负责发现偏差。
 4. **最低可接受赔率**：`min_odds = max((1 + min_edge) / p_final, value.min_odds)`。用户只在 Tipico 赔率 ≥ 这个值时下注。
 5. **候选条件**（全部满足）：模型概率高于市场概率；`min_odds ≤ max_odds`；**可得赔率** ≥ `min_odds`。
-   可得赔率的取法：手填行里有 `tip_*`（Tipico 自己的价格）时永远优先；
+   可得赔率的取法：手填行里有 `tip_*`（Tipico 自己的价格）时永远优先，
+   **逐个选项生效**——只填了客胜就只有客胜用 Tipico 价，其余选项仍用代理价
+   （候选判断只比较一个选项，要求填齐整个盘口会让它静默退回代理价）；
    否则按 `value.price_source` 取联赛 feed 的某一列，默认 `avg`（市场平均）。
+
+   **联赛比赛的手填行是覆盖，不是追加**（`manual.overlay`）：feed 里已有的比赛
+   只把填了的赔率列盖上去。否则同一场会被评估两遍，而 `drop_duplicates` 会
+   悄悄留下报价更高的那一边。
 
    **不要改回 `max`。** 实测一个周末的 995 个报价：市场最高赔率比市场平均高 **4.0%**，
    Bet365 比市场平均高 0.8%，而 `min_edge` 只有 3%。用 `max` 意味着模型声称的

@@ -47,16 +47,24 @@ def competition_names(cfg: dict) -> dict[str, str]:
     return names
 
 
-def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader
-                ) -> tuple[list[dict], list[str]]:
-    """Evaluate league fixtures from the football-data.co.uk feed."""
+def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader,
+                entered: pd.DataFrame | None = None
+                ) -> tuple[list[dict], list[str], pd.DataFrame]:
+    """Evaluate league fixtures from the football-data.co.uk feed.
+
+    Hand-entered rows for a match the feed already has are merged in rather
+    than evaluated separately, so Tipico's own price replaces the market proxy
+    instead of competing with it. Whatever did not match is handed back for
+    manual_rows to price on its own.
+    """
     try:
         fixtures = fixtures_loader(list(cfg["leagues"]), cache)
     except requests.RequestException as e:
         return [], [f"赛程数据源无法访问：{e}"]
     fixtures_all_divs = sorted(set(fixtures["div"])) if not fixtures.empty else []
+    leftover = entered if entered is not None else pd.DataFrame()
     if fixtures.empty:
-        return [], ["赛程源 fixtures.csv 是空的，今天没有联赛可以分析。"]
+        return [], ["赛程源 fixtures.csv 是空的，今天没有联赛可以分析。"], leftover
     feed_latest = fixtures["date"].max()
     end = today + pd.Timedelta(days=cfg["value"]["horizon_days"])
     fixtures = fixtures[(fixtures["date"] >= today) & (fixtures["date"] < end)]
@@ -69,7 +77,10 @@ def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader
         note += f"，只覆盖 {len(covered)} 个联赛：{'、'.join(covered)}。" if covered else "。"
         note += ("football-data.co.uk 的赛程是周五下午发布周末场次、周二下午发布周中场次，"
                  "国际比赛周没有联赛可发就不会更新。等不及可以用 manual_fixtures.csv 手填。")
-        return [], [note]
+        return [], [note], leftover
+
+    if entered is not None and not entered.empty:
+        fixtures, leftover = manual.overlay(fixtures, entered)
 
     rows, notes = [], []
     seasons = recent_seasons(cfg["history_seasons"], today.date())
@@ -87,7 +98,7 @@ def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader
             rows.extend(ev)
             if cfg["value"].get("combos"):
                 rows.extend(evaluate_combos(fx, model, cfg))
-    return rows, notes
+    return rows, notes, leftover
 
 
 STALE_DAYS = 30
@@ -111,8 +122,8 @@ def freshness_note(label: str, latest, today, stale_days: int = STALE_DAYS) -> s
             f"这之后的比赛模型还没看到。")
 
 
-def manual_rows(cfg: dict, today, cache: Path, root: Path,
-                pool_loader=load_pool, intl_loader=intl.load, manual_loader=manual.load,
+def manual_rows(cfg: dict, today, cache: Path, root: Path, fixtures: pd.DataFrame | None,
+                pool_loader=load_pool, intl_loader=intl.load,
                 history_loader=load_history) -> tuple[list[dict], list[str]]:
     """Evaluate hand-entered fixtures.
 
@@ -125,17 +136,7 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path,
     automatically with a real CLV because its results do have a source.
     """
     comps = cfg.get("manual_competitions") or {}
-    path = Path(root) / cfg["paths"]["manual_fixtures"]
-    try:
-        entered = manual_loader(path)
-    except (ValueError, OSError) as e:
-        return [], [f"读不了手填赛程 {path.name}：{e}"]
-    fixtures = manual.to_fixture_rows(entered)
-    if fixtures.empty:
-        return [], []
-    end = today + pd.Timedelta(days=cfg["value"]["horizon_days"])
-    fixtures = fixtures[(fixtures["date"] >= today) & (fixtures["date"] < end)]
-    if fixtures.empty:
+    if fixtures is None or fixtures.empty:
         return [], []
 
     aliases = load_table(root)
@@ -240,11 +241,22 @@ def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_
     today = pd.Timestamp(today).normalize()
     cache = Path(root) / cfg["paths"]["cache"]
 
-    rows, notes = league_rows(cfg, today, cache, fixtures_loader, history_loader)
-    mrows, mnotes = manual_rows(cfg, today, cache, root, pool_loader, intl_loader,
-                                manual_loader, history_loader)
+    notes: list[str] = []
+    path = Path(root) / cfg["paths"]["manual_fixtures"]
+    try:
+        entered = manual.to_fixture_rows(manual_loader(path))
+    except (ValueError, OSError) as e:
+        entered, _ = pd.DataFrame(), notes.append(f"读不了手填赛程 {path.name}：{e}")
+    if not entered.empty:
+        end = today + pd.Timedelta(days=cfg["value"]["horizon_days"])
+        entered = entered[(entered["date"] >= today) & (entered["date"] < end)]
+
+    rows, lnotes, leftover = league_rows(cfg, today, cache, fixtures_loader,
+                                         history_loader, entered)
+    mrows, mnotes = manual_rows(cfg, today, cache, root, leftover,
+                                pool_loader, intl_loader, history_loader)
     rows += mrows
-    notes += mnotes
+    notes += lnotes + mnotes
 
     all_df = pd.DataFrame(rows)
     if all_df.empty:
@@ -266,7 +278,7 @@ def _pick_table(picks: pd.DataFrame, start: int = 0) -> list[str]:
     ]
     for i, (_, p) in enumerate(picks.iterrows(), start=start + 1):
         t = f" {p['time']}" if isinstance(p["time"], str) and p["time"] else ""
-        src = "" if p.get("price_source") == "tipico" else "*"
+        src = "" if str(p.get("price_source", "")).startswith("tipico") else "*"
         lines.append(
             f"| {i} | {p['home']} vs {p['away']} | {p['league']} | "
             f"{pd.Timestamp(p['date']):%m-%d}{t} | {p['label']} | {p['fair_odds']:.2f} | "

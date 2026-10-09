@@ -185,3 +185,76 @@ def test_price_source_falls_back_rather_than_dropping_a_fixture():
 
 def test_config_ships_the_conservative_default():
     assert load_config()["value"]["price_source"] == "avg"
+
+
+# --- partial Tipico entries and feed overlay ----------------------------------
+
+def test_a_single_tipico_price_is_used_for_that_outcome():
+    """Only one outcome is compared against min_odds, so demanding the whole
+    market would silently fall back to the proxy for a row where the user
+    entered just the side they care about."""
+    row = pd.Series({"AvgH": 2.00, "AvgD": 3.60, "AvgA": 3.57, "TipicoA": 3.80})
+    odds, src = available_odds(row, "1X2")
+    assert odds["A"] == 3.80 and src == "tipico_partial"
+    assert odds["H"] == 2.00                      # the rest stays on the proxy
+
+
+def test_a_complete_tipico_market_is_labelled_plainly():
+    row = pd.Series({"AvgH": 2.00, "AvgD": 3.60, "AvgA": 3.57,
+                     "TipicoH": 2.05, "TipicoD": 3.70, "TipicoA": 3.80})
+    assert available_odds(row, "1X2") == ({"H": 2.05, "D": 3.70, "A": 3.80}, "tipico")
+
+
+def test_partial_over_under_entry():
+    row = pd.Series({"Avg>2.5": 1.51, "Avg<2.5": 2.46, "Tipico>2.5": 1.45})
+    odds, src = available_odds(row, "OU25")
+    assert odds == {"O25": 1.45, "U25": 2.46} and src == "tipico_partial"
+
+
+def test_a_tipico_price_below_the_minimum_removes_the_pick():
+    """The real reason to enter it: West Ham vs QPR cleared on the market
+    proxy at 1.51 but Tipico showed 1.45, under the 1.50 minimum."""
+    cfg = load_config()
+    cfg["value"]["markets"] = ["OU25"]
+
+    class Fake:
+        def predict(self, h, a, neutral=False):
+            return {"H": 0.4, "D": 0.3, "A": 0.3, "O25": 0.72, "U25": 0.28}
+
+    # chosen so min_odds lands at 1.47, between Tipico's 1.45 and the proxy 1.51
+    base = {"div": "E1", "date": pd.Timestamp("2026-10-09"), "home": "West Ham",
+            "away": "QPR", "P>2.5": 1.42, "P<2.5": 3.20,
+            "Avg>2.5": 1.51, "Avg<2.5": 2.46}
+    proxy = {r["outcome"]: r for r in evaluate_fixture(pd.Series(base), Fake(), cfg)}["O25"]
+    real = {r["outcome"]: r
+            for r in evaluate_fixture(pd.Series({**base, "Tipico>2.5": 1.45}), Fake(), cfg)}["O25"]
+    assert 1.45 < proxy["min_odds"] < 1.51, "这组数字要卡在两个价格之间才测得到东西"
+    assert proxy["is_candidate"] and proxy["best_odds"] == 1.51
+    assert not real["is_candidate"] and real["best_odds"] == 1.45
+
+
+def test_overlay_replaces_feed_odds_instead_of_duplicating_the_match():
+    from src.manual import overlay
+    day = pd.Timestamp("2026-10-09")
+    feed = pd.DataFrame([
+        {"div": "F2", "date": day, "home": "Nancy", "away": "Guingamp",
+         "AvgA": 3.57, "TipicoA": None},
+        {"div": "D2", "date": day, "home": "X", "away": "Y", "AvgA": 2.0, "TipicoA": None},
+    ])
+    entered = pd.DataFrame([
+        {"div": "F2", "date": day, "home": "Nancy", "away": "Guingamp", "TipicoA": 3.80},
+        {"div": "CL", "date": day, "home": "Real Madrid", "away": "Juventus", "TipicoA": 4.0},
+    ])
+    merged, leftover = overlay(feed, entered)
+    assert len(merged) == 2, "不能把同一场比赛变成两行"
+    assert merged.loc[merged["home"] == "Nancy", "TipicoA"].iloc[0] == 3.80
+    assert merged.loc[merged["home"] == "Nancy", "AvgA"].iloc[0] == 3.57   # 未填的列保留
+    assert list(leftover["home"]) == ["Real Madrid"]
+
+
+def test_overlay_is_a_no_op_on_empty_inputs():
+    from src.manual import overlay
+    feed = pd.DataFrame([{"div": "E0", "date": pd.Timestamp("2026-10-09"),
+                          "home": "A", "away": "B"}])
+    assert overlay(feed, pd.DataFrame())[0].equals(feed)
+    assert overlay(pd.DataFrame(), feed)[1].equals(feed)
