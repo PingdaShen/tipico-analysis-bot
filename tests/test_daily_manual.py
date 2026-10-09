@@ -464,3 +464,29 @@ def test_hand_entered_times_are_not_shifted(cfg, tmp_path, world):
                            f"{truth['teams'][-1]},0,3.00,3.60,2.40,3.20,3.70,2.50,,,,")
     all_df, _, _ = _run(cfg, tmp_path, today, pool=pool)
     assert all_df.iloc[0]["time"] == "21:00"
+
+
+def test_league_model_sees_hand_entered_results(cfg, tmp_path):
+    """football-data publishes a round a day or two late, so without this the
+    model would price Saturday's card without having seen Friday's."""
+    league = make_league(div="E0", n_teams=12, seasons=3, seed=1)
+    hist_raw, fix_raw, today, _ = league
+    hl, fl = loaders(hist_raw, fix_raw)
+
+    base, notes = daily.league_history("E0", cfg, tmp_path, tmp_path, today, hl)
+    assert not notes
+
+    (tmp_path / "manual_results.csv").write_text(
+        "comp,date,home,away,hg,ag,neutral,tournament\n"
+        f"E0,{today:%Y-%m-%d},Team00,Team01,5,0,0,\n", encoding="utf-8")
+    cfg["paths"]["manual_results"] = "manual_results.csv"
+    merged, notes = daily.league_history("E0", cfg, tmp_path, tmp_path, today, hl)
+
+    assert len(merged) == len(base) + 1
+    assert any("已合并 1 场手录赛果" in n for n in notes)
+    # the model is fitted strictly before ref_date, so the same-day result only
+    # counts from the next day on — which is exactly when it should
+    later = today + pd.Timedelta(days=1)
+    before = daily.fit_model(base, cfg, later)
+    after = daily.fit_model(merged, cfg, later)
+    assert after.predict("Team00", "Team01")["H"] > before.predict("Team00", "Team01")["H"]

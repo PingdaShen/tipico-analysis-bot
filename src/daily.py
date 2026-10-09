@@ -39,6 +39,20 @@ def fit_model(history: pd.DataFrame, cfg: dict, ref_date) -> DixonColes:
                       min_team_matches=m["min_team_matches"]).fit(history, ref_date)
 
 
+def league_history(div: str, cfg: dict, cache: Path, root: Path, today,
+                   history_loader) -> tuple[pd.DataFrame, list[str]]:
+    """A league's results, with any hand-entered scores merged in.
+
+    football-data publishes a round a day or two after it is played, so
+    without this the model would price Saturday's card without having seen
+    Friday's. The international and European models already do the same.
+    """
+    seasons = recent_seasons(cfg["history_seasons"], today.date())
+    base = history_loader(div, seasons, cache, today=today.date())
+    return manual.apply_results(base, Path(root) / cfg["paths"]["manual_results"],
+                                [div], label=f"{cfg['leagues'].get(div, div)}：")
+
+
 def shift_kickoff(fixtures: pd.DataFrame, hours: int) -> pd.DataFrame:
     """Move feed kick-off times onto the user's clock.
 
@@ -75,8 +89,8 @@ def competition_names(cfg: dict) -> dict[str, str]:
     return names
 
 
-def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader,
-                entered: pd.DataFrame | None = None
+def league_rows(cfg: dict, today, cache: Path, root: Path, fixtures_loader,
+                history_loader, entered: pd.DataFrame | None = None
                 ) -> tuple[list[dict], list[str], pd.DataFrame]:
     """Evaluate league fixtures from the football-data.co.uk feed.
 
@@ -113,9 +127,9 @@ def league_rows(cfg: dict, today, cache: Path, fixtures_loader, history_loader,
         fixtures, leftover = manual.overlay(fixtures, entered)
 
     rows, notes = [], []
-    seasons = recent_seasons(cfg["history_seasons"], today.date())
     for div, group in fixtures.groupby("div"):
-        history = history_loader(div, seasons, cache, today=today.date())
+        history, hnotes = league_history(div, cfg, cache, root, today, history_loader)
+        notes.extend(hnotes)
         try:
             model = fit_model(history, cfg, today)
         except ValueError as e:
@@ -172,7 +186,6 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path, fixtures: pd.DataFram
     aliases = load_table(root)
     models: dict[str, DixonColes | None] = {}
     rows, notes = [], []
-    seasons = recent_seasons(cfg["history_seasons"], today.date())
 
     def league_model(div: str) -> DixonColes | None:
         """The per-league model, fitted at most once per run."""
@@ -180,8 +193,8 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path, fixtures: pd.DataFram
             return models[div]
         models[div] = None
         try:
-            models[div] = fit_model(history_loader(div, seasons, cache, today=today.date()),
-                                    cfg, today)
+            history, _ = league_history(div, cfg, cache, root, today, history_loader)
+            models[div] = fit_model(history, cfg, today)
         except ValueError as e:
             notes.append(f"{cfg['leagues'][div]}：跳过手填的比赛（{e}）")
         return models[div]
@@ -281,7 +294,7 @@ def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_
         end = today + pd.Timedelta(days=cfg["value"]["horizon_days"])
         entered = entered[(entered["date"] >= today) & (entered["date"] < end)]
 
-    rows, lnotes, leftover = league_rows(cfg, today, cache, fixtures_loader,
+    rows, lnotes, leftover = league_rows(cfg, today, cache, root, fixtures_loader,
                                          history_loader, entered)
     mrows, mnotes = manual_rows(cfg, today, cache, root, leftover,
                                 pool_loader, intl_loader, history_loader)
