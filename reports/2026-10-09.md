@@ -7,9 +7,9 @@
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
 | 1 | Nancy vs Guingamp | 法乙 | 10-09 20:00 | 客胜 Guingamp | 3.38 | **3.49** | 3.80 | €1.00 |
-| 2 | Braunschweig vs Holstein Kiel | 德乙 | 10-09 18:30 | 小于 2.5 球 | 2.45 | **2.52** | 2.65 | €1.00 |
-| 3 | Montpellier vs Grenoble | 法乙 | 10-09 20:00 | 小于 2.5 球 | 1.70 | **1.75** | 1.83 | €1.00 |
-| 4 | Dortmund vs Werder Bremen | 德甲 | 10-09 20:30 | 小于 2.5 球 | 3.00 | **3.09** | 3.20 | €1.00 |
+| 2 | Dortmund vs Werder Bremen | 德甲 | 10-09 20:30 | 小于 2.5 球 | 3.00 | **3.09** | 3.30 | €1.00 |
+| 3 | Braunschweig vs Holstein Kiel | 德乙 | 10-09 18:30 | 小于 2.5 球 | 2.45 | **2.52** | 2.65 | €1.00 |
+| 4 | Montpellier vs Grenoble | 法乙 | 10-09 20:00 | 小于 2.5 球 | 1.70 | **1.75** | 1.83 | €1.00 |
 | 5 | Moreirense vs Gil Vicente | 葡超 | 10-09 19:45 | 主胜 Moreirense | 3.30 | **3.40** | 3.50 | €1.00 |
 | 6 | Inverness C vs Stenhousemuir | 苏冠 | 10-10 16:00 | 客胜 Stenhousemuir | 2.88 | **2.97** | 3.86* | €1.00 |
 | 7 | Barcelona vs Getafe | 西甲 | 10-10 18:30 | 小于 2.5 球 | 3.19 | **3.29** | 3.78* | €1.00 |
@@ -27,22 +27,22 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 20261009-F2-Nancy-Guingamp-A
 ```
 
-**2. Braunschweig vs Holstein Kiel — 小于 2.5 球**
+**2. Dortmund vs Werder Bremen — 小于 2.5 球**
+
+```
+20261009-D1-Dortmund-WerderBremen-U25
+```
+
+**3. Braunschweig vs Holstein Kiel — 小于 2.5 球**
 
 ```
 20261009-D2-Braunschweig-HolsteinKiel-U25
 ```
 
-**3. Montpellier vs Grenoble — 小于 2.5 球**
+**4. Montpellier vs Grenoble — 小于 2.5 球**
 
 ```
 20261009-F2-Montpellier-Grenoble-U25
-```
-
-**4. Dortmund vs Werder Bremen — 小于 2.5 球**
-
-```
-20261009-D1-Dortmund-WerderBremen-U25
 ```
 
 **5. Moreirense vs Gil Vicente — 主胜 Moreirense**
@@ -91,9 +91,9 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 
 ```bash
 python -m src.ledger add 20261009-F2-Nancy-Guingamp-A --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261009-D1-Dortmund-WerderBremen-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261009-D2-Braunschweig-HolsteinKiel-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261009-F2-Montpellier-Grenoble-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261009-D1-Dortmund-WerderBremen-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261009-P1-Moreirense-GilVicente-H --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-SC1-InvernessC-Stenhousemuir-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-SP1-Barcelona-Getafe-U25 --odds <Tipico赔率> --stake 1.00
