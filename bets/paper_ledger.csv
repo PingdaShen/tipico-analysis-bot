@@ -11,3 +11,7 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261009-F2-Montpellier-Grenoble-U25,2026-10-09,2026-10-09,F2,Montpellier,Grenoble,OU25,U25,小于 2.5 球,1.75,1.0,0.5877,settled,2-0 赢,0.75,,,,,,
 20261009-D1-Dortmund-WerderBremen-U25,2026-10-09,2026-10-09,D1,Dortmund,Werder Bremen,OU25,U25,小于 2.5 球,3.09,1.0,0.333,settled,2-2 输,-1.0,,,,,,
 20261009-P1-Moreirense-GilVicente-H,2026-10-09,2026-10-09,P1,Moreirense,Gil Vicente,1X2,H,主胜 Moreirense,3.4,1.0,0.3026,settled,0-1 输,-1.0,,,,,,
+20261011-SP2-Mallorca-LasPalmas-U25,2026-10-10,2026-10-11,SP2,Mallorca,Las Palmas,OU25,U25,小于 2.5 球,1.76,1.0,0.585,open,,,,,,,single,
+20261011-T1-Besiktas-Kocaelispor-U25,2026-10-10,2026-10-11,T1,Besiktas,Kocaelispor,OU25,U25,小于 2.5 球,2.06,1.0,0.4988,open,,,,,,,single,
+20261011-B1-StGilloise-Oud-HeverleeLeuven-U25,2026-10-10,2026-10-11,B1,St. Gilloise,Oud-Heverlee Leuven,OU25,U25,小于 2.5 球,2.63,1.0,0.3914,open,,,,,,,single,
+20261011-I1-Como-Roma-U25,2026-10-10,2026-10-11,I1,Como,Roma,OU25,U25,小于 2.5 球,2.22,1.0,0.465,open,,,,,,,single,
