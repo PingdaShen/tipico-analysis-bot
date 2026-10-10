@@ -9,8 +9,8 @@
 | 1 | Inverness C vs Stenhousemuir | 苏冠 | 10-10 16:00 | 客胜 Stenhousemuir | 2.88 | **2.97** | 3.80 | €1.00 |
 | 2 | Barcelona vs Getafe | 西甲 | 10-10 18:30 | 小于 2.5 球 | 3.19 | **3.29** | 3.80 | €1.00 |
 | 3 | Shrewsbury vs Exeter | 英乙 | 10-10 16:00 | 小于 2.5 球 | 1.51 | **1.55** | 1.67 | €1.00 |
-| 4 | Doncaster vs Burton | 英甲 | 10-10 16:00 | 客胜 Burton | 4.15 | **4.27** | 4.40 | €1.00 |
-| 5 | Hearts vs St Mirren | 苏超 | 10-10 16:00 | 小于 2.5 球 | 2.36 | **2.43** | 2.50* | €1.00 |
+| 4 | Hearts vs St Mirren | 苏超 | 10-10 16:00 | 小于 2.5 球 | 2.36 | **2.43** | 2.60 | €1.00 |
+| 5 | Doncaster vs Burton | 英甲 | 10-10 16:00 | 客胜 Burton | 4.15 | **4.27** | 4.40 | €1.00 |
 | 6 | Mallorca vs Las Palmas | 西乙 | 10-11 18:30 | 小于 2.5 球 | 1.71 | **1.76** | 1.97* | €1.00 |
 | 7 | Besiktas vs Kocaelispor | 土超 | 10-11 18:00 | 小于 2.5 球 | 2.00 | **2.06** | 2.25* | €1.00 |
 | 8 | St. Gilloise vs Oud-Heverlee Leuven | 比甲 | 10-11 16:00 | 小于 2.5 球 | 2.56 | **2.63** | 2.67* | €1.00 |
@@ -38,16 +38,16 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 20261010-E3-Shrewsbury-Exeter-U25
 ```
 
-**4. Doncaster vs Burton — 客胜 Burton**
-
-```
-20261010-E2-Doncaster-Burton-A
-```
-
-**5. Hearts vs St Mirren — 小于 2.5 球**
+**4. Hearts vs St Mirren — 小于 2.5 球**
 
 ```
 20261010-SC0-Hearts-StMirren-U25
+```
+
+**5. Doncaster vs Burton — 客胜 Burton**
+
+```
+20261010-E2-Doncaster-Burton-A
 ```
 
 **6. Mallorca vs Las Palmas — 小于 2.5 球**
@@ -86,8 +86,8 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 python -m src.ledger add 20261010-SC1-InvernessC-Stenhousemuir-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-SP1-Barcelona-Getafe-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-E3-Shrewsbury-Exeter-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261010-E2-Doncaster-Burton-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261010-SC0-Hearts-StMirren-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261010-E2-Doncaster-Burton-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261011-SP2-Mallorca-LasPalmas-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261011-T1-Besiktas-Kocaelispor-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261011-B1-StGilloise-Oud-HeverleeLeuven-U25 --odds <Tipico赔率> --stake 1.00
