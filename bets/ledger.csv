@@ -6,3 +6,4 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261009-P1-Moreirense-GilVicente-H,2026-10-09,2026-10-09,P1,Moreirense,Gil Vicente,1X2,H,主胜 Moreirense,3.4,0.0,0.3026,settled,0-1 输,,,,,,system_leg,SYS-20261009-3of5-7d2c
 20261010-SC1-InvernessC-Stenhousemuir-A,2026-10-10,2026-10-10,SC1,Inverness C,Stenhousemuir,1X2,A,客胜 Stenhousemuir,3.7,0.5,0.3471,open,,,,,,,single,
 20261010-SP1-Barcelona-Getafe-U25,2026-10-10,2026-10-10,SP1,Barcelona,Getafe,OU25,U25,小于 2.5 球,3.8,0.5,0.3132,open,,,,,,,single,
+20261010-E2-Doncaster-Burton-A,2026-10-10,2026-10-10,E2,Doncaster,Burton,1X2,A,客胜 Burton,4.4,0.5,0.2409,open,,,,,,,single,
