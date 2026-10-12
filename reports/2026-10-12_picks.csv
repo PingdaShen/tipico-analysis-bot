@@ -1,0 +1,2 @@
+pick_id,div,date,time,home,away,market,outcome,label,p_model,p_market,p_final,market_source,price_source,fair_odds,min_odds,best_odds,avg_odds,edge_best,stake,is_candidate,naive_odds,league,manual
+20261012-SP2-Tenerife-Girona-A,SP2,2026-10-12,21:00,Tenerife,Girona,1X2,A,客胜 Girona,0.5652445023442841,0.37019247717418124,0.42870808472521216,average,market_avg,2.3325895536608954,2.4025672402707223,2.46,2.46,0.054621888424021936,1.0,True,,西乙,False
