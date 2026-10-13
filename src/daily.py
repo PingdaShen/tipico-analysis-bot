@@ -24,7 +24,7 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-from . import intl, ledger, manual
+from . import intl, ledger, manual, openligadb
 from .aliases import load_table
 from .config import ROOT, load_config
 from .data import load_fixtures, load_history, recent_seasons
@@ -168,7 +168,8 @@ def freshness_note(label: str, latest, today, stale_days: int = STALE_DAYS) -> s
 
 def manual_rows(cfg: dict, today, cache: Path, root: Path, fixtures: pd.DataFrame | None,
                 pool_loader=load_pool, intl_loader=intl.load,
-                history_loader=load_history) -> tuple[list[dict], list[str]]:
+                history_loader=load_history
+                ) -> tuple[list[dict], list[str], DixonColes | None, set]:
     """Evaluate hand-entered fixtures.
 
     Covers the European and international competitions, which have no feed at
@@ -181,7 +182,7 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path, fixtures: pd.DataFram
     """
     comps = cfg.get("manual_competitions") or {}
     if fixtures is None or fixtures.empty:
-        return [], []
+        return [], [], None, set()
 
     aliases = load_table(root)
     models: dict[str, DixonColes | None] = {}
@@ -243,6 +244,8 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path, fixtures: pd.DataFram
             notes.append(f"{kind} 模型拟合失败：{e}")
         return models[kind]
 
+    priced = {(pd.Timestamp(r["date"]).date(), r["home"], r["away"])
+              for _, r in fixtures.iterrows()}
     for div, group in fixtures.groupby("div"):
         if div in cfg["leagues"]:
             model = league_model(div)
@@ -275,12 +278,13 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path, fixtures: pd.DataFram
             rows.extend(ev)
             if cfg["value"].get("combos"):
                 rows.extend(evaluate_combos(fx, model, cfg, neutral=neutral))
-    return rows, notes
+    return rows, notes, models.get("uefa"), priced
 
 
 def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_fixtures,
             root: Path = ROOT, pool_loader=load_pool, intl_loader=intl.load,
-            manual_loader=manual.load) -> tuple[pd.DataFrame, pd.DataFrame, list[str]]:
+            manual_loader=manual.load, uefa_schedule_loader=openligadb.load
+            ) -> tuple[pd.DataFrame, pd.DataFrame, list[str]]:
     today = pd.Timestamp(today).normalize()
     cache = Path(root) / cfg["paths"]["cache"]
 
@@ -296,19 +300,54 @@ def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_
 
     rows, lnotes, leftover = league_rows(cfg, today, cache, root, fixtures_loader,
                                          history_loader, entered)
-    mrows, mnotes = manual_rows(cfg, today, cache, root, leftover,
-                                pool_loader, intl_loader, history_loader)
+    mrows, mnotes, uefa_model, priced = manual_rows(
+        cfg, today, cache, root, leftover, pool_loader, intl_loader, history_loader)
     rows += mrows
     notes += lnotes + mnotes
 
+    # The schedule section needs the European model, but fitting it costs a
+    # download plus a few seconds over ~900 teams — so only do it when there
+    # is actually a Champions League match in the window and no hand-entered
+    # fixture has already caused it to be fitted.
+    schedule = pd.DataFrame()
+    if cfg["uefa"].get("enabled", True) and cfg["uefa"].get("openligadb", True):
+        try:
+            schedule = openligadb.fixtures(
+                uefa_schedule_loader(openligadb.season_for(today), cache),
+                today, cfg["value"]["horizon_days"])
+        except (ValueError, requests.RequestException) as e:
+            notes.append(f"欧冠赛程取不到：{e}")
+        if not schedule.empty and uefa_model is None:
+            try:
+                pool, _ = pool_loader(cfg, cache, today=today)
+                if not pool.empty:
+                    uefa_model = fit_pool(pool, cfg, today)
+            except (ValueError, requests.RequestException) as e:
+                notes.append(f"欧战模型拟合失败：{e}")
+
     all_df = pd.DataFrame(rows)
+
+    def stash(df):
+        """Carry the European extras to the report.
+
+        Only plain objects go in attrs — pandas compares them when merging
+        frames, and a DataFrame there raises on the truth-value check.
+        """
+        df.attrs["uefa_model"] = uefa_model
+        df.attrs["priced"] = priced
+        df.attrs["uefa_schedule"] = schedule.to_dict("records")
+        return df
+
     if all_df.empty:
-        return all_df, all_df, notes
+        all_df = stash(pd.DataFrame(columns=["div", "date", "home", "away", "market",
+                                             "outcome", "is_candidate"]))
+        return all_df, all_df.copy(), notes
     all_df["league"] = all_df["div"].map(competition_names(cfg)).fillna(all_df["div"])
     all_df["manual"] = all_df["div"].isin(cfg.get("manual_competitions") or {})
     # max_picks applies per match day. A Friday run covers Saturday too, and
     # Saturday's card is ten times the size, so a global cap let tomorrow take
     # every slot and left tonight's matches unreported.
+    stash(all_df)
     picks = (all_df[all_df["is_candidate"]]
              .sort_values("edge_best", ascending=False)
              .drop_duplicates(subset=["date", "home", "away"])   # 每场比赛最多一注
@@ -397,6 +436,60 @@ def _how_to_section(picks: pd.DataFrame) -> list[str]:
     return lines
 
 
+def uefa_fixture_section(cfg: dict, today, upcoming: list[dict] | None, model,
+                         priced: set) -> list[str]:
+    """Upcoming Champions League matches that are still waiting for odds.
+
+    openligadb supplies the schedule, which football-data has no trace of, but
+    it carries no prices — and without a market anchor there is no min_odds
+    and so no pick. Listing the fixtures with the model's own probability lets
+    the user see which ones are worth looking up before typing anything in.
+    """
+    if model is None or not upcoming:
+        return []
+    aliases = load_table(ROOT)
+    offset = (cfg.get("report") or {}).get("kickoff_offset_hours", 0)
+
+    rows = []
+    for fx in upcoming:
+        home, _ = manual.resolve_team(fx["home"], set(model.teams), aliases)
+        away, _ = manual.resolve_team(fx["away"], set(model.teams), aliases)
+        if home is None or away is None:
+            continue
+        if (pd.Timestamp(fx["date"]).date(), home, away) in priced:
+            continue                                    # odds already entered
+        p = model.predict(home, away)
+        if p is None:
+            continue
+        hh, mm = (int(x) for x in str(fx["time"]).split(":"))
+        rows.append({"time": f"{(hh + offset) % 24:02d}:{mm:02d}", "home": home, "away": away,
+                     "date": pd.Timestamp(fx["date"]), **{k: p[k] for k in
+                                                          ("H", "D", "A", "O25", "U25")}})
+    if not rows:
+        return []
+    lines = [
+        "## 欧冠赛程（还没有赔率）",
+        "",
+        "赛程来自 openligadb，但它没有赔率——没有市场锚就算不出最低赔率，",
+        "所以这些**还不是推荐**。下面是模型自己的概率（未与市场融合），",
+        "用来判断哪几场值得去查赔率。要让某场进入推荐，把赔率填进去：",
+        "",
+        "```bash",
+        "python -m src.manual add --comp CL --date <YYYY-MM-DD> \\",
+        "    --home <主队> --away <客队> \\",
+        "    --ref-h <参考主胜> --ref-d <参考平> --ref-a <参考客胜> \\",
+        "    --tip-h <Tipico主胜> --tip-d <Tipico平> --tip-a <Tipico客胜>",
+        "```",
+        "",
+        "| 日期 | 时间 | 比赛 | 模型主胜 | 平 | 客胜 | 模型小于 2.5 |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for r in sorted(rows, key=lambda x: (x["date"], x["time"])):
+        lines.append(f"| {r['date']:%m-%d} | {r['time']} | {r['home']} vs {r['away']} | "
+                     f"{r['H']:.0%} | {r['D']:.0%} | {r['A']:.0%} | {r['U25']:.0%} |")
+    return lines + [""]
+
+
 def _combo_section(picks: pd.DataFrame, all_df: pd.DataFrame, cfg: dict) -> list[str]:
     """Minimum odds for same-match combinations on the matches already picked.
 
@@ -470,6 +563,9 @@ def render_report(today, picks: pd.DataFrame, all_df: pd.DataFrame,
         lines += _id_section(picks)
         lines += _how_to_section(picks)
         lines += _combo_section(picks, all_df, cfg)
+    lines += uefa_fixture_section(cfg, today, all_df.attrs.get("uefa_schedule"),
+                                  all_df.attrs.get("uefa_model"),
+                                  all_df.attrs.get("priced") or set())
     if notes:
         lines += ["## 备注", *[f"- {n}" for n in notes], ""]
     lines += [

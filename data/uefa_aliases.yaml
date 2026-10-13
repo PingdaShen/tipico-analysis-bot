@@ -9,7 +9,8 @@
 # 没进表的队名会被当成一支独立球队（仍然起到连接联赛的作用，
 # 但因为 min_team_matches 不会被推荐）。
 #
-# 当前覆盖 156 个队名。
+# 当前覆盖 171 个队名。
+# openligadb 用德语名（Inter Mailand、FC Brügge、AS Rom），是第三套命名。
 aliases:
   1. FC Heidenheim 1846: Heidenheim
   1. FC Union Berlin: Union Berlin
@@ -22,10 +23,12 @@ aliases:
   AIK Solna: AIK
   Aris Saloniki: Aris
   Arsenal FC: Arsenal
+  AS Rom: Roma
   Aston Villa FC: Aston Villa
   Atalanta: Atalanta
   Atalanta BC: Atalanta
   Athletic Club: Ath Bilbao
+  Atletico Madrid: Ath Madrid
   Atlético Madrid: Ath Madrid
   Austria Wien: Austria Vienna
   AZ Alkmaar: AZ Alkmaar
@@ -45,19 +48,23 @@ aliases:
   Chelsea FC: Chelsea
   Club Atlético de Madrid: Ath Madrid
   Club Brugge KV: Club Brugge
+  Como 1907: Como
   Crystal Palace: Crystal Palace
   CS Universitatea Craiova: Univ. Craiova
   Derry City: Derry City
   Djurgårdens IF: Djurgarden
   Dundee United: Dundee United
   Eintracht Frankfurt: Ein Frankfurt
+  FC Arsenal: Arsenal
   FC Barcelona: Barcelona
   FC Basel 1893: Basel
   FC Bayern München: Bayern Munich
+  FC Brügge: Club Brugge
   FC Corvinul Hunedoara: Corvinul
   FC Internazionale Milano: Inter
   FC København: FC Copenhagen
   FC Lausanne-Sport: Lausanne
+  FC Liverpool: Liverpool
   FC Lugano: Lugano
   FC Midtjylland: Midtjylland
   FC Porto: Porto
@@ -68,11 +75,14 @@ aliases:
   FC Zürich: Zurich
   FCSB: FCSB
   Fenerbahçe: Fenerbahce
+  Fenerbahçe SK: Fenerbahce
   Feyenoord: Feyenoord
   Feyenoord Rotterdam: Feyenoord
+  FK Bodö/Glimt: Bodo/Glimt
   FK Bodø/Glimt: Bodo/Glimt
   Fredrikstad FK: Fredrikstad
   Galatasaray: Galatasaray
+  Galatasaray Istanbul: Galatasaray
   Galatasaray SK: Galatasaray
   Girona FC: Girona
   Go Ahead Eagles: Go Ahead Eagles
@@ -83,6 +93,7 @@ aliases:
   IF Elfsborg: Elfsborg
   Ilves Tampere: Ilves
   Inter: Inter
+  Inter Mailand: Inter
   İstanbul Başakşehir: Buyuksehyr
   Jagiellonia Białystok: Jagiellonia
   Juventus: Juventus
@@ -111,6 +122,7 @@ aliases:
   PAOK Saloniki: PAOK
   Paris Saint-Germain: Paris SG
   Paris Saint-Germain FC: Paris SG
+  Paris St. Germain: Paris SG
   PSV: PSV Eindhoven
   Racing Club de Lens: Lens
   Raków Częstochowa: Rakow
@@ -129,9 +141,11 @@ aliases:
   Royal Antwerp FC: Antwerp
   Royale Union Saint-Gilloise: St. Gilloise
   RSC Anderlecht: Anderlecht
+  Sabah: ""
   Samsunspor: Samsunspor
   Servette FC: Servette
   Sevilla FC: Sevilla
+  Shakhtar Donetsk: ""
   Shamrock Rovers: Shamrock Rovers
   Shelbourne FC: Shelbourne
   Silkeborg IF: Silkeborg
@@ -139,6 +153,8 @@ aliases:
   SK Brann: Brann
   SK Sturm Graz: Sturm Graz
   SL Benfica: Benfica
+  Slavia Prag: ""
+  Slovan Bratislava: ""
   Sport Lisboa e Benfica: Benfica
   Sporting Braga: Sp Braga
   Sporting Charleroi: Charleroi

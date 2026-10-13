@@ -36,7 +36,8 @@ manual_results.csv       手录赛果：补上两个赛果源还没收录的比�
 data/uefa_aliases.yaml   欧战队名 -> football-data 队名的人工别名表
 src/data.py              下载赛果/赔率：football-data.co.uk 的 mmz4281（主联赛）、
                          new/（额外国家）和 martj42/international_results（国家队），带本地缓存
-src/openfootball.py      解析 openfootball 的欧战赛果文本（取 90 分钟比分）
+src/openfootball.py      解析 openfootball 的欧战赛果文本（取 90 分钟比分，到上赛季为止）
+src/openligadb.py        本赛季欧冠的赛程和赛果（api.openligadb.de，不需要 key）
 src/aliases.py           跨数据源的队名归一；check / suggest 子命令
 src/pool.py              跨联赛合并数据集和拟合（欧战定价用）
 src/intl.py              国家队模型（中立场处理 + 更长的时间窗口）
@@ -60,7 +61,8 @@ bets/                    ledger.csv（真实）、paper_ledger.csv（模拟）
 | | 赛程 | 赔率 | 赛果（用于结算） | 能算 CLV |
 |---|---|---|---|---|
 | 国内联赛（22 个） | `fixtures.csv` | 有赛前赔率 | football-data.co.uk | **能** |
-| 欧冠/欧联/欧协联 | 手填 | **手填** | openfootball（晚一个赛季） | 不能 |
+| 欧冠 | **openligadb 自动** | **手填** | openligadb（本赛季实时） | 手记收盘价后能 |
+| 欧联/欧协联 | 手填 | **手填** | openfootball 只有资格赛 | 手记收盘价后能 |
 | 国家队 | 手填 | **手填** | international_results | 不能 |
  
 football-data.co.uk 完全没有欧战和国家队数据（`mmz4281/2627/CL.csv` 返回 404）。
@@ -189,6 +191,10 @@ Tipico 里除了单注和全串，还有「n 对 k」的系统投注（德语 Sy
   悄悄污染双方评分，比丢掉这场比赛更糟，所以这是人工维护的数据文件，不在运行时猜。
   新赛季跑 `python -m src.aliases check` 看有没有没覆盖的队名。
 - 没归一上的队名保留为独立球队：它仍然连接它交手过的联赛，而 `min_team_matches` 会挡住它进推荐。
+- **报告会列出还没有赔率的欧冠赛程**（`daily.uefa_fixture_section`），附模型自己的概率，
+  让用户判断哪几场值得去查赔率。没有市场锚就没有 `min_odds`，所以这些不是推荐。
+  合并模型只在窗口内真有欧冠比赛时才拟合——它要下载并在约 900 支球队上跑几秒，
+  不该每天白跑。
  
 ### 欧战模型的已知偏差
  
@@ -436,8 +442,14 @@ python -m src.aliases suggest              # 给出候选匹配供人工确认
   手工记一次才能算 CLV。不记的话这些推荐只能看长期盈亏（噪声大得多）。
 - **欧联和欧协联正赛没有赛果源**，openfootball 只有资格赛。这两项赛事的球队评分
   只能来自国内联赛和欧冠的链接。
-- **openfootball 晚一个赛季发布**：当前赛季的欧战赛果拿不到，所以跨联赛链接最新到上个赛季，
-  刚下的欧战注也可能一段时间内结算不了。
+- **openfootball 晚一个赛季发布**，所以本赛季的欧冠改用 `api.openligadb.de`
+  （`src/openligadb.py`，`/getmatchdata/ucl/<年>`，不需要 key）。它提供赛程和赛果，
+  **但没有赔率**——赔率仍然要填进 `manual_fixtures.csv`。
+  它只有欧冠：`uel`、`uecl`、`unl` 这些短名返回空列表，`ucl2026` 是没人维护的桩
+  （32 行，全部日期都是 2026-09-08），能用的是 `ucl`。
+  队名是德语（`Inter Mailand`、`FC Brügge`、`AS Rom`），是继 football-data 和
+  openfootball 之后的第三套命名，同样走 `data/uefa_aliases.yaml`。
+  欧联和欧协联正赛仍然没有赛果源。
 - **`international_results` 落后数周**：最近一个国际比赛日的结果通常还没进来。
   两个滞后都会在报告备注里写明（超过 `daily.STALE_DAYS` 天时）。
 - **两个赛果源对加时赛的处理不一致**：`international_results` 把加时进球计入

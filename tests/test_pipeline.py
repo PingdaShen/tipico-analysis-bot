@@ -27,6 +27,7 @@ def cfg(tmp_path):
     c["paths"]["ledger"] = str(tmp_path / "bets/ledger.csv")
     c["paths"]["paper_ledger"] = str(tmp_path / "bets/paper_ledger.csv")
     c["paths"]["manual_fixtures"] = str(tmp_path / "manual_fixtures.csv")
+    c["uefa"]["openligadb"] = False   # 测试不联网
     return c
 
 

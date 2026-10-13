@@ -3,6 +3,7 @@ import copy
 
 import numpy as np
 import pandas as pd
+import requests
 import pytest
 
 from src import daily, ledger, manual
@@ -26,6 +27,7 @@ def cfg(tmp_path):
     c["paths"]["manual_fixtures"] = "manual_fixtures.csv"
     c["uefa"]["min_team_matches"] = 5
     c["international"]["min_team_matches"] = 5
+    c["uefa"]["openligadb"] = False   # 测试不联网
     return c
 
 
@@ -490,3 +492,87 @@ def test_league_model_sees_hand_entered_results(cfg, tmp_path):
     before = daily.fit_model(base, cfg, later)
     after = daily.fit_model(merged, cfg, later)
     assert after.predict("Team00", "Team01")["H"] > before.predict("Team00", "Team01")["H"]
+
+
+# --- Champions League schedule ------------------------------------------------
+
+def _ucl(date="2026-10-13", home="Team00", away="Team01"):
+    return [{"div": "CL", "date": pd.Timestamp(date), "time": "19:00",
+             "home": home, "away": away, "hg": None, "ag": None,
+             "neutral": False, "finished": False}]
+
+
+def test_ucl_schedule_is_listed_when_odds_are_missing(cfg, tmp_path, world):
+    """openligadb has the fixtures football-data lacks, but no prices — so
+    they are shown with the model's own view rather than as picks."""
+    domestic, cup, today, truth = world
+    pool = pd.concat([domestic, cup], ignore_index=True)
+    h, a = truth["teams"][0], truth["teams"][-1]
+    cfg["uefa"]["openligadb"] = True
+    all_df, picks, notes = daily.analyze(
+        cfg, today, root=tmp_path,
+        history_loader=lambda *a_, **k: pd.DataFrame(),
+        fixtures_loader=lambda *a_, **k: pd.DataFrame(),
+        pool_loader=lambda c, cache, today=None: (pool, {}),
+        intl_loader=lambda c, cache, today=None, **k: pd.DataFrame(),
+        uefa_schedule_loader=lambda season, cache, **k: pd.DataFrame(
+            _ucl(f"{today:%Y-%m-%d}", h, a)),
+    )
+    assert picks.empty, "没有赔率就不能成为推荐"
+    report = daily.render_report(today, picks, all_df, notes, cfg)
+    assert "## 欧冠赛程（还没有赔率）" in report
+    assert f"{h} vs {a}" in report
+    assert "还不是推荐" in report
+
+
+def test_a_priced_fixture_drops_out_of_the_schedule_list(cfg, tmp_path, world):
+    domestic, cup, today, truth = world
+    pool = pd.concat([domestic, cup], ignore_index=True)
+    h, a = truth["teams"][0], truth["teams"][-1]
+    cfg["uefa"]["openligadb"] = True
+    _manual_file(tmp_path, f"CL,{today:%Y-%m-%d},21:00,{h},{a},0,"
+                           f"3.00,3.60,2.40,3.20,3.70,2.50,,,,")
+    all_df, picks, notes = daily.analyze(
+        cfg, today, root=tmp_path,
+        history_loader=lambda *a_, **k: pd.DataFrame(),
+        fixtures_loader=lambda *a_, **k: pd.DataFrame(),
+        pool_loader=lambda c, cache, today=None: (pool, {}),
+        intl_loader=lambda c, cache, today=None, **k: pd.DataFrame(),
+        uefa_schedule_loader=lambda season, cache, **k: pd.DataFrame(
+            _ucl(f"{today:%Y-%m-%d}", h, a)),
+    )
+    report = daily.render_report(today, picks, all_df, notes, cfg)
+    assert "## 欧冠赛程（还没有赔率）" not in report, "已经填了赔率就不该再催"
+    assert not picks.empty
+
+
+def test_no_pool_is_fitted_when_there_is_no_ucl_match(cfg, tmp_path):
+    """Fitting ~900 teams costs a download and several seconds; skip it."""
+    called = []
+    cfg["uefa"]["openligadb"] = True
+    daily.analyze(
+        cfg, pd.Timestamp("2026-10-13"), root=tmp_path,
+        history_loader=lambda *a, **k: pd.DataFrame(),
+        fixtures_loader=lambda *a, **k: pd.DataFrame(),
+        pool_loader=lambda *a, **k: (called.append(1), (pd.DataFrame(), {}))[1],
+        intl_loader=lambda *a, **k: pd.DataFrame(),
+        uefa_schedule_loader=lambda season, cache, **k: pd.DataFrame(),
+    )
+    assert not called, "没有欧冠比赛就不该拟合合并模型"
+
+
+def test_a_dead_schedule_endpoint_does_not_break_the_report(cfg, tmp_path):
+    cfg["uefa"]["openligadb"] = True
+
+    def boom(season, cache, **k):
+        raise requests.RequestException("down")
+
+    _, _, notes = daily.analyze(
+        cfg, pd.Timestamp("2026-10-13"), root=tmp_path,
+        history_loader=lambda *a, **k: pd.DataFrame(),
+        fixtures_loader=lambda *a, **k: pd.DataFrame(),
+        pool_loader=lambda *a, **k: (pd.DataFrame(), {}),
+        intl_loader=lambda *a, **k: pd.DataFrame(),
+        uefa_schedule_loader=boom,
+    )
+    assert any("欧冠赛程取不到" in n for n in notes)

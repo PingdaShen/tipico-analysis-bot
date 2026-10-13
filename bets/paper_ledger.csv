@@ -17,3 +17,5 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261011-I1-Como-Roma-U25,2026-10-10,2026-10-11,I1,Como,Roma,OU25,U25,小于 2.5 球,2.22,1.0,0.465,open,,,,,,,single,
 20261010-SC0-Hearts-StMirren-U25,2026-10-10,2026-10-10,SC0,Hearts,St Mirren,OU25,U25,小于 2.5 球,2.43,1.0,0.4239,settled,5-0 输,-1.0,,,,,single,
 20261012-SP2-Tenerife-Girona-A,2026-10-11,2026-10-12,SP2,Tenerife,Girona,1X2,A,客胜 Girona,2.4,1.0,0.4287,open,,,,,,,single,
+20261013-E1-Cardiff-Watford-A,2026-10-13,2026-10-13,E1,Cardiff,Watford,1X2,A,客胜 Watford,4.23,1.0,0.2432,open,,,,,,,single,
+20261014-E1-QPR-Derby-A,2026-10-13,2026-10-14,E1,QPR,Derby,1X2,A,客胜 Derby,4.31,1.0,0.2387,open,,,,,,,single,

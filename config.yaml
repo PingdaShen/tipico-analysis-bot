@@ -101,6 +101,12 @@ uefa:
   history_seasons: 6     # 欧战链接用的赛季数，比国内联赛长：链接本来就少
   divs: [CL, CLQ, ELQ, CONFQ]
   min_team_matches: 10   # 合并模型里推荐门槛更高（跨联赛本身更不确定）
+  # 本赛季的欧冠赛程和赛果从 api.openligadb.de 取（不需要 key）。
+  # openfootball 要等一个赛季结束才发布，所以跨联赛链接会停在上赛季，
+  # 刚下的欧战注也结算不了；openligadb 补上这个缺口。
+  # 它只有欧冠——uel / uecl / unl 这些短名返回的都是空列表。
+  # 它也没有赔率，赔率仍然要填进 manual_fixtures.csv。
+  openligadb: true
   xi: 0.0006             # 衰减比联赛模型慢，否则跨联赛链接几乎没有权重
   # 合并模型有 ~900 支球队、~1800 个参数，但跨联赛链接只有几百场，
   # 所以正则化必须比单联赛模型强得多。用 2022-2024 赛季选参、2025 赛季验证：

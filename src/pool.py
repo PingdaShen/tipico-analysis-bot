@@ -26,6 +26,7 @@ import pandas as pd
 from .aliases import load_table, resolve_names
 from .data import current_season_start, load_extra_history, load_history, season_code
 from .model import DixonColes
+from . import openligadb
 from .openfootball import load_uefa_history
 
 POOL_COLUMNS = ["div", "date", "home", "away", "hg", "ag", "neutral"]
@@ -85,7 +86,18 @@ def load_pool(cfg: dict, cache: str | Path, today=None, root: Path | None = None
 
     domestic = load_domestic(cfg, cache, today, history_loader, extra_loader)
     uefa = uefa_loader(pool_seasons(cfg, today), cache)
-    info = {"domestic": len(domestic), "uefa": len(uefa), "unresolved": [],
+    # openfootball stops a season short, so the current campaign's links come
+    # from openligadb instead — without them the newest teams in Europe have
+    # no cross-league edge at all
+    live = 0
+    if cfg["uefa"].get("openligadb", True):
+        current = openligadb.results(openligadb.load(openligadb.season_for(today), cache))
+        if not current.empty:
+            uefa = (current if uefa.empty else
+                    pd.concat([uefa, current], ignore_index=True))
+            live = len(current)
+    info = {"domestic": len(domestic), "uefa": len(uefa), "uefa_live": live,
+            "unresolved": [],
             "uefa_latest": uefa["date"].max() if not uefa.empty else None,
             "domestic_latest": domestic["date"].max() if not domestic.empty else None}
     if uefa.empty:
