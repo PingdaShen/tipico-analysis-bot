@@ -159,23 +159,6 @@ python -m src.ledger close 20261014-CL-Betis-Porto-A --close-h <收盘主胜> --
 | Betis vs Porto | 客胜 Porto + 大于 2.5 球 | 5.31 | **5.47** | 6.32 |
 | Betis vs Porto | 客胜 Porto + 小于 2.5 球 | 8.39 | **8.64** | 6.71 |
 
-## 欧冠赛程（还没有赔率）
-
-赛程来自 openligadb，但它没有赔率——没有市场锚就算不出最低赔率，
-所以这些**还不是推荐**。下面是模型自己的概率（未与市场融合），
-用来判断哪几场值得去查赔率。要让某场进入推荐，把赔率填进去：
-
-```bash
-python -m src.manual add --comp CL --date <YYYY-MM-DD> \
-    --home <主队> --away <客队> \
-    --ref-h <参考主胜> --ref-d <参考平> --ref-a <参考客胜> \
-    --tip-h <Tipico主胜> --tip-d <Tipico平> --tip-a <Tipico客胜>
-```
-
-| 日期 | 时间 | 比赛 | 模型主胜 | 平 | 客胜 | 模型小于 2.5 |
-|---|---|---|---|---|---|---|
-| 10-14 | 20:00 | Slovan Bratislava vs Stuttgart | 28% | 23% | 49% | 35% |
-
 ## 备注
 - 从 the-odds-api 取到 18 场带赔率的赛程（1X2 锚定 Pinnacle）。
 - 其中 17 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
