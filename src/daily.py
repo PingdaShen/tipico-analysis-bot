@@ -94,6 +94,11 @@ def _odds_api_fixtures(cfg: dict, today, cache: Path, comps: dict, odds_loader
     if not soft.empty:
         notes.append(f"其中 {len(soft)} 场的大小球 2.5 锚定的是软庄——"
                      f"Pinnacle 只挂主盘，欧战常常不是 2.5。")
+    quota = oddsapi.remaining_quota(cache)
+    if quota:
+        left = quota.get("remaining")
+        warn = "，**快用完了**" if isinstance(left, int) and left < 100 else ""
+        notes.append(f"the-odds-api 免费额度还剩 {left} 次（每月 500）{warn}。")
     return out, notes
 
 

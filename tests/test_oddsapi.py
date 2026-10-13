@@ -145,3 +145,58 @@ def test_every_manual_competition_has_a_sport_key():
     from src.config import load_config
     comps = load_config()["manual_competitions"]
     assert set(comps) == set(oddsapi.SPORTS), "manual_competitions 和 SPORTS 要对上"
+
+
+# --- quota discipline ---------------------------------------------------------
+
+def test_is_idle_skips_a_competition_with_no_match_coming(tmp_path):
+    """Most days the Europa and Conference Leagues have nothing in the window,
+    and asking anyway cost 2 credits each, every run."""
+    cache = tmp_path / "oddsapi_EL_h2h-totals.json"
+    far = json.loads(json.dumps(EVENT))
+    far["commence_time"] = "2026-11-20T19:00:00Z"
+    cache.write_text(json.dumps([far]), encoding="utf-8")
+    assert oddsapi.is_idle("EL", tmp_path, "2026-10-13", 2)
+
+    soon = json.loads(json.dumps(EVENT))
+    soon["commence_time"] = "2026-10-15T19:00:00Z"
+    cache.write_text(json.dumps([soon]), encoding="utf-8")
+    assert not oddsapi.is_idle("EL", tmp_path, "2026-10-13", 2)
+
+
+def test_is_idle_is_false_without_a_cache(tmp_path):
+    assert not oddsapi.is_idle("EL", tmp_path, "2026-10-13", 2)
+    (tmp_path / "oddsapi_EL_h2h-totals.json").write_text("not json", encoding="utf-8")
+    assert not oddsapi.is_idle("EL", tmp_path, "2026-10-13", 2)
+
+
+def test_load_skips_an_idle_competition(tmp_path, monkeypatch):
+    monkeypatch.setenv(oddsapi.KEY_ENV, "dummy")
+    far = json.loads(json.dumps(EVENT))
+    far["commence_time"] = "2026-11-20T19:00:00Z"
+    (tmp_path / "oddsapi_EL_h2h-totals.json").write_text(json.dumps([far]), encoding="utf-8")
+    assert oddsapi.load("EL", tmp_path, today="2026-10-13", horizon_days=2).empty
+
+
+def test_quota_is_recorded_and_read_back(tmp_path):
+    assert oddsapi.remaining_quota(tmp_path) is None
+
+    class Resp:
+        headers = {"x-requests-remaining": "211", "x-requests-used": "289"}
+
+    oddsapi._record_quota(tmp_path, Resp())
+    q = oddsapi.remaining_quota(tmp_path)
+    assert q["remaining"] == 211 and q["used"] == 289 and "at" in q
+
+
+def test_a_fresh_cache_is_reused_without_a_request(tmp_path, monkeypatch):
+    """At 2 credits a call, an uncached poll burns the month's allowance in days."""
+    monkeypatch.setenv(oddsapi.KEY_ENV, "dummy")
+    cache = tmp_path / "oddsapi_CL_h2h-totals.json"
+    cache.write_text(json.dumps([EVENT]), encoding="utf-8")
+
+    def explode(*a, **k):
+        raise AssertionError("缓存有效时不该发请求")
+
+    monkeypatch.setattr(oddsapi.requests, "get", explode)
+    assert len(oddsapi.fetch_events("CL", tmp_path, max_age_hours=6)) == 1

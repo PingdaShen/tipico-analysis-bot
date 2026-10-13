@@ -52,23 +52,78 @@ def api_key() -> str | None:
     return key or None
 
 
+QUOTA_FILE = "oddsapi_quota.json"
+
+
+def remaining_quota(cache_dir: str | Path) -> dict | None:
+    """Last known quota, written by the most recent live call."""
+    path = Path(cache_dir) / QUOTA_FILE
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def _record_quota(cache_dir: Path, response) -> None:
+    left = response.headers.get("x-requests-remaining")
+    if left is None:
+        return
+    try:
+        (Path(cache_dir) / QUOTA_FILE).write_text(json.dumps({
+            "remaining": int(left),
+            "used": int(response.headers.get("x-requests-used", 0)),
+            "at": pd.Timestamp.now("UTC").isoformat(),
+        }), encoding="utf-8")
+    except (OSError, ValueError):
+        pass
+
+
 def _get(path: str, params: dict, cache: Path, max_age_hours: float,
          fetcher=None) -> list | None:
-    """One cached GET. Returns None when the call could not be made."""
-    from .data import fetch
+    """One cached GET. Returns None when the call could not be made.
 
+    This does its own request rather than reusing `data.fetch` so it can read
+    the quota headers — the free tier is 500 a month and without recording
+    what is left, a change that starts polling too often goes unnoticed until
+    the key stops working.
+    """
     key = api_key()
     if not key:
         return None
-    fetcher = fetcher or fetch
     query = "&".join(f"{k}={v}" for k, v in sorted(params.items()))
     url = f"{BASE_URL}/{path}?{query}&apiKey={key}"
-    try:
-        raw = fetcher(url, cache, max_age_hours)
-    except requests.RequestException as e:
-        # never let the key reach a log line
-        print(f"[warn] the-odds-api {path}: {type(e).__name__}")
-        return None
+    if fetcher is not None:
+        try:
+            raw = fetcher(url, cache, max_age_hours)
+        except requests.RequestException:
+            return None
+    else:
+        cache = Path(cache)
+        if cache.exists() and max_age_hours > 0:
+            age_h = (pd.Timestamp.now().timestamp() - cache.stat().st_mtime) / 3600
+            if age_h < max_age_hours:
+                raw = cache.read_bytes()
+                try:
+                    payload = json.loads(raw.decode("utf-8", "replace"))
+                except json.JSONDecodeError:
+                    payload = None
+                return payload if isinstance(payload, list) else None
+        try:
+            resp = requests.get(f"{BASE_URL}/{path}",
+                                params={**params, "apiKey": key}, timeout=30)
+        except requests.RequestException as e:
+            # never let the key reach a log line
+            print(f"[warn] the-odds-api {path}: {type(e).__name__}")
+            return None
+        _record_quota(cache.parent, resp)
+        if resp.status_code != 200:
+            print(f"[warn] the-odds-api {path}: HTTP {resp.status_code}")
+            return None
+        raw = resp.content
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_bytes(raw)
     try:
         payload = json.loads(raw.decode("utf-8", "replace"))
     except json.JSONDecodeError:
@@ -77,10 +132,49 @@ def _get(path: str, params: dict, cache: Path, max_age_hours: float,
     return payload if isinstance(payload, list) else None
 
 
+def next_kickoff(events: list) -> pd.Timestamp | None:
+    """Earliest commence_time in a cached response."""
+    times = [pd.to_datetime(e.get("commence_time"), errors="coerce", utc=True)
+             for e in events if e.get("commence_time")]
+    times = [t for t in times if pd.notna(t)]
+    return min(times).tz_localize(None) if times else None
+
+
+def is_idle(div: str, cache_dir: str | Path, today, horizon_days: int) -> bool:
+    """True when a cached response already says there is nothing to fetch for.
+
+    Most days the Europa and Conference Leagues have no match inside the
+    window, and asking anyway cost 2 credits each every run. The cached
+    response carries every upcoming fixture, so once it says the next one is
+    beyond the horizon there is nothing to learn by asking again.
+    """
+    cache = Path(cache_dir) / f"oddsapi_{div}_h2h-totals.json"
+    if not cache.exists():
+        return False
+    try:
+        events = json.loads(cache.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return False
+    if not isinstance(events, list):
+        return False
+    nxt = next_kickoff(events)
+    if nxt is None:
+        return False
+    end = pd.Timestamp(today).normalize() + pd.Timedelta(days=horizon_days)
+    # refresh once the window is within a day of the next match, so prices are
+    # current by the time they matter
+    return nxt > end + pd.Timedelta(days=1)
+
+
 def fetch_events(div: str, cache_dir: str | Path, markets=("h2h", "totals"),
-                 regions: str = "eu", max_age_hours: float = 3,
+                 regions: str = "eu", max_age_hours: float = 6,
                  fetcher=None) -> list:
-    """Raw events for one competition. Costs one credit per market."""
+    """Raw events for one competition. Costs one credit per market.
+
+    Cached for hours by default: a fixture list does not change minute to
+    minute, and at 2 credits a call an uncached poll burns the monthly
+    allowance in days.
+    """
     sport = SPORTS.get(div)
     if sport is None:
         return []
@@ -210,6 +304,8 @@ def to_fixture_rows(events: list, div: str, timezone: str = "UTC") -> pd.DataFra
 def load(div: str, cache_dir: str | Path, today=None, horizon_days: int = 2,
          timezone: str = "UTC", fetcher=None) -> pd.DataFrame:
     """Priced fixtures for one competition inside the report's window."""
+    if today is not None and fetcher is None and is_idle(div, cache_dir, today, horizon_days):
+        return pd.DataFrame()
     df = to_fixture_rows(fetch_events(div, cache_dir, fetcher=fetcher), div, timezone)
     if df.empty or today is None:
         return df

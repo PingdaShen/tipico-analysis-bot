@@ -389,8 +389,25 @@ def settle_systems(cfg: dict, root: Path, paper: bool) -> None:
 
 
 
+class AutocloseResult(int):
+    """How many closing prices were recorded, plus why none were.
+
+    It behaves as the count so callers can keep treating it as a number, but
+    carries a reason — a bare 0 could mean "nothing was due", "no API key" or
+    "no bets at all", and printing the same sentence for all three made a
+    missing secret look like normal quiet operation.
+    """
+
+    reason: str = ""
+
+    def __new__(cls, count: int, reason: str = ""):
+        self = super().__new__(cls, count)
+        self.reason = reason
+        return self
+
+
 def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
-              odds_fetcher=None) -> int:
+              odds_fetcher=None) -> AutocloseResult:
     """Record closing odds for bets about to kick off.
 
     A closing line only exists in the minutes before kick-off, so it has to be
@@ -408,8 +425,12 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
     now = pd.Timestamp(now) if now is not None else pd.Timestamp.now('UTC')
     now = now.tz_localize(None) if now.tzinfo else now
     covered = [d for d in (cfg.get("manual_competitions") or {}) if d in oddsapi.SPORTS]
-    if not covered or not oddsapi.api_key():
-        return 0
+    if not covered:
+        return AutocloseResult(0, "config.yaml 里没有 the-odds-api 覆盖的赛事。")
+    if not oddsapi.api_key():
+        return AutocloseResult(
+            0, f"环境变量 {oddsapi.KEY_ENV} 没有设置——在 GitHub 上要检查 "
+               f"Settings → Secrets 里的名字是否就是 {oddsapi.KEY_ENV}。")
 
     pending = {}
     for paper in (False, True):
@@ -431,7 +452,10 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
                 continue          # older rows have no kick-off; fall back to the date
             pending.setdefault(r["div"], set()).add((r["home"], r["away"]))
     if not pending:
-        return 0
+        total = sum(len(load(ledger_path(cfg, root, p_))) for p_ in (False, True))
+        return AutocloseResult(
+            0, f"窗口内（开球前 {window_minutes} 分钟）没有待记录的注；"
+               f"账本共 {total} 行。")
 
     cache = Path(root) / cfg["paths"]["cache"]
     # the alias table ships with the code, so it comes from the repo root even
@@ -439,7 +463,10 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
     table = load_table(ROOT)
     touched = 0
     for div, wanted in pending.items():
-        events = oddsapi.fetch_events(div, cache, max_age_hours=0, fetcher=odds_fetcher)
+        # a few minutes, not zero: several crons can land inside one window
+        # and refetching on each would triple the cost for the same price
+        events = oddsapi.fetch_events(div, cache, max_age_hours=0.15,
+                                      fetcher=odds_fetcher)
         if not events:
             continue
         rows = oddsapi.to_fixture_rows(events, div)
@@ -462,7 +489,9 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
                     touched += set_closing(pid, values, cfg, root, source=source)
                 except SystemExit as e:
                     print(f"[提示] {pid}: {e}")
-    return touched
+    if not touched:
+        return AutocloseResult(0, "窗口内有待记录的注，但 API 没有返回可用的赔率。")
+    return AutocloseResult(touched)
 
 
 def _ids_for(cfg: dict, root: Path, div: str, home: str, away: str) -> list[str]:
@@ -631,7 +660,7 @@ def main() -> None:
         add(args.pick_id, args.odds, args.stake, cfg)
     elif args.cmd == "autoclose":
         n = autoclose(cfg, window_minutes=args.window)
-        print(f"记录了 {n} 条收盘赔率。" if n else "窗口内没有待记录的注，没有调用 API。")
+        print(f"记录了 {n} 条收盘赔率。" if n else f"没有记录任何收盘赔率：{n.reason}")
     elif args.cmd == "system":
         legs = {}
         for item in args.leg:
