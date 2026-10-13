@@ -462,6 +462,7 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
     # when the ledgers live somewhere else
     table = load_table(ROOT)
     touched = 0
+    soonest = None          # next kick-off we are waiting for, for the message
     for div, wanted in pending.items():
         # a few minutes, not zero: several crons can land inside one window
         # and refetching on each would triple the cost for the same price
@@ -477,7 +478,9 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
         for _, fx in rows.iterrows():
             if (fx["home"], fx["away"]) not in wanted:
                 continue
-            start = pd.Timestamp(f"{fx['date']:%Y-%m-%d} {fx['Time']}")
+            start = pd.Timestamp(fx["kickoff_utc"])
+            if start > now and (soonest is None or start < soonest):
+                soonest = start
             if not (now <= start <= now + pd.Timedelta(minutes=window_minutes)):
                 continue
             values = {"close_h": fx.get("PSH"), "close_d": fx.get("PSD"),
@@ -490,7 +493,15 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
                 except SystemExit as e:
                     print(f"[提示] {pid}: {e}")
     if not touched:
-        return AutocloseResult(0, "窗口内有待记录的注，但 API 没有返回可用的赔率。")
+        if soonest is None:
+            return AutocloseResult(
+                0, "有待记录的注，但赔率源里找不到对应的比赛——可能已经开赛了，"
+                   "收盘价错过了，只能事后用 record-close 手工补。")
+        wait = (soonest - now).total_seconds() / 60
+        return AutocloseResult(
+            0, f"还没到时候：最近的一场在 {soonest:%H:%M} UTC 开球，"
+               f"还有 {wait:.0f} 分钟，而窗口是开球前 {window_minutes} 分钟。"
+               f"{soonest - pd.Timedelta(minutes=window_minutes):%H:%M} UTC 之后再跑。")
     return AutocloseResult(touched)
 
 

@@ -397,3 +397,35 @@ def test_autoclose_falls_back_to_the_date_for_older_rows(cfg, tmp_path, monkeypa
     assert ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00",
                             window_minutes=45, odds_fetcher=lambda *a: payload) == 1
     assert pd.notna(ledger.load(path).iloc[0]["clv"])
+
+
+def test_autoclose_says_when_to_run_instead(cfg, tmp_path, monkeypatch):
+    """Three times running, a bare "nothing to do" hid a different cause —
+    first a possibly-missing key, then a window that had not opened yet."""
+    import json
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    row = _row(pick_id="ucl", outcome="A", odds=12.5, label="客胜 Club Brugge")
+    row.update(div="CL", home="Inter", away="Club Brugge",
+               date=pd.Timestamp("2026-10-13"),
+               kickoff_utc=pd.Timestamp("2026-10-13 19:00"))
+    _write(cfg, tmp_path, True, [row])
+    payload = json.dumps([UCL_EVENT]).encode()
+
+    r = ledger.autoclose(cfg, tmp_path, now="2026-10-13T17:36:00", window_minutes=60,
+                         odds_fetcher=lambda *a: payload)
+    assert r == 0
+    assert "19:00" in r.reason and "18:00" in r.reason, "要说清楚几点之后再跑"
+    assert "83" in r.reason
+
+
+def test_autoclose_says_the_match_was_missed(cfg, tmp_path, monkeypatch):
+    import json
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    row = _row(pick_id="ucl", outcome="A", odds=12.5, label="客胜 Club Brugge")
+    row.update(div="CL", home="Inter", away="Club Brugge",
+               date=pd.Timestamp("2026-10-13"), kickoff_utc=None)
+    _write(cfg, tmp_path, True, [row])
+    gone = json.dumps([]).encode()
+    r = ledger.autoclose(cfg, tmp_path, now="2026-10-13T21:00:00", window_minutes=60,
+                         odds_fetcher=lambda *a: gone)
+    assert r == 0 and "错过" in r.reason and "record-close" in r.reason
