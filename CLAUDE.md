@@ -281,17 +281,23 @@ Tipico 里除了单注和全串，还有「n 对 k」的系统投注（德语 Sy
   比赛有概率却没有可比的价格，`min_odds` 的判断过不了，永远成不了候选。
 - 队名是**第四套**命名（`Inter Milan`、`AS Roma`、`Sporting Lisbon`），
   同样走 `data/uefa_aliases.yaml`。
+- **`commence_time` 是 UTC，要做真正的时区换算**（`report.timezone`），
+  不能套用 `kickoff_offset_hours`——那个固定 +1 是为 football-data 的英国时间设的。
+  用错会让报告里每场欧战的开球时间早 1 小时（夏令时），而冬令时又正好对。
  
 ### 收盘赔率要在开球前抓
  
 收盘线只在开球前几分钟存在。`daily-report` 跑在 06:00 UTC——比最早的欧冠开球
-早近 10 小时，取到的是**开盘价**。所以另有 `record-close-auto.yml`，在
-15:15 / 17:15 / 18:15 / 19:15 UTC 各跑一次 `python -m src.ledger autoclose`，
-给 60 分钟内开球、且还没有 CLV 的欧战/国家队注记录收盘价。
+早近 10 小时，取到的是**开盘价**。所以另有 `record-close-auto.yml`，**每半小时**跑一次
+`python -m src.ledger autoclose`（UTC 11:00-21:30），给 45 分钟内开球、
+且还没有 CLV 的欧战/国家队注记录收盘价。
  
 - 国内联赛不需要：football-data 连同赛果一起发布收盘赔率。
-- **窗口内没有待处理的注时直接退出，不调用 API**；待处理的注不是当天的也跳过。
-  所以没有比赛的日子一次配额都不花。
+- **账本存了 `kickoff_utc`**，所以窗口外的运行直接退出、不调用 API。
+  没有这一列的话，比赛日的每一次运行都要花一次请求才能发现「还没到时候」——
+  频率提不上去。GitHub 的定时任务常有几分钟到几十分钟延迟，密一点才不会漏。
+- 早先的 cron 是一天四次、窗口 60 分钟，结果 2026-10-13 漏掉了 16:45 UTC 开球的
+  两场：上一次运行早了 90 分钟（在窗口外），下一次已经开赛 30 分钟。
 - 1X2 锚定 Pinnacle 时 `close_source` 记为 `pinnacle`，否则记 `average`。
  
 ## 手录收盘赔率

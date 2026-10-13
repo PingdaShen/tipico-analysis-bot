@@ -28,6 +28,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import requests
@@ -171,7 +172,7 @@ def _spread(event: dict, home: str, away: str, line: float = TOTALS_LINE) -> dic
     return cols
 
 
-def to_fixture_rows(events: list, div: str, offset_hours: int = 0) -> pd.DataFrame:
+def to_fixture_rows(events: list, div: str, timezone: str = "UTC") -> pd.DataFrame:
     """Events as football-data-shaped rows, so market.py can read them as-is.
 
     The anchor prices go into Pinnacle's column names (PSH/PSD/PSA, P>2.5,
@@ -188,9 +189,14 @@ def to_fixture_rows(events: list, div: str, offset_hours: int = 0) -> pd.DataFra
         tot, t_src = _totals(e)
         if h2h is None and tot is None:
             continue
-        local = start + pd.Timedelta(hours=offset_hours)
-        row = {"div": div, "date": pd.Timestamp(start.date()),
-               "Time": local.strftime("%H:%M"), "home": home, "away": away,
+        # commence_time is UTC, so this is a real conversion — not the fixed
+        # offset football-data's UK times need (that one is +1 all year, this
+        # one is +2 in summer, and getting it wrong put every Champions League
+        # kick-off in the report an hour early)
+        local = start.tz_convert(ZoneInfo(timezone))
+        row = {"div": div, "date": pd.Timestamp(local.date()),
+               "Time": local.strftime("%H:%M"), "kickoff_utc": start.tz_localize(None),
+               "home": home, "away": away,
                "neutral": False, "anchor_1x2": h_src, "anchor_ou25": t_src}
         if h2h:
             row.update({"PSH": h2h["H"], "PSD": h2h["D"], "PSA": h2h["A"]})
@@ -202,9 +208,9 @@ def to_fixture_rows(events: list, div: str, offset_hours: int = 0) -> pd.DataFra
 
 
 def load(div: str, cache_dir: str | Path, today=None, horizon_days: int = 2,
-         offset_hours: int = 0, fetcher=None) -> pd.DataFrame:
+         timezone: str = "UTC", fetcher=None) -> pd.DataFrame:
     """Priced fixtures for one competition inside the report's window."""
-    df = to_fixture_rows(fetch_events(div, cache_dir, fetcher=fetcher), div, offset_hours)
+    df = to_fixture_rows(fetch_events(div, cache_dir, fetcher=fetcher), div, timezone)
     if df.empty or today is None:
         return df
     today = pd.Timestamp(today).normalize()

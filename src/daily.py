@@ -68,7 +68,7 @@ def _odds_api_fixtures(cfg: dict, today, cache: Path, comps: dict, odds_loader
     """
     if not cfg["uefa"].get("odds_api", True) or not oddsapi.api_key():
         return pd.DataFrame(), []
-    offset = (cfg.get("report") or {}).get("kickoff_offset_hours", 0)
+    tz = (cfg.get("report") or {}).get("timezone", "UTC")
     frames, notes = [], []
     for div in comps:
         if div not in oddsapi.SPORTS:
@@ -76,7 +76,7 @@ def _odds_api_fixtures(cfg: dict, today, cache: Path, comps: dict, odds_loader
         try:
             df = odds_loader(div, cache, today=today,
                              horizon_days=cfg["value"]["horizon_days"],
-                             offset_hours=offset)
+                             timezone=tz)
         except requests.RequestException as e:
             notes.append(f"{div} 的赔率取不到：{type(e).__name__}")
             continue

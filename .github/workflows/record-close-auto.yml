@@ -11,17 +11,17 @@ name: record-close-auto
 # 窗口内没有待处理的注时直接退出，不调用 API、不消耗配额。
 on:
   schedule:
-    # 覆盖欧洲常见开球时段（UTC）：17:45 / 19:00 / 20:00 / 21:00 德国时间
-    - cron: "15 15 * * *"
-    - cron: "15 17 * * *"
-    - cron: "15 18 * * *"
-    - cron: "15 19 * * *"
+    # 每半小时跑一次，覆盖欧洲全部开球时段（UTC 11:00-21:30）。
+    # 账本里存了开球时间，所以窗口外的运行直接退出、不调用 API，
+    # 频率高不等于费配额。GitHub 的定时任务常有几分钟到几十分钟延迟，
+    # 密一点才不会漏掉开球。
+    - cron: "0,30 11-21 * * *"
   workflow_dispatch:
     inputs:
       window:
         description: "开球前多少分钟内算「即将开球」"
         required: false
-        default: "60"
+        default: "45"
         type: string
 
 env:
@@ -51,7 +51,7 @@ jobs:
         env:
           WINDOW: ${{ inputs.window }}
         run: |
-          python -m src.ledger autoclose --window "${WINDOW:-60}" \
+          python -m src.ledger autoclose --window "${WINDOW:-45}" \
             | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: 提交

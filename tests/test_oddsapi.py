@@ -78,10 +78,22 @@ def test_spread_gives_a_price_the_user_could_take():
     assert row["Avg<2.5"] == pytest.approx((3.40 + 3.32) / 2)
 
 
-def test_kickoff_is_shifted_and_the_date_is_utc():
-    row = oddsapi.to_fixture_rows([EVENT], "CL", offset_hours=2).iloc[0]
-    assert row["Time"] == "21:00"
+def test_kickoff_is_converted_not_offset():
+    """commence_time is UTC. Applying football-data's fixed UK offset of +1
+    put every Champions League kick-off in the report an hour early."""
+    row = oddsapi.to_fixture_rows([EVENT], "CL", timezone="Europe/Berlin").iloc[0]
+    assert row["Time"] == "21:00", "19:00Z 在夏令时的德国是 21:00"
     assert row["date"] == pd.Timestamp("2026-10-13")
+    assert row["kickoff_utc"] == pd.Timestamp("2026-10-13 19:00")
+    # winter would be +1, which a fixed offset could never get right
+    winter = json.loads(json.dumps(EVENT))
+    winter["commence_time"] = "2026-12-09T19:00:00Z"
+    assert oddsapi.to_fixture_rows([winter], "CL",
+                                   timezone="Europe/Berlin").iloc[0]["Time"] == "20:00"
+
+
+def test_utc_is_the_default():
+    assert oddsapi.to_fixture_rows([EVENT], "CL").iloc[0]["Time"] == "19:00"
 
 
 def test_rows_without_usable_prices_are_dropped():

@@ -127,6 +127,7 @@ def evaluate_fixture(row, model, cfg: dict, neutral: bool = False) -> list[dict]
                 "p_final": p,
                 "market_source": source,
                 "price_source": price_source,
+                "kickoff_utc": row.get("kickoff_utc"),
                 "fair_odds": 1 / p,
                 "min_odds": min_odds,
                 "best_odds": best_o,

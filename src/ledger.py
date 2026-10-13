@@ -25,7 +25,7 @@ from .openfootball import load_uefa_history
 
 COLUMNS = ["id", "created", "date", "div", "home", "away", "market", "outcome", "label",
            "odds", "stake", "p_final", "status", "result", "pnl", "close_odds", "clv",
-           "clv_novig", "close_source", "kind", "system_id"]
+           "clv_novig", "close_source", "kind", "system_id", "kickoff_utc"]
 
 # A system bet ("Systemwette", e.g. 5 aus 2 = every 2-leg combination of five
 # selections) cannot be stored as its own legs: a double only pays when both
@@ -66,6 +66,7 @@ def save_systems(df: pd.DataFrame, path: Path) -> None:
 TEXT_COLUMNS = ["id", "created", "div", "home", "away", "market", "outcome", "label",
                 "status", "result", "close_source", "kind", "system_id"]
 NUM_COLUMNS = ["odds", "stake", "p_final", "pnl", "close_odds", "clv", "clv_novig"]
+TIME_COLUMNS = ["kickoff_utc"]
 
 
 def load(path: Path) -> pd.DataFrame:
@@ -80,6 +81,8 @@ def load(path: Path) -> pd.DataFrame:
         df[c] = df[c].astype(object).where(df[c].notna(), "")
     for c in NUM_COLUMNS:
         df[c] = pd.to_numeric(df[c], errors="coerce").astype(float)
+    for c in TIME_COLUMNS:
+        df[c] = pd.to_datetime(df[c], errors="coerce")
     return df
 
 
@@ -97,6 +100,9 @@ def _row_from_pick(p, odds: float, stake: float, today) -> dict:
         "p_final": round(float(p["p_final"]), 4), "status": "open",
         "result": "", "pnl": None, "close_odds": None, "clv": None,
         "clv_novig": None, "close_source": "", "kind": SINGLE, "system_id": "",
+        # kick-off is what lets autoclose decide whether a match is inside the
+        # window without spending a request to find out
+        "kickoff_utc": p.get("kickoff_utc"),
     }
 
 
@@ -383,7 +389,7 @@ def settle_systems(cfg: dict, root: Path, paper: bool) -> None:
 
 
 
-def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 60,
+def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
               odds_fetcher=None) -> int:
     """Record closing odds for bets about to kick off.
 
@@ -413,10 +419,16 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 60,
         open_rows = df[(df["status"] == "open") & df["div"].isin(covered)
                        & df["clv"].isna()]
         for _, r in open_rows.iterrows():
-            # only today's matches can be inside the window, and checking the
-            # date here keeps a quiet run from spending any quota at all
-            if pd.Timestamp(r["date"]).date() != now.date():
-                continue
+            # The kick-off time decides whether a match is inside the window,
+            # and knowing it here means a run outside the window costs nothing
+            # — without it every run on a match day would spend a request just
+            # to discover there is nothing to do yet.
+            kickoff = r["kickoff_utc"]
+            if pd.notna(kickoff):
+                if not (now <= pd.Timestamp(kickoff) <= now + pd.Timedelta(minutes=window_minutes)):
+                    continue
+            elif pd.Timestamp(r["date"]).date() != now.date():
+                continue          # older rows have no kick-off; fall back to the date
             pending.setdefault(r["div"], set()).add((r["home"], r["away"]))
     if not pending:
         return 0
@@ -595,8 +607,8 @@ def main() -> None:
     sub.add_parser("summary")
     ac = sub.add_parser("autoclose",
                         help="给即将开球的欧战/国家队注记录收盘赔率（定时任务用）")
-    ac.add_argument("--window", type=int, default=60,
-                    help="开球前多少分钟内算「即将开球」，默认 60")
+    ac.add_argument("--window", type=int, default=45,
+                    help="开球前多少分钟内算「即将开球」，默认 45")
     y = sub.add_parser("system", help="记录一次系统投注（Systemwette，如 5 选 2）")
     y.add_argument("--k", type=int, required=True, help="每注串几层，5 对 2 就填 2")
     y.add_argument("--stake", type=float, required=True, help="总投入（不是每注）")

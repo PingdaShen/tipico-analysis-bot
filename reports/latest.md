@@ -17,13 +17,14 @@
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 3 | RB Leipzig vs PSV Eindhoven | 欧冠 | 10-13 20:00 | 客胜 PSV Eindhoven | 4.30 | **4.43** | 4.72* | €1.00 |
-| 4 | Galatasaray vs Barcelona | 欧冠 | 10-13 20:00 | 小于 2.5 球 | 4.21 | **4.34** | 4.61* | €1.00 |
-| 5 | Arsenal vs Lille | 欧冠 | 10-13 20:00 | 小于 2.5 球 | 2.47 | **2.55** | 2.58* | €1.00 |
-| 6 | Feyenoord vs Como | 欧冠 | 10-14 17:45 | 主胜 Feyenoord | 2.79 | **2.87** | 3.52* | €1.00 |
-| 7 | Roma vs Real Madrid | 欧冠 | 10-14 20:00 | 小于 2.5 球 | 2.60 | **2.68** | 2.84* | €1.00 |
-| 8 | Shakhtar Donetsk vs AEK | 欧冠 | 10-14 20:00 | 小于 2.5 球 | 1.84 | **1.89** | 1.95* | €1.00 |
-| 9 | Betis vs Porto | 欧冠 | 10-14 20:00 | 客胜 Porto | 3.25 | **3.35** | 3.42* | €1.00 |
+| 3 | RB Leipzig vs PSV Eindhoven | 欧冠 | 10-13 21:00 | 客胜 PSV Eindhoven | 4.45 | **4.59** | 5.03* | €1.00 |
+| 4 | Galatasaray vs Barcelona | 欧冠 | 10-13 21:00 | 小于 2.5 球 | 4.29 | **4.42** | 4.71* | €1.00 |
+| 5 | Arsenal vs Lille | 欧冠 | 10-13 21:00 | 小于 2.5 球 | 2.55 | **2.62** | 2.71* | €1.00 |
+| 6 | Inter vs Club Brugge | 欧冠 | 10-13 21:00 | 小于 2.5 球 | 3.43 | **3.54** | 3.57* | €1.00 |
+| 7 | Feyenoord vs Como | 欧冠 | 10-14 18:45 | 主胜 Feyenoord | 2.82 | **2.90** | 3.53* | €1.00 |
+| 8 | Roma vs Real Madrid | 欧冠 | 10-14 21:00 | 小于 2.5 球 | 2.60 | **2.68** | 2.84* | €1.00 |
+| 9 | Betis vs Porto | 欧冠 | 10-14 21:00 | 客胜 Porto | 3.25 | **3.35** | 3.44* | €1.00 |
+| 10 | Shakhtar Donetsk vs AEK | 欧冠 | 10-14 21:00 | 小于 2.5 球 | 1.84 | **1.89** | 1.94* | €1.00 |
 
 ## 投注 ID
 
@@ -35,16 +36,16 @@ record-bet 和 record-close 表单要填这个（点代码块右上角可直接�
 20261013-CL-RBLeipzig-PSVEindhoven-A
 ```
 
-**2. Cardiff vs Watford — 客胜 Watford**
-
-```
-20261013-E1-Cardiff-Watford-A
-```
-
-**3. Galatasaray vs Barcelona — 小于 2.5 球**
+**2. Galatasaray vs Barcelona — 小于 2.5 球**
 
 ```
 20261013-CL-Galatasaray-Barcelona-U25
+```
+
+**3. Cardiff vs Watford — 客胜 Watford**
+
+```
+20261013-E1-Cardiff-Watford-A
 ```
 
 **4. Arsenal vs Lille — 小于 2.5 球**
@@ -53,34 +54,40 @@ record-bet 和 record-close 表单要填这个（点代码块右上角可直接�
 20261013-CL-Arsenal-Lille-U25
 ```
 
-**5. Feyenoord vs Como — 主胜 Feyenoord**
+**5. Inter vs Club Brugge — 小于 2.5 球**
+
+```
+20261013-CL-Inter-ClubBrugge-U25
+```
+
+**6. Feyenoord vs Como — 主胜 Feyenoord**
 
 ```
 20261014-CL-Feyenoord-Como-H
 ```
 
-**6. Roma vs Real Madrid — 小于 2.5 球**
+**7. Roma vs Real Madrid — 小于 2.5 球**
 
 ```
 20261014-CL-Roma-RealMadrid-U25
 ```
 
-**7. QPR vs Derby — 客胜 Derby**
+**8. QPR vs Derby — 客胜 Derby**
 
 ```
 20261014-E1-QPR-Derby-A
-```
-
-**8. Shakhtar Donetsk vs AEK — 小于 2.5 球**
-
-```
-20261014-CL-ShakhtarDonetsk-AEK-U25
 ```
 
 **9. Betis vs Porto — 客胜 Porto**
 
 ```
 20261014-CL-Betis-Porto-A
+```
+
+**10. Shakhtar Donetsk vs AEK — 小于 2.5 球**
+
+```
+20261014-CL-ShakhtarDonetsk-AEK-U25
 ```
 
 ## 怎么用
@@ -95,22 +102,24 @@ record-bet 和 record-close 表单要填这个（点代码块右上角可直接�
 
 ```bash
 python -m src.ledger add 20261013-CL-RBLeipzig-PSVEindhoven-A --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261013-E1-Cardiff-Watford-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261013-CL-Galatasaray-Barcelona-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261013-E1-Cardiff-Watford-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261013-CL-Arsenal-Lille-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261013-CL-Inter-ClubBrugge-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261014-CL-Feyenoord-Como-H --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261014-CL-Roma-RealMadrid-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261014-E1-QPR-Derby-A --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261014-CL-ShakhtarDonetsk-AEK-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261014-CL-Betis-Porto-A --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261014-CL-ShakhtarDonetsk-AEK-U25 --odds <Tipico赔率> --stake 1.00
 # 开球前：
 python -m src.ledger close 20261013-CL-RBLeipzig-PSVEindhoven-A --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
 python -m src.ledger close 20261013-CL-Galatasaray-Barcelona-U25 --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
 python -m src.ledger close 20261013-CL-Arsenal-Lille-U25 --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
+python -m src.ledger close 20261013-CL-Inter-ClubBrugge-U25 --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
 python -m src.ledger close 20261014-CL-Feyenoord-Como-H --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
 python -m src.ledger close 20261014-CL-Roma-RealMadrid-U25 --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
-python -m src.ledger close 20261014-CL-ShakhtarDonetsk-AEK-U25 --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
 python -m src.ledger close 20261014-CL-Betis-Porto-A --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
+python -m src.ledger close 20261014-CL-ShakhtarDonetsk-AEK-U25 --close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>
 ```
 
 </details>
@@ -134,30 +143,34 @@ python -m src.ledger close 20261014-CL-Betis-Porto-A --close-h <收盘主胜> --
 | QPR vs Derby | 客胜 Derby + 大于 2.5 球 | 7.00 | **7.21** | 8.13 |
 | QPR vs Derby | 客胜 Derby + 小于 2.5 球 | 10.43 | **10.74** | 8.65 |
 | QPR vs Derby | 平局 + 大于 2.5 球 | 15.78 | **16.25** | 7.59 |
-| Arsenal vs Lille | 主胜 Arsenal + 小于 2.5 球 | 4.05 | **4.17** | 3.23 |
-| Arsenal vs Lille | 平局 + 小于 2.5 球 | 8.13 | **8.38** | 15.65 |
-| Arsenal vs Lille | 客胜 Lille + 大于 2.5 球 | 23.79 | **24.50** | 21.96 |
-| Arsenal vs Lille | 客胜 Lille + 小于 2.5 球 | 29.03 | **29.90** | 32.32 |
-| Galatasaray vs Barcelona | 客胜 Barcelona + 小于 2.5 球 | 8.16 | **8.40** | 6.10 |
-| Galatasaray vs Barcelona | 主胜 Galatasaray + 大于 2.5 球 | 8.97 | **9.24** | 9.21 |
-| Galatasaray vs Barcelona | 平局 + 小于 2.5 球 | 11.92 | **12.28** | 25.20 |
-| Galatasaray vs Barcelona | 平局 + 大于 2.5 球 | 12.02 | **12.38** | 7.85 |
-| RB Leipzig vs PSV Eindhoven | 客胜 PSV Eindhoven + 大于 2.5 球 | 5.40 | **5.57** | 5.75 |
-| RB Leipzig vs PSV Eindhoven | 平局 + 大于 2.5 球 | 9.75 | **10.05** | 6.67 |
-| RB Leipzig vs PSV Eindhoven | 平局 + 小于 2.5 球 | 10.21 | **10.52** | 19.77 |
-| RB Leipzig vs PSV Eindhoven | 客胜 PSV Eindhoven + 小于 2.5 球 | 21.10 | **21.74** | 17.05 |
-| Feyenoord vs Como | 主胜 Feyenoord + 大于 2.5 球 | 3.73 | **3.84** | 4.34 |
-| Feyenoord vs Como | 平局 + 小于 2.5 球 | 7.07 | **7.28** | 12.33 |
-| Feyenoord vs Como | 主胜 Feyenoord + 小于 2.5 球 | 11.03 | **11.36** | 7.82 |
+| Arsenal vs Lille | 主胜 Arsenal + 小于 2.5 球 | 4.10 | **4.22** | 3.28 |
+| Arsenal vs Lille | 平局 + 小于 2.5 球 | 8.45 | **8.70** | 16.58 |
+| Arsenal vs Lille | 客胜 Lille + 大于 2.5 球 | 25.79 | **26.56** | 23.79 |
+| Arsenal vs Lille | 客胜 Lille + 小于 2.5 球 | 32.87 | **33.85** | 36.80 |
+| Galatasaray vs Barcelona | 客胜 Barcelona + 小于 2.5 球 | 8.13 | **8.37** | 6.11 |
+| Galatasaray vs Barcelona | 主胜 Galatasaray + 大于 2.5 球 | 9.39 | **9.67** | 9.61 |
+| Galatasaray vs Barcelona | 平局 + 大于 2.5 球 | 12.29 | **12.66** | 8.04 |
+| Galatasaray vs Barcelona | 平局 + 小于 2.5 球 | 12.39 | **12.76** | 26.49 |
+| Inter vs Club Brugge | 主胜 Inter + 小于 2.5 球 | 6.09 | **6.27** | 4.64 |
+| Inter vs Club Brugge | 平局 + 小于 2.5 球 | 10.27 | **10.58** | 21.46 |
+| Inter vs Club Brugge | 客胜 Club Brugge + 大于 2.5 球 | 14.20 | **14.63** | 14.11 |
+| Inter vs Club Brugge | 平局 + 大于 2.5 球 | 15.97 | **16.45** | 8.82 |
+| RB Leipzig vs PSV Eindhoven | 客胜 PSV Eindhoven + 大于 2.5 球 | 5.54 | **5.71** | 5.88 |
+| RB Leipzig vs PSV Eindhoven | 平局 + 大于 2.5 球 | 9.79 | **10.08** | 6.76 |
+| RB Leipzig vs PSV Eindhoven | 平局 + 小于 2.5 球 | 10.72 | **11.05** | 21.06 |
+| RB Leipzig vs PSV Eindhoven | 客胜 PSV Eindhoven + 小于 2.5 球 | 22.64 | **23.32** | 18.32 |
+| Feyenoord vs Como | 主胜 Feyenoord + 大于 2.5 球 | 3.76 | **3.87** | 4.36 |
+| Feyenoord vs Como | 平局 + 小于 2.5 球 | 7.19 | **7.40** | 12.59 |
+| Feyenoord vs Como | 主胜 Feyenoord + 小于 2.5 球 | 11.24 | **11.57** | 7.97 |
 | Shakhtar Donetsk vs AEK | 平局 + 小于 2.5 球 | 4.21 | **4.33** | 6.26 |
 | Shakhtar Donetsk vs AEK | 主胜 Shakhtar Donetsk + 小于 2.5 球 | 6.45 | **6.64** | 5.02 |
 | Shakhtar Donetsk vs AEK | 客胜 AEK + 小于 2.5 球 | 6.61 | **6.81** | 5.41 |
-| Roma vs Real Madrid | 平局 + 小于 2.5 球 | 6.22 | **6.41** | 10.61 |
-| Roma vs Real Madrid | 客胜 Real Madrid + 小于 2.5 球 | 7.16 | **7.38** | 5.32 |
-| Roma vs Real Madrid | 主胜 Roma + 小于 2.5 球 | 11.92 | **12.28** | 9.79 |
+| Roma vs Real Madrid | 平局 + 小于 2.5 球 | 6.23 | **6.41** | 10.61 |
+| Roma vs Real Madrid | 客胜 Real Madrid + 小于 2.5 球 | 7.14 | **7.36** | 5.31 |
+| Roma vs Real Madrid | 主胜 Roma + 小于 2.5 球 | 11.96 | **12.32** | 9.83 |
 | Betis vs Porto | 平局 + 小于 2.5 球 | 5.11 | **5.26** | 7.88 |
-| Betis vs Porto | 客胜 Porto + 大于 2.5 球 | 5.32 | **5.48** | 6.32 |
-| Betis vs Porto | 客胜 Porto + 小于 2.5 球 | 8.39 | **8.64** | 6.71 |
+| Betis vs Porto | 客胜 Porto + 大于 2.5 球 | 5.31 | **5.47** | 6.31 |
+| Betis vs Porto | 客胜 Porto + 小于 2.5 球 | 8.38 | **8.63** | 6.70 |
 
 ## 备注
 - 从 the-odds-api 取到 18 场带赔率的赛程（1X2 锚定 Pinnacle）。

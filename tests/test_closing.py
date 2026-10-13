@@ -357,3 +357,43 @@ def test_autoclose_leaves_league_bets_to_the_feed(cfg, tmp_path, monkeypatch):
     assert ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00",
                             odds_fetcher=lambda *a: called.append(1) or b"[]") == 0
     assert not called
+
+
+def test_autoclose_uses_the_stored_kickoff_to_avoid_spending_quota(cfg, tmp_path, monkeypatch):
+    """Without a stored kick-off, every run on a match day would spend a
+    request just to discover there is nothing to do yet — which is why the
+    cron can only be frequent once the time is in the ledger."""
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    row = _row(pick_id="ucl", outcome="A", odds=12.5, label="客胜 Club Brugge")
+    row.update(div="CL", home="Inter", away="Club Brugge",
+               date=pd.Timestamp("2026-10-13"),
+               kickoff_utc=pd.Timestamp("2026-10-13 19:00"))
+    _write(cfg, tmp_path, True, [row])
+    called = []
+
+    def fetcher(*a):
+        called.append(1)
+        return b"[]"
+
+    # three hours before kick-off: outside the window, no request at all
+    assert ledger.autoclose(cfg, tmp_path, now="2026-10-13T16:00:00",
+                            window_minutes=45, odds_fetcher=fetcher) == 0
+    assert not called
+    # half an hour before: inside the window, now it asks
+    ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00",
+                     window_minutes=45, odds_fetcher=fetcher)
+    assert called
+
+
+def test_autoclose_falls_back_to_the_date_for_older_rows(cfg, tmp_path, monkeypatch):
+    """Rows written before kickoff_utc existed still have to work."""
+    import json
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    row = _row(pick_id="ucl", outcome="A", odds=12.5, label="客胜 Club Brugge")
+    row.update(div="CL", home="Inter", away="Club Brugge",
+               date=pd.Timestamp("2026-10-13"), kickoff_utc=None)
+    path = _write(cfg, tmp_path, True, [row])
+    payload = json.dumps([UCL_EVENT]).encode()
+    assert ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00",
+                            window_minutes=45, odds_fetcher=lambda *a: payload) == 1
+    assert pd.notna(ledger.load(path).iloc[0]["clv"])

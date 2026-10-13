@@ -215,6 +215,9 @@ report:
   # 所以全年恒定相差 1 小时，直接加常数即可，不需要时区库。
   # 手填赛程里的时间按原样显示——那是你自己填的本地时间。
   kickoff_offset_hours: 1
+  # the-odds-api 给的是 UTC，所以那部分做真正的时区换算（夏令时 +2、冬令时 +1），
+  # 不能套用上面那个为英国时间设的固定偏移。
+  timezone: Europe/Berlin
 
 paths:
   cache: data/cache
