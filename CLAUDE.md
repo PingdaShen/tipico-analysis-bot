@@ -38,6 +38,7 @@ src/data.py              下载赛果/赔率：football-data.co.uk 的 mmz4281�
                          new/（额外国家）和 martj42/international_results（国家队），带本地缓存
 src/openfootball.py      解析 openfootball 的欧战赛果文本（取 90 分钟比分，到上赛季为止）
 src/openligadb.py        本赛季欧冠的赛程和赛果（api.openligadb.de，不需要 key）
+src/oddsapi.py           欧战/国家队的赛程和赔率（the-odds-api.com，需要 ODDS_API_KEY）
 src/aliases.py           跨数据源的队名归一；check / suggest 子命令
 src/pool.py              跨联赛合并数据集和拟合（欧战定价用）
 src/intl.py              国家队模型（中立场处理 + 更长的时间窗口）
@@ -61,9 +62,11 @@ bets/                    ledger.csv（真实）、paper_ledger.csv（模拟）
 | | 赛程 | 赔率 | 赛果（用于结算） | 能算 CLV |
 |---|---|---|---|---|
 | 国内联赛（22 个） | `fixtures.csv` | 有赛前赔率 | football-data.co.uk | **能** |
-| 欧冠 | **openligadb 自动** | **手填** | openligadb（本赛季实时） | 手记收盘价后能 |
-| 欧联/欧协联 | 手填 | **手填** | openfootball 只有资格赛 | 手记收盘价后能 |
-| 国家队 | 手填 | **手填** | international_results | 不能 |
+| 欧冠 | the-odds-api | **the-odds-api（含 Pinnacle）** | openligadb（本赛季实时） | **能** |
+| 欧联/欧协联 | the-odds-api | **the-odds-api（含 Pinnacle）** | 无 | **能** |
+| 国家队（欧国联） | the-odds-api | **the-odds-api（含 Pinnacle）** | international_results | **能** |
+
+没有 `ODDS_API_KEY` 时全部退回手填（`manual_fixtures.csv`），功能不变、只是费事。
  
 football-data.co.uk 完全没有欧战和国家队数据（`mmz4281/2627/CL.csv` 返回 404）。
 欧联和欧协联连赛果源都没有：openfootball 只有欧冠正赛和三项赛事的资格赛。
@@ -255,6 +258,28 @@ Tipico 里除了单注和全串，还有「n 对 k」的系统投注（德语 Sy
 只补 Belarus 会得到反向结论，因为 Finland 同期 7-0 圣马力诺、2-1 阿尔巴尼亚，
 涨幅比 Belarus 大。所以 `manual_results.csv` 要按**比赛窗口整体**录入，
 不要只补你关心的那支球队。
+ 
+## the-odds-api（欧战和国家队的赔率源）
+ 
+`src/oddsapi.py`。密钥放环境变量 **`ODDS_API_KEY`**（CI 里是 GitHub Secret），
+绝不写进 config、日志或提交记录——`fetch_events` 的异常处理只打印异常类型，
+有测试守着密钥不外泄。
+ 
+- 覆盖欧冠、欧联、欧协联、欧国联四项（`oddsapi.SPORTS`），和
+  `config.yaml` 的 `manual_competitions` 一一对应。
+- **包含 Pinnacle**，这很关键：用户在德国访问不了 Pinnacle 网站，但 API 返回的
+  只是数字。于是这些赛事第一次有了锐价锚和可自动计算的 CLV。
+- **配额**：免费版 500 次/月，按「盘口数」计费（1X2 + 大小球 = 2 次/赛事）。
+  所以只在窗口内真有比赛时才拉，并按 `uefa.odds_api_cache_hours` 缓存。
+  赛事列表接口不计费。
+- **大小球的锚比 1X2 软**：Pinnacle 只挂自己的主盘，欧战常常是 3.0 而不是 2.5。
+  实测一轮欧冠 18 场里 Pinnacle 只有 1 场挂 2.5，所以 2.5 线退回到挂这条线的
+  软庄（Betsson、Nordic Bet、William Hill 全覆盖）。`anchor_ou25` 记录实际来源，
+  报告备注里会写明有多少场是软锚。
+- `_spread` 另外算出跨庄的平均价和最高价写进 `Avg*`/`Max*`——没有这两列的话，
+  比赛有概率却没有可比的价格，`min_odds` 的判断过不了，永远成不了候选。
+- 队名是**第四套**命名（`Inter Milan`、`AS Roma`、`Sporting Lisbon`），
+  同样走 `data/uefa_aliases.yaml`。
  
 ## 手录收盘赔率
  

@@ -78,8 +78,8 @@ def test_uefa_fixture_becomes_a_manual_pick(cfg, tmp_path, world):
     assert not picks.empty and picks["manual"].all()
 
     report = daily.render_report(today, picks, all_df, notes, cfg)
-    assert "欧战 / 国家队（手填赔率）" in report
-    assert "无法计算 CLV" in report
+    assert "## 欧战 / 国家队" in report
+    assert "算不出 CLV" in report  # 手填赔率，没有收盘价
     assert "## 联赛" not in report            # nothing from the league feed today
 
 
@@ -137,7 +137,7 @@ def test_league_and_manual_picks_are_reported_separately(cfg, tmp_path, world):
     all_df, picks, notes = _run(cfg, tmp_path, today, pool=pool, league=league)
     assert picks["manual"].any() and (~picks["manual"]).any()
     report = daily.render_report(today, picks, all_df, notes, cfg)
-    assert "## 联赛" in report and "欧战 / 国家队（手填赔率）" in report
+    assert "## 联赛" in report and "## 欧战 / 国家队" in report
     # numbering runs continuously across the two tables
     assert "| 1 |" in report and f"| {len(picks)} |" in report
 

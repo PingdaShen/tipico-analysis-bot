@@ -9,8 +9,9 @@
 # 没进表的队名会被当成一支独立球队（仍然起到连接联赛的作用，
 # 但因为 min_team_matches 不会被推荐）。
 #
-# 当前覆盖 171 个队名。
+# 当前覆盖 180 个队名。
 # openligadb 用德语名（Inter Mailand、FC Brügge、AS Rom），是第三套命名。
+# the-odds-api 又是一套写法（Inter Milan、AS Roma、Sporting Lisbon）。
 aliases:
   1. FC Heidenheim 1846: Heidenheim
   1. FC Union Berlin: Union Berlin
@@ -19,11 +20,13 @@ aliases:
   AC Milan: Milan
   ACF Fiorentina: Fiorentina
   AEK Athen: AEK
+  AEK Athens: AEK
   AFC Ajax: Ajax
   AIK Solna: AIK
   Aris Saloniki: Aris
   Arsenal FC: Arsenal
   AS Rom: Roma
+  AS Roma: Roma
   Aston Villa FC: Aston Villa
   Atalanta: Atalanta
   Atalanta BC: Atalanta
@@ -37,6 +40,7 @@ aliases:
   Bayern München: Bayern Munich
   Beşiktaş: Besiktas
   BK Häcken: Hacken
+  Bodø/Glimt: Bodo/Glimt
   Bologna FC 1909: Bologna
   Borussia Dortmund: Dortmund
   Brøndby IF: Brondby
@@ -94,6 +98,7 @@ aliases:
   Ilves Tampere: Ilves
   Inter: Inter
   Inter Mailand: Inter
+  Inter Milan: Inter
   İstanbul Başakşehir: Buyuksehyr
   Jagiellonia Białystok: Jagiellonia
   Juventus: Juventus
@@ -120,6 +125,7 @@ aliases:
   PAE Olympiakos SFP: Olympiakos
   Panathinaikos: Panathinaikos
   PAOK Saloniki: PAOK
+  Paris Saint Germain: Paris SG
   Paris Saint-Germain: Paris SG
   Paris Saint-Germain FC: Paris SG
   Paris St. Germain: Paris SG
@@ -142,6 +148,7 @@ aliases:
   Royale Union Saint-Gilloise: St. Gilloise
   RSC Anderlecht: Anderlecht
   Sabah: ""
+  Sabah FK: ""
   Samsunspor: Samsunspor
   Servette FC: Servette
   Sevilla FC: Sevilla
@@ -154,6 +161,7 @@ aliases:
   SK Sturm Graz: Sturm Graz
   SL Benfica: Benfica
   Slavia Prag: ""
+  Slavia Praha: ""
   Slovan Bratislava: ""
   Sport Lisboa e Benfica: Benfica
   Sporting Braga: Sp Braga
@@ -161,6 +169,7 @@ aliases:
   Sporting Clube de Braga: Sp Braga
   Sporting Clube de Portugal: Sp Lisbon
   Sporting CP: Sp Lisbon
+  Sporting Lisbon: Sp Lisbon
   SS Lazio: Lazio
   SSC Napoli: Napoli
   St Patrick's Athletic: St. Patricks
@@ -183,3 +192,4 @@ aliases:
   Wolfsberger AC: Wolfsberger AC
   Zenit St. Petersburg: Zenit
   Śląsk Wrocław: Slask Wroclaw
+  ŠK Slovan Bratislava: ""

@@ -20,6 +20,10 @@ on:
         default: ""
         type: string
 
+env:
+  # 欧战和国家队的赔率源。没设置时这部分自动跳过，联赛不受影响。
+  ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+
 permissions:
   contents: read
 

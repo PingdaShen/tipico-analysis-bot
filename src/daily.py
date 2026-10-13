@@ -24,7 +24,7 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-from . import intl, ledger, manual, openligadb
+from . import intl, ledger, manual, oddsapi, openligadb
 from .aliases import load_table
 from .config import ROOT, load_config
 from .data import load_fixtures, load_history, recent_seasons
@@ -51,6 +51,50 @@ def league_history(div: str, cfg: dict, cache: Path, root: Path, today,
     base = history_loader(div, seasons, cache, today=today.date())
     return manual.apply_results(base, Path(root) / cfg["paths"]["manual_results"],
                                 [div], label=f"{cfg['leagues'].get(div, div)}：")
+
+
+MATCH_KEY = ["date", "home", "away"]
+
+
+def _odds_api_fixtures(cfg: dict, today, cache: Path, comps: dict, odds_loader
+                       ) -> tuple[pd.DataFrame, list[str]]:
+    """Priced European and international fixtures from the-odds-api.
+
+    This is what turns those competitions from "type the odds in yourself"
+    into ordinary picks: the anchor comes from Pinnacle, which the user cannot
+    reach from Germany, so their CLV becomes measurable the same way a
+    league's is. Team names are a fourth convention and go through the alias
+    table before anything else.
+    """
+    if not cfg["uefa"].get("odds_api", True) or not oddsapi.api_key():
+        return pd.DataFrame(), []
+    offset = (cfg.get("report") or {}).get("kickoff_offset_hours", 0)
+    frames, notes = [], []
+    for div in comps:
+        if div not in oddsapi.SPORTS:
+            continue
+        try:
+            df = odds_loader(div, cache, today=today,
+                             horizon_days=cfg["value"]["horizon_days"],
+                             offset_hours=offset)
+        except requests.RequestException as e:
+            notes.append(f"{div} 的赔率取不到：{type(e).__name__}")
+            continue
+        if not df.empty:
+            frames.append(df)
+    if not frames:
+        return pd.DataFrame(), notes
+    out = pd.concat(frames, ignore_index=True)
+    table = load_table(ROOT)
+    for col in ("home", "away"):
+        out[col] = out[col].map(lambda n: table.get(n) or n)
+    soft = out[out["anchor_ou25"].notna() & (out["anchor_ou25"] != "pinnacle")]
+    notes.append(f"从 the-odds-api 取到 {len(out)} 场带赔率的赛程"
+                 f"（1X2 锚定 Pinnacle）。")
+    if not soft.empty:
+        notes.append(f"其中 {len(soft)} 场的大小球 2.5 锚定的是软庄——"
+                     f"Pinnacle 只挂主盘，欧战常常不是 2.5。")
+    return out, notes
 
 
 def shift_kickoff(fixtures: pd.DataFrame, hours: int) -> pd.DataFrame:
@@ -168,7 +212,7 @@ def freshness_note(label: str, latest, today, stale_days: int = STALE_DAYS) -> s
 
 def manual_rows(cfg: dict, today, cache: Path, root: Path, fixtures: pd.DataFrame | None,
                 pool_loader=load_pool, intl_loader=intl.load,
-                history_loader=load_history
+                history_loader=load_history, odds_loader=oddsapi.load
                 ) -> tuple[list[dict], list[str], DixonColes | None, set]:
     """Evaluate hand-entered fixtures.
 
@@ -181,12 +225,21 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path, fixtures: pd.DataFram
     automatically with a real CLV because its results do have a source.
     """
     comps = cfg.get("manual_competitions") or {}
-    if fixtures is None or fixtures.empty:
-        return [], [], None, set()
+    fixtures = pd.DataFrame() if fixtures is None else fixtures
+    priced_api, api_notes = _odds_api_fixtures(cfg, today, cache, comps, odds_loader)
+    if not priced_api.empty:
+        # a hand-entered row wins: it carries Tipico's own price
+        priced_api, _ = manual.overlay(priced_api, fixtures)
+        keep = fixtures.empty or ~fixtures[MATCH_KEY].apply(tuple, axis=1).isin(
+            priced_api[MATCH_KEY].apply(tuple, axis=1))
+        fixtures = pd.concat([priced_api, fixtures[keep]] if not fixtures.empty
+                             else [priced_api], ignore_index=True)
+    if fixtures.empty:
+        return [], api_notes, None, set()
 
     aliases = load_table(root)
     models: dict[str, DixonColes | None] = {}
-    rows, notes = [], []
+    rows, notes = [], list(api_notes)
 
     def league_model(div: str) -> DixonColes | None:
         """The per-league model, fitted at most once per run."""
@@ -283,8 +336,8 @@ def manual_rows(cfg: dict, today, cache: Path, root: Path, fixtures: pd.DataFram
 
 def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_fixtures,
             root: Path = ROOT, pool_loader=load_pool, intl_loader=intl.load,
-            manual_loader=manual.load, uefa_schedule_loader=openligadb.load
-            ) -> tuple[pd.DataFrame, pd.DataFrame, list[str]]:
+            manual_loader=manual.load, uefa_schedule_loader=openligadb.load,
+            odds_loader=oddsapi.load) -> tuple[pd.DataFrame, pd.DataFrame, list[str]]:
     today = pd.Timestamp(today).normalize()
     cache = Path(root) / cfg["paths"]["cache"]
 
@@ -301,7 +354,8 @@ def analyze(cfg: dict, today, history_loader=load_history, fixtures_loader=load_
     rows, lnotes, leftover = league_rows(cfg, today, cache, root, fixtures_loader,
                                          history_loader, entered)
     mrows, mnotes, uefa_model, priced = manual_rows(
-        cfg, today, cache, root, leftover, pool_loader, intl_loader, history_loader)
+        cfg, today, cache, root, leftover, pool_loader, intl_loader, history_loader,
+        odds_loader)
     rows += mrows
     notes += lnotes + mnotes
 
@@ -447,6 +501,8 @@ def uefa_fixture_section(cfg: dict, today, upcoming: list[dict] | None, model,
     """
     if model is None or not upcoming:
         return []
+    if oddsapi.api_key() and cfg["uefa"].get("odds_api", True):
+        return []          # the-odds-api already supplies these with prices
     aliases = load_table(ROOT)
     offset = (cfg.get("report") or {}).get("kickoff_offset_hours", 0)
 
@@ -554,12 +610,22 @@ def render_report(today, picks: pd.DataFrame, all_df: pd.DataFrame,
         if not league_picks.empty:
             lines += ["## 联赛", ""] + _pick_table(league_picks) + [""]
         if not other_picks.empty:
-            lines += [
-                "## 欧战 / 国家队（手填赔率）", "",
-                "这些赛事没有收盘赔率，**无法计算 CLV**，所以不能用主要指标检验；",
-                "欧战的跨联赛实力值本身也比联赛模型不确定得多。请当作次要参考。",
-                "",
-            ] + _pick_table(other_picks, start=len(league_picks)) + [""]
+            from_api = (other_picks.get("market_source") == "pinnacle").any() \
+                if "market_source" in other_picks.columns else False
+            lines += ["## 欧战 / 国家队", ""]
+            if from_api:
+                lines += [
+                    "赛程和赔率来自 the-odds-api，1X2 锚定 Pinnacle。",
+                    "**开球前再跑一次就能取到收盘价**，所以这些注的 CLV 是算得出来的。",
+                    "不过跨联赛的实力值本身比联赛模型不确定得多，请当作次要参考。",
+                ]
+            else:
+                lines += [
+                    "这些赛事的赔率是手填的，没有收盘赔率就**算不出 CLV**，",
+                    "不能用主要指标检验；跨联赛的实力值也比联赛模型不确定得多。",
+                    "请当作次要参考。",
+                ]
+            lines += [""] + _pick_table(other_picks, start=len(league_picks)) + [""]
         lines += _id_section(picks)
         lines += _how_to_section(picks)
         lines += _combo_section(picks, all_df, cfg)

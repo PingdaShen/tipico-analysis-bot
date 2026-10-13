@@ -107,6 +107,13 @@ uefa:
   # 它只有欧冠——uel / uecl / unl 这些短名返回的都是空列表。
   # 它也没有赔率，赔率仍然要填进 manual_fixtures.csv。
   openligadb: true
+  # the-odds-api.com 提供欧冠/欧联/欧协联/欧国联的赛程和赔率，而且包含 Pinnacle
+  # ——用户在德国访问不了那个网站，但 API 返回的只是数字。
+  # 密钥放在环境变量 ODDS_API_KEY（CI 里是 GitHub Secret），绝不写进这里。
+  # 免费额度 500 次/月，每次请求按「盘口数」计费（1X2 + 大小球 = 2 次），
+  # 所以只在窗口内真有比赛时才拉，并且按 odds_api_cache_hours 缓存。
+  odds_api: true
+  odds_api_cache_hours: 3
   xi: 0.0006             # 衰减比联赛模型慢，否则跨联赛链接几乎没有权重
   # 合并模型有 ~900 支球队、~1800 个参数，但跨联赛链接只有几百场，
   # 所以正则化必须比单联赛模型强得多。用 2022-2024 赛季选参、2025 赛季验证：

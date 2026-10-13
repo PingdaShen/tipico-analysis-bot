@@ -7,12 +7,15 @@
 | | 赛程 | 赔率 | 能算 CLV |
 |---|---|---|---|
 | 国内联赛（22 个，含英冠英甲、苏格兰、德乙意乙西乙法乙、荷比葡土希） | 自动 | 自动 | **能** |
-| 欧冠 / 欧联 / 欧协联 | **手填** | **手填** | 手记收盘价后能 |
-| 国家队（欧国联、世预赛等） | **手填** | **手填** | 手记收盘价后能 |
+| 欧冠 / 欧联 / 欧协联 | 自动 | 自动（含 Pinnacle） | **能** |
+| 国家队（欧国联） | 自动 | 自动（含 Pinnacle） | **能** |
+| 其他国家队赛事（世预赛等） | **手填** | **手填** | 手记收盘价后能 |
 
-football-data.co.uk 完全没有欧战和国家队数据，也没有免费替代源同时提供赛程和赔率，
-所以这两类赛事的价格需要你自己填进 `manual_fixtures.csv`（手机上可以用 Actions 的
-**add-fixture** 表单）。详见 [CLAUDE.md](CLAUDE.md)。
+football-data.co.uk 完全没有欧战和国家队数据。欧战和欧国联的赛程与赔率来自
+[the-odds-api.com](https://the-odds-api.com)，需要把免费 API key 存成 GitHub Secret
+`ODDS_API_KEY`（本地则放进环境变量）。它包含 Pinnacle 的赔率，所以这些赛事也能算出
+可信的 CLV。没有 key 时这部分自动跳过，改用 `manual_fixtures.csv` 手填，联赛不受影响。
+详见 [CLAUDE.md](CLAUDE.md)。
 
 ## 先看这个：模型目前没有优势
 
