@@ -383,6 +383,90 @@ def settle_systems(cfg: dict, root: Path, paper: bool) -> None:
 
 
 
+def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 60,
+              odds_fetcher=None) -> int:
+    """Record closing odds for bets about to kick off.
+
+    A closing line only exists in the minutes before kick-off, so it has to be
+    captured then — the daily run happens ten hours earlier and sees opening
+    prices. League bets do not need this (football-data publishes closing odds
+    with the results), but the European and international competitions have no
+    such feed, and without a closing price those bets can never be scored on
+    CLV, the one metric that works at these volumes.
+
+    The API is only called when an open bet is actually inside the window, so
+    a quiet day costs no quota at all.
+    """
+    from . import oddsapi
+
+    now = pd.Timestamp(now) if now is not None else pd.Timestamp.now('UTC')
+    now = now.tz_localize(None) if now.tzinfo else now
+    covered = [d for d in (cfg.get("manual_competitions") or {}) if d in oddsapi.SPORTS]
+    if not covered or not oddsapi.api_key():
+        return 0
+
+    pending = {}
+    for paper in (False, True):
+        df = load(ledger_path(cfg, root, paper))
+        if df.empty:
+            continue
+        open_rows = df[(df["status"] == "open") & df["div"].isin(covered)
+                       & df["clv"].isna()]
+        for _, r in open_rows.iterrows():
+            # only today's matches can be inside the window, and checking the
+            # date here keeps a quiet run from spending any quota at all
+            if pd.Timestamp(r["date"]).date() != now.date():
+                continue
+            pending.setdefault(r["div"], set()).add((r["home"], r["away"]))
+    if not pending:
+        return 0
+
+    cache = Path(root) / cfg["paths"]["cache"]
+    # the alias table ships with the code, so it comes from the repo root even
+    # when the ledgers live somewhere else
+    table = load_table(ROOT)
+    touched = 0
+    for div, wanted in pending.items():
+        events = oddsapi.fetch_events(div, cache, max_age_hours=0, fetcher=odds_fetcher)
+        if not events:
+            continue
+        rows = oddsapi.to_fixture_rows(events, div)
+        if rows.empty:
+            continue
+        for col in ("home", "away"):
+            rows[col] = rows[col].map(lambda n: table.get(n) or n)
+        for _, fx in rows.iterrows():
+            if (fx["home"], fx["away"]) not in wanted:
+                continue
+            start = pd.Timestamp(f"{fx['date']:%Y-%m-%d} {fx['Time']}")
+            if not (now <= start <= now + pd.Timedelta(minutes=window_minutes)):
+                continue
+            values = {"close_h": fx.get("PSH"), "close_d": fx.get("PSD"),
+                      "close_a": fx.get("PSA"), "close_o25": fx.get("P>2.5"),
+                      "close_u25": fx.get("P<2.5")}
+            source = "pinnacle" if fx.get("anchor_1x2") == "pinnacle" else "average"
+            for pid in _ids_for(cfg, root, div, fx["home"], fx["away"]):
+                try:
+                    touched += set_closing(pid, values, cfg, root, source=source)
+                except SystemExit as e:
+                    print(f"[提示] {pid}: {e}")
+    return touched
+
+
+def _ids_for(cfg: dict, root: Path, div: str, home: str, away: str) -> list[str]:
+    """Pick ids of open bets on one match, across both ledgers."""
+    out = []
+    for paper in (False, True):
+        df = load(ledger_path(cfg, root, paper))
+        if df.empty:
+            continue
+        m = df[(df["div"] == div) & (df["home"] == home) & (df["away"] == away)
+               & (df["status"] == "open") & df["clv"].isna()]
+        out.extend(m["id"].tolist())
+    return sorted(set(out))
+
+
+
 def settle(cfg: dict, root: Path = ROOT, history_loader=load_history, today=None,
            **loaders) -> None:
     cache = Path(root) / cfg["paths"]["cache"]
@@ -509,6 +593,10 @@ def main() -> None:
     a.add_argument("--stake", type=float, required=True)
     sub.add_parser("settle")
     sub.add_parser("summary")
+    ac = sub.add_parser("autoclose",
+                        help="给即将开球的欧战/国家队注记录收盘赔率（定时任务用）")
+    ac.add_argument("--window", type=int, default=60,
+                    help="开球前多少分钟内算「即将开球」，默认 60")
     y = sub.add_parser("system", help="记录一次系统投注（Systemwette，如 5 选 2）")
     y.add_argument("--k", type=int, required=True, help="每注串几层，5 对 2 就填 2")
     y.add_argument("--stake", type=float, required=True, help="总投入（不是每注）")
@@ -529,6 +617,9 @@ def main() -> None:
     cfg = load_config()
     if args.cmd == "add":
         add(args.pick_id, args.odds, args.stake, cfg)
+    elif args.cmd == "autoclose":
+        n = autoclose(cfg, window_minutes=args.window)
+        print(f"记录了 {n} 条收盘赔率。" if n else "窗口内没有待记录的注，没有调用 API。")
     elif args.cmd == "system":
         legs = {}
         for item in args.leg:

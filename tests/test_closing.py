@@ -256,3 +256,104 @@ def test_a_league_can_be_settled_from_a_hand_entered_score(cfg, tmp_path):
                   intl_loader=lambda *a, **k: pd.DataFrame(),
                   uefa_loader=lambda *a, **k: pd.DataFrame())
     assert ledger.load(path).iloc[0]["status"] == "settled"
+
+
+# --- automatic pre-kickoff capture --------------------------------------------
+
+UCL_EVENT = {
+    "home_team": "Inter Milan", "away_team": "Club Brugge",
+    "commence_time": "2026-10-13T19:00:00Z",
+    "bookmakers": [{"key": "pinnacle", "title": "Pinnacle", "markets": [
+        {"key": "h2h", "outcomes": [{"name": "Inter Milan", "price": 1.25},
+                                    {"name": "Club Brugge", "price": 11.64},
+                                    {"name": "Draw", "price": 6.32}]}]}],
+}
+
+
+def _open_ucl(cfg, tmp_path, outcome="A", odds=12.5):
+    row = _row(pick_id="ucl", outcome=outcome, odds=odds, label="客胜 Club Brugge")
+    row.update(div="CL", home="Inter", away="Club Brugge",
+               date=pd.Timestamp("2026-10-13"))
+    return _write(cfg, tmp_path, True, [row])
+
+
+def test_autoclose_captures_the_price_before_kickoff(cfg, tmp_path, monkeypatch):
+    """The daily run is ten hours early, so without this these bets never get
+    a CLV — and CLV is the only metric that works at these volumes."""
+    import json
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    path = _open_ucl(cfg, tmp_path)
+    payload = json.dumps([UCL_EVENT]).encode()
+
+    n = ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00",
+                         window_minutes=60, odds_fetcher=lambda *a: payload)
+    assert n == 1
+    row = ledger.load(path).iloc[0]
+    assert row["close_odds"] == 11.64
+    assert row["close_source"] == "pinnacle"
+    assert row["clv"] == pytest.approx(round(12.5 / 11.64 - 1, 4))
+    assert pd.notna(row["clv_novig"]), "整个盘口都在，去水 CLV 要算得出来"
+
+
+def test_autoclose_ignores_a_match_outside_the_window(cfg, tmp_path, monkeypatch):
+    import json
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    path = _open_ucl(cfg, tmp_path)
+    payload = json.dumps([UCL_EVENT]).encode()
+    assert ledger.autoclose(cfg, tmp_path, now="2026-10-13T12:00:00",
+                            window_minutes=60, odds_fetcher=lambda *a: payload) == 0
+    assert pd.isna(ledger.load(path).iloc[0]["clv"])
+
+
+def test_autoclose_spends_no_quota_when_nothing_is_pending(cfg, tmp_path, monkeypatch):
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    called = []
+
+    def fetcher(*a):
+        called.append(1)
+        return b"[]"
+
+    # no bets at all
+    assert ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00",
+                            odds_fetcher=fetcher) == 0
+    # a bet, but not today
+    row = _row(pick_id="ucl", odds=12.5)
+    row.update(div="CL", home="Inter", away="Club Brugge",
+               date=pd.Timestamp("2026-10-20"))
+    _write(cfg, tmp_path, True, [row])
+    assert ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00",
+                            odds_fetcher=fetcher) == 0
+    assert not called, "没有待处理的注就不该调用 API"
+
+
+def test_autoclose_does_nothing_without_a_key(cfg, tmp_path, monkeypatch):
+    monkeypatch.delenv("ODDS_API_KEY", raising=False)
+    _open_ucl(cfg, tmp_path)
+    assert ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00") == 0
+
+
+def test_autoclose_skips_a_bet_that_already_has_a_clv(cfg, tmp_path, monkeypatch):
+    import json
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    path = _open_ucl(cfg, tmp_path)
+    payload = json.dumps([UCL_EVENT]).encode()
+    ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00",
+                     odds_fetcher=lambda *a: payload)
+    before = ledger.load(path).iloc[0]["clv"]
+    called = []
+    assert ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00",
+                            odds_fetcher=lambda *a: called.append(1) or payload) == 0
+    assert not called
+    assert ledger.load(path).iloc[0]["clv"] == before
+
+
+def test_autoclose_leaves_league_bets_to_the_feed(cfg, tmp_path, monkeypatch):
+    """football-data publishes closing odds with the results."""
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    row = _row(pick_id="league", odds=4.0)
+    row.update(div="E0", date=pd.Timestamp("2026-10-13"))
+    _write(cfg, tmp_path, True, [row])
+    called = []
+    assert ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00",
+                            odds_fetcher=lambda *a: called.append(1) or b"[]") == 0
+    assert not called

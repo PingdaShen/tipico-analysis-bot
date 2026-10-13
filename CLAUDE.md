@@ -51,7 +51,8 @@ src/ledger.py            真实/模拟投注记录：添加、自动结算、汇
 src/backtest.py          逐周滚动回测（用 Bet365 赔率代替 Tipico，只覆盖国内联赛）
 tests/                   离线测试（合成联赛数据和合成多联赛世界，不依赖网络）
 .github/workflows/       daily.yml 每天运行；backtest.yml 手动回测；
-                         record-bet.yml 记录投注；record-close.yml 记收盘赔率；
+                         record-bet.yml 记录投注；record-close.yml 手记收盘赔率；
+                         record-close-auto.yml 开球前自动记收盘赔率；
                          record-system.yml 记系统投注；add-fixture.yml 填欧战/国家队赔率
 reports/                 每日报告 latest.md、YYYY-MM-DD.md 及 CSV
 bets/                    ledger.csv（真实）、paper_ledger.csv（模拟）
@@ -280,6 +281,18 @@ Tipico 里除了单注和全串，还有「n 对 k」的系统投注（德语 Sy
   比赛有概率却没有可比的价格，`min_odds` 的判断过不了，永远成不了候选。
 - 队名是**第四套**命名（`Inter Milan`、`AS Roma`、`Sporting Lisbon`），
   同样走 `data/uefa_aliases.yaml`。
+ 
+### 收盘赔率要在开球前抓
+ 
+收盘线只在开球前几分钟存在。`daily-report` 跑在 06:00 UTC——比最早的欧冠开球
+早近 10 小时，取到的是**开盘价**。所以另有 `record-close-auto.yml`，在
+15:15 / 17:15 / 18:15 / 19:15 UTC 各跑一次 `python -m src.ledger autoclose`，
+给 60 分钟内开球、且还没有 CLV 的欧战/国家队注记录收盘价。
+ 
+- 国内联赛不需要：football-data 连同赛果一起发布收盘赔率。
+- **窗口内没有待处理的注时直接退出，不调用 API**；待处理的注不是当天的也跳过。
+  所以没有比赛的日子一次配额都不花。
+- 1X2 锚定 Pinnacle 时 `close_source` 记为 `pinnacle`，否则记 `average`。
  
 ## 手录收盘赔率
  

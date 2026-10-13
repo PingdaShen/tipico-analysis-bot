@@ -111,7 +111,8 @@ CLV 不受影响，每条腿照常单独计算。
 | `backtest` | 手动滚动回测，结果进运行摘要和构件 |
 | `record-bet` | 表单记录一注真实投注 |
 | `add-fixture` | 表单填欧战/国家队的赛程和赔率 |
-| `record-close` | 表单记收盘赔率（开球前几分钟），算出 CLV |
+| `record-close` | 表单手记收盘赔率（没有 API key 时用） |
+| `record-close-auto` | 开球前自动记欧战/国家队的收盘赔率（每天 4 次，没比赛不耗配额） |
 | `record-system` | 表单记系统投注（Systemwette，如 5 对 2） |
 
 本项目不保证盈利，只用亏得起的钱。

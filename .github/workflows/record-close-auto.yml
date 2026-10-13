@@ -1,0 +1,68 @@
+name: record-close-auto
+
+# 开球前自动记录欧战/国家队的收盘赔率。
+#
+# 收盘线只在开球前几分钟存在，而 daily-report 跑在 06:00 UTC——比最早的欧冠
+# 开球早近 10 小时，取到的是开盘价。没有收盘价这些注就永远算不出 CLV，
+# 而 CLV 是本项目在当前注量下唯一有效的指标。
+#
+# 国内联赛不需要：football-data 会连同赛果一起发布收盘赔率。
+#
+# 窗口内没有待处理的注时直接退出，不调用 API、不消耗配额。
+on:
+  schedule:
+    # 覆盖欧洲常见开球时段（UTC）：17:45 / 19:00 / 20:00 / 21:00 德国时间
+    - cron: "15 15 * * *"
+    - cron: "15 17 * * *"
+    - cron: "15 18 * * *"
+    - cron: "15 19 * * *"
+  workflow_dispatch:
+    inputs:
+      window:
+        description: "开球前多少分钟内算「即将开球」"
+        required: false
+        default: "60"
+        type: string
+
+env:
+  ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ledger-write
+  cancel-in-progress: false
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: 记录收盘赔率
+        env:
+          WINDOW: ${{ inputs.window }}
+        run: |
+          python -m src.ledger autoclose --window "${WINDOW:-60}" \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: 提交
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bets
+          if git diff --staged --quiet; then
+            echo "没有变化，不提交。"
+            exit 0
+          fi
+          git commit -m "收盘赔率（自动）$(date -u +%F\ %H:%M)"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
