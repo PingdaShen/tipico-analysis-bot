@@ -414,8 +414,9 @@ def test_autoclose_says_when_to_run_instead(cfg, tmp_path, monkeypatch):
     r = ledger.autoclose(cfg, tmp_path, now="2026-10-13T17:36:00", window_minutes=60,
                          odds_fetcher=lambda *a: payload)
     assert r == 0
-    assert "19:00" in r.reason and "18:00" in r.reason, "要说清楚几点之后再跑"
-    assert "83" in r.reason
+    assert "19:00" in r.reason, "要说明哪一场在等"
+    assert "18:00" in r.reason, "要说清楚几点之后再跑（开球前 60 分钟）"
+    assert "84 分钟" in r.reason, "17:36 到 19:00 是 84 分钟"
 
 
 def test_autoclose_says_the_match_was_missed(cfg, tmp_path, monkeypatch):

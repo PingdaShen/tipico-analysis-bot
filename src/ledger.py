@@ -432,7 +432,7 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
             0, f"环境变量 {oddsapi.KEY_ENV} 没有设置——在 GitHub 上要检查 "
                f"Settings → Secrets 里的名字是否就是 {oddsapi.KEY_ENV}。")
 
-    pending = {}
+    pending, next_known = {}, None
     for paper in (False, True):
         df = load(ledger_path(cfg, root, paper))
         if df.empty:
@@ -446,12 +446,19 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
             # to discover there is nothing to do yet.
             kickoff = r["kickoff_utc"]
             if pd.notna(kickoff):
-                if not (now <= pd.Timestamp(kickoff) <= now + pd.Timedelta(minutes=window_minutes)):
+                kickoff = pd.Timestamp(kickoff)
+                if kickoff > now and (next_known is None or kickoff < next_known):
+                    next_known = kickoff
+                if not (now <= kickoff <= now + pd.Timedelta(minutes=window_minutes)):
                     continue
             elif pd.Timestamp(r["date"]).date() != now.date():
                 continue          # older rows have no kick-off; fall back to the date
             pending.setdefault(r["div"], set()).add((r["home"], r["away"]))
     if not pending:
+        # the ledger knows the kick-off times, so say when to come back rather
+        # than making the user guess — and without spending a request to do it
+        if next_known is not None:
+            return AutocloseResult(0, _wait_message(next_known, now, window_minutes))
         total = sum(len(load(ledger_path(cfg, root, p_))) for p_ in (False, True))
         return AutocloseResult(
             0, f"窗口内（开球前 {window_minutes} 分钟）没有待记录的注；"
@@ -497,12 +504,15 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
             return AutocloseResult(
                 0, "有待记录的注，但赔率源里找不到对应的比赛——可能已经开赛了，"
                    "收盘价错过了，只能事后用 record-close 手工补。")
-        wait = (soonest - now).total_seconds() / 60
-        return AutocloseResult(
-            0, f"还没到时候：最近的一场在 {soonest:%H:%M} UTC 开球，"
-               f"还有 {wait:.0f} 分钟，而窗口是开球前 {window_minutes} 分钟。"
-               f"{soonest - pd.Timedelta(minutes=window_minutes):%H:%M} UTC 之后再跑。")
+        return AutocloseResult(0, _wait_message(soonest, now, window_minutes))
     return AutocloseResult(touched)
+
+
+def _wait_message(kickoff, now, window_minutes: int) -> str:
+    wait = (kickoff - now).total_seconds() / 60
+    opens = kickoff - pd.Timedelta(minutes=window_minutes)
+    return (f"还没到时候：最近的一场在 {kickoff:%H:%M} UTC 开球，还有 {wait:.0f} 分钟，"
+            f"而窗口是开球前 {window_minutes} 分钟。{opens:%H:%M} UTC 之后再跑。")
 
 
 def _ids_for(cfg: dict, root: Path, div: str, home: str, away: str) -> list[str]:
