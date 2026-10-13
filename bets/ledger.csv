@@ -1,11 +1,11 @@
 id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,result,pnl,close_odds,clv,clv_novig,close_source,kind,system_id
-20261009-F2-Nancy-Guingamp-A,2026-10-09,2026-10-09,F2,Nancy,Guingamp,1X2,A,客胜 Guingamp,3.8,0.0,0.2955,settled,1-0 输,,,,,,system_leg,SYS-20261009-3of5-7d2c
-20261009-D1-Dortmund-WerderBremen-U25,2026-10-09,2026-10-09,D1,Dortmund,Werder Bremen,OU25,U25,小于 2.5 球,3.3,0.0,0.333,settled,2-2 输,,,,,,system_leg,SYS-20261009-3of5-7d2c
-20261009-D2-Braunschweig-HolsteinKiel-U25,2026-10-09,2026-10-09,D2,Braunschweig,Holstein Kiel,OU25,U25,小于 2.5 球,2.65,0.0,0.4088,settled,1-0 赢,,,,,,system_leg,SYS-20261009-3of5-7d2c
-20261009-F2-Montpellier-Grenoble-U25,2026-10-09,2026-10-09,F2,Montpellier,Grenoble,OU25,U25,小于 2.5 球,1.83,0.0,0.5877,settled,2-0 赢,,,,,,system_leg,SYS-20261009-3of5-7d2c
-20261009-P1-Moreirense-GilVicente-H,2026-10-09,2026-10-09,P1,Moreirense,Gil Vicente,1X2,H,主胜 Moreirense,3.4,0.0,0.3026,settled,0-1 输,,,,,,system_leg,SYS-20261009-3of5-7d2c
-20261010-SC1-InvernessC-Stenhousemuir-A,2026-10-10,2026-10-10,SC1,Inverness C,Stenhousemuir,1X2,A,客胜 Stenhousemuir,3.7,0.5,0.3471,settled,2-0 输,-0.5,,,,,single,
-20261010-SP1-Barcelona-Getafe-U25,2026-10-10,2026-10-10,SP1,Barcelona,Getafe,OU25,U25,小于 2.5 球,3.8,0.5,0.3132,settled,3-0 输,-0.5,,,,,single,
-20261010-E2-Doncaster-Burton-A,2026-10-10,2026-10-10,E2,Doncaster,Burton,1X2,A,客胜 Burton,4.4,0.5,0.2409,settled,1-0 输,-0.5,,,,,single,
-20261010-E3-Shrewsbury-Exeter-U25,2026-10-10,2026-10-10,E3,Shrewsbury,Exeter,OU25,U25,小于 2.5 球,1.67,0.5,0.6634,settled,0-1 赢,0.33,,,,,single,
-20261010-SC0-Hearts-StMirren-U25,2026-10-10,2026-10-10,SC0,Hearts,St Mirren,OU25,U25,小于 2.5 球,2.6,0.5,0.4239,settled,5-0 输,-0.5,,,,,single,
+20261009-F2-Nancy-Guingamp-A,2026-10-09,2026-10-09,F2,Nancy,Guingamp,1X2,A,客胜 Guingamp,3.8,0.0,0.2955,settled,1-0 输,,3.26,0.1656,0.0699,average,system_leg,SYS-20261009-3of5-7d2c
+20261009-D1-Dortmund-WerderBremen-U25,2026-10-09,2026-10-09,D1,Dortmund,Werder Bremen,OU25,U25,小于 2.5 球,3.3,0.0,0.333,settled,2-2 输,,2.65,0.2453,0.1671,average,system_leg,SYS-20261009-3of5-7d2c
+20261009-D2-Braunschweig-HolsteinKiel-U25,2026-10-09,2026-10-09,D2,Braunschweig,Holstein Kiel,OU25,U25,小于 2.5 球,2.65,0.0,0.4088,settled,1-0 赢,,2.59,0.0232,-0.0531,average,system_leg,SYS-20261009-3of5-7d2c
+20261009-F2-Montpellier-Grenoble-U25,2026-10-09,2026-10-09,F2,Montpellier,Grenoble,OU25,U25,小于 2.5 球,1.83,0.0,0.5877,settled,2-0 赢,,1.81,0.011,-0.058,average,system_leg,SYS-20261009-3of5-7d2c
+20261009-P1-Moreirense-GilVicente-H,2026-10-09,2026-10-09,P1,Moreirense,Gil Vicente,1X2,H,主胜 Moreirense,3.4,0.0,0.3026,settled,0-1 输,,3.28,0.0366,-0.0374,average,system_leg,SYS-20261009-3of5-7d2c
+20261010-SC1-InvernessC-Stenhousemuir-A,2026-10-10,2026-10-10,SC1,Inverness C,Stenhousemuir,1X2,A,客胜 Stenhousemuir,3.7,0.5,0.3471,settled,2-0 输,-0.5,4.18,-0.1148,-0.1953,average,single,
+20261010-SP1-Barcelona-Getafe-U25,2026-10-10,2026-10-10,SP1,Barcelona,Getafe,OU25,U25,小于 2.5 球,3.8,0.5,0.3132,settled,3-0 输,-0.5,3.61,0.0526,-0.0111,average,single,
+20261010-E2-Doncaster-Burton-A,2026-10-10,2026-10-10,E2,Doncaster,Burton,1X2,A,客胜 Burton,4.4,0.5,0.2409,settled,1-0 输,-0.5,4.49,-0.02,-0.0812,average,single,
+20261010-E3-Shrewsbury-Exeter-U25,2026-10-10,2026-10-10,E3,Shrewsbury,Exeter,OU25,U25,小于 2.5 球,1.67,0.5,0.6634,settled,0-1 赢,0.33,1.64,0.0183,-0.0526,average,single,
+20261010-SC0-Hearts-StMirren-U25,2026-10-10,2026-10-10,SC0,Hearts,St Mirren,OU25,U25,小于 2.5 球,2.6,0.5,0.4239,settled,5-0 输,-0.5,2.46,0.0569,-0.0111,average,single,
