@@ -469,12 +469,18 @@ def _how_to_section(picks: pd.DataFrame) -> list[str]:
         "3. 下注后在 Actions 页面跑 **record-bet**，填 ID、实际赔率、注额。",
     ]
     if bool(manual_flag.any()):
-        lines += [
-            "4. **开球前几分钟**在 Actions 页面跑 **record-close**，填那一刻的市场赔率"
-            "（有 Pinnacle 用 Pinnacle）。",
-            "   欧战和国家队没有收盘赔率源，不记就永远算不出 CLV，这些推荐也就无从检验。"
-            "联赛不用管，收盘价会自动取。",
-        ]
+        from . import oddsapi
+        if oddsapi.api_key():
+            lines.append(
+                "4. 收盘赔率不用管：`record-close-auto` 每半小时跑一次，"
+                "开球前 45 分钟内会自动抓 Pinnacle 的价格；联赛的收盘价随赛果自动取。")
+        else:
+            lines += [
+                "4. **开球前几分钟**在 Actions 页面跑 **record-close**，填那一刻的市场赔率"
+                "（有 Pinnacle 用 Pinnacle）。",
+                "   没有配置 `ODDS_API_KEY`，所以欧战和国家队的收盘价只能手记；"
+                "不记就永远算不出 CLV。联赛不用管，收盘价会自动取。",
+            ]
     lines += [
         "",
         "<details><summary>用终端的话</summary>",
@@ -484,8 +490,8 @@ def _how_to_section(picks: pd.DataFrame) -> list[str]:
     for _, p in picks.iterrows():
         lines.append(f"python -m src.ledger add {p['pick_id']} --odds <Tipico赔率> "
                      f"--stake {p['stake']:.2f}")
-    if bool(manual_flag.any()):
-        lines.append("# 开球前：")
+    if bool(manual_flag.any()) and not oddsapi.api_key():
+        lines.append("# 开球前（没有 ODDS_API_KEY 时才需要）：")
         for _, p in picks[manual_flag].iterrows():
             lines.append(f"python -m src.ledger close {p['pick_id']} "
                          f"--close-h <收盘主胜> --close-d <收盘平> --close-a <收盘客胜>")

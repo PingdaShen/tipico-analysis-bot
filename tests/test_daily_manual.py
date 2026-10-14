@@ -576,3 +576,21 @@ def test_a_dead_schedule_endpoint_does_not_break_the_report(cfg, tmp_path):
         uefa_schedule_loader=boom,
     )
     assert any("欧冠赛程取不到" in n for n in notes)
+
+
+def test_the_report_does_not_ask_for_manual_closing_odds_when_the_api_is_there(
+        cfg, tmp_path, world, monkeypatch):
+    """record-close-auto handles it; telling the user to do it by hand is
+    stale advice left over from before the API existed."""
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    report, _ = _report_for(cfg, tmp_path, world)
+    assert "record-close-auto" in report
+    assert "ledger close" not in report, "不该再给手记收盘价的命令"
+
+
+def test_the_report_still_explains_manual_closing_without_a_key(
+        cfg, tmp_path, world, monkeypatch):
+    monkeypatch.delenv("ODDS_API_KEY", raising=False)
+    report, picks = _report_for(cfg, tmp_path, world)
+    assert "ODDS_API_KEY" in report
+    assert f"python -m src.ledger close {picks.iloc[0]['pick_id']}" in report

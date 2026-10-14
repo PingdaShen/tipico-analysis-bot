@@ -9,7 +9,7 @@
 # 没进表的队名会被当成一支独立球队（仍然起到连接联赛的作用，
 # 但因为 min_team_matches 不会被推荐）。
 #
-# 当前覆盖 180 个队名。
+# 当前覆盖 222 个队名。
 # openligadb 用德语名（Inter Mailand、FC Brügge、AS Rom），是第三套命名。
 # the-odds-api 又是一套写法（Inter Milan、AS Roma、Sporting Lisbon）。
 aliases:
@@ -22,9 +22,11 @@ aliases:
   AEK Athen: AEK
   AEK Athens: AEK
   AFC Ajax: Ajax
+  AGF Aarhus: Aarhus
   AIK Solna: AIK
   Aris Saloniki: Aris
   Arsenal FC: Arsenal
+  AS Monaco: Monaco
   AS Rom: Roma
   AS Roma: Roma
   Aston Villa FC: Aston Villa
@@ -38,14 +40,17 @@ aliases:
   Bayer 04 Leverkusen: Leverkusen
   Bayer Leverkusen: Leverkusen
   Bayern München: Bayern Munich
+  Besiktas JK: Besiktas
   Beşiktaş: Besiktas
   BK Häcken: Hacken
   Bodø/Glimt: Bodo/Glimt
   Bologna FC 1909: Bologna
   Borussia Dortmund: Dortmund
+  Brighton and Hove Albion: Brighton
   Brøndby IF: Brondby
   BSC Young Boys: Young Boys
   CD Santa Clara: Santa Clara
+  Celta Vigo: Celta
   Celtic FC: Celtic
   Cercle Brugge: Cercle Brugge
   CFR Cluj: CFR Cluj
@@ -56,47 +61,61 @@ aliases:
   Crystal Palace: Crystal Palace
   CS Universitatea Craiova: Univ. Craiova
   Derry City: Derry City
+  Dinamo Zagreb: ""
   Djurgårdens IF: Djurgarden
   Dundee United: Dundee United
   Eintracht Frankfurt: Ein Frankfurt
+  FC Ararat-Armenia: ""
   FC Arsenal: Arsenal
   FC Barcelona: Barcelona
   FC Basel 1893: Basel
   FC Bayern München: Bayern Munich
   FC Brügge: Club Brugge
   FC Corvinul Hunedoara: Corvinul
+  FC Iberia 1999: ""
   FC Internazionale Milano: Inter
+  FC Kairat: ""
   FC København: FC Copenhagen
   FC Lausanne-Sport: Lausanne
   FC Liverpool: Liverpool
   FC Lugano: Lugano
   FC Midtjylland: Midtjylland
+  FC Nordsjaelland: Nordsjaelland
   FC Porto: Porto
   FC Red Bull Salzburg: Salzburg
   FC St. Gallen: St. Gallen
+  FC Thun: Thun
   FC Twente: Twente
+  FC Twente Enschede: Twente
   FC Utrecht: Utrecht
   FC Zürich: Zurich
   FCSB: FCSB
   Fenerbahçe: Fenerbahce
   Fenerbahçe SK: Fenerbahce
+  Ferencváros TC: ""
   Feyenoord: Feyenoord
   Feyenoord Rotterdam: Feyenoord
   FK Bodö/Glimt: Bodo/Glimt
   FK Bodø/Glimt: Bodo/Glimt
+  FK Borac Banja Luka: ""
+  FK Jablonec: ""
+  FK Kauno Žalgiris: ""
   Fredrikstad FK: Fredrikstad
   Galatasaray: Galatasaray
   Galatasaray Istanbul: Galatasaray
   Galatasaray SK: Galatasaray
   Girona FC: Girona
   Go Ahead Eagles: Go Ahead Eagles
+  Hajduk Split: ""
   Hammarby IF: Hammarby
+  Hapoel Be'er Sheva: ""
   Heart of Midlothian: Hearts
   Hibernian FC: Hibernian
   HJK Helsinki: HJK
   IF Elfsborg: Elfsborg
   Ilves Tampere: Ilves
   Inter: Inter
+  Inter Club d'Escaldes: ""
   Inter Mailand: Inter
   Inter Milan: Inter
   İstanbul Başakşehir: Buyuksehyr
@@ -104,31 +123,43 @@ aliases:
   Juventus: Juventus
   Juventus FC: Juventus
   KAA Gent: Gent
+  KF Egnatia: ""
   Kilmarnock FC: Kilmarnock
   KRC Genk: Genk
   Kuopion PS: KuPS
+  KuPS Kuopio: KuPS
   LASK: LASK
   Lech Poznań: Lech Poznan
   Legia Warszawa: Legia
   Lille OSC: Lille
+  Lincoln Red Imps FC: ""
   Liverpool FC: Liverpool
   Malmö FF: Malmo FF
   Manchester City: Man City
   Manchester City FC: Man City
   Manchester United: Man United
   Manchester United FC: Man United
+  Mjällby AIF: Mjallby
   Molde FK: Molde
+  NEC Nijmegen: Nijmegen
   Newcastle United FC: Newcastle
+  NK Celje: ""
   OGC Nice: Nice
+  Olympiakos Piraeus: Olympiakos
   Olympique de Marseille: Marseille
   Olympique Marseille: Marseille
+  Omonoia FC: ""
   PAE Olympiakos SFP: Olympiakos
+  Pafos FC: ""
   Panathinaikos: Panathinaikos
+  Panathinaikos FC: Panathinaikos
   PAOK Saloniki: PAOK
   Paris Saint Germain: Paris SG
   Paris Saint-Germain: Paris SG
   Paris Saint-Germain FC: Paris SG
   Paris St. Germain: Paris SG
+  PFC CSKA Sofia: ""
+  PFC Levski Sofia: ""
   PSV: PSV Eindhoven
   Racing Club de Lens: Lens
   Raków Częstochowa: Rakow
@@ -142,7 +173,10 @@ aliases:
   Real Betis: Betis
   Real Madrid: Real Madrid
   Real Madrid CF: Real Madrid
+  Real Sociedad: Sociedad
   Real Sociedad de Fútbol: Sociedad
+  Red Star Belgrade: ""
+  Riga FC: ""
   Rosenborg BK: Rosenborg
   Royal Antwerp FC: Antwerp
   Royale Union Saint-Gilloise: St. Gilloise
@@ -150,12 +184,15 @@ aliases:
   Sabah: ""
   Sabah FK: ""
   Samsunspor: Samsunspor
+  SC Braga: Sp Braga
+  SC Freiburg: Freiburg
   Servette FC: Servette
   Sevilla FC: Sevilla
   Shakhtar Donetsk: ""
   Shamrock Rovers: Shamrock Rovers
   Shelbourne FC: Shelbourne
   Silkeborg IF: Silkeborg
+  Sint Truiden: St Truiden
   SJK Seinäjoki: SJK
   SK Brann: Brann
   SK Sturm Graz: Sturm Graz
@@ -163,6 +200,7 @@ aliases:
   Slavia Prag: ""
   Slavia Praha: ""
   Slovan Bratislava: ""
+  Sparta Prague: ""
   Sport Lisboa e Benfica: Benfica
   Sporting Braga: Sp Braga
   Sporting Charleroi: Charleroi
@@ -176,16 +214,20 @@ aliases:
   St. Mirren FC: St Mirren
   Stade Brestois 29: Brest
   Sturm Graz: Sturm Graz
+  Torreense: ""
   Tottenham Hotspur: Tottenham
   Tottenham Hotspur FC: Tottenham
   Trabzonspor: Trabzonspor
   Tromsø IL: Tromso
+  TSG Hoffenheim: Hoffenheim
   Union Saint-Gilloise: St. Gilloise
   Universitatea Cluj: U. Cluj
+  Universitatea Craiova: Univ. Craiova
   Vaasan PS: VPS
   VfB Stuttgart: Stuttgart
   VfL Wolfsburg: Wolfsburg
   Viking FK: Viking
+  Viktoria Plzeň: ""
   Villarreal CF: Villarreal
   Vitória Guimarães: Guimaraes
   Wisła Kraków: Wisla
