@@ -221,13 +221,17 @@ def closing_for_outcome(market: str, outcome: str, values: dict) -> float | None
     return float(v) if v is not None else None
 
 
-def devigged_close(values: dict) -> dict | None:
-    """De-vigged closing probabilities, for whichever market was given in full.
+def devigged_close(values: dict, market: str | None = None) -> dict | None:
+    """De-vigged closing probabilities for one market.
 
-    Shown back to the user so they can see what the closing line actually
-    implied, which is more informative than the CLV percentage on its own.
+    `market` matters: iterating in a fixed order returned 1X2 whenever it was
+    complete, so an over/under bet either got the wrong table or no no-vig CLV
+    at all — and clv_novig is the headline metric, so a gap there is not
+    cosmetic.
     """
-    for flags in MARKET_FLAGS.values():
+    tables = ({market: MARKET_FLAGS[market]} if market in MARKET_FLAGS
+              else MARKET_FLAGS)
+    for flags in tables.values():
         odds = [values.get(f) for f in flags.values()]
         if any(o is None for o in odds):
             continue
@@ -266,7 +270,7 @@ def set_closing(pick_id: str, values: dict, cfg: dict, root: Path = ROOT,
             df.loc[idx, "close_odds"] = close
             df.loc[idx, "clv"] = clv
             df.loc[idx, "close_source"] = source
-            fair = devigged_close(values)
+            fair = devigged_close(values, row["market"])
             novig = None
             if fair and row["outcome"] in fair:
                 novig = round(float(row["odds"]) * fair[row["outcome"]] - 1, 4)
@@ -493,8 +497,12 @@ def autoclose(cfg: dict, root: Path = ROOT, now=None, window_minutes: int = 45,
             values = {"close_h": fx.get("PSH"), "close_d": fx.get("PSD"),
                       "close_a": fx.get("PSA"), "close_o25": fx.get("P>2.5"),
                       "close_u25": fx.get("P<2.5")}
-            source = "pinnacle" if fx.get("anchor_1x2") == "pinnacle" else "average"
-            for pid in _ids_for(cfg, root, div, fx["home"], fx["away"]):
+            # the two markets can come from different books — Pinnacle quotes
+            # 1X2 on everything but publishes only its own main total — so the
+            # source is per market, or sharp_clv quietly mixes a soft line in
+            anchors = {"1X2": fx.get("anchor_1x2"), "OU25": fx.get("anchor_ou25")}
+            for pid, market in _ids_for(cfg, root, div, fx["home"], fx["away"]):
+                source = "pinnacle" if anchors.get(market) == "pinnacle" else "average"
                 try:
                     touched += set_closing(pid, values, cfg, root, source=source)
                 except SystemExit as e:
@@ -515,17 +523,18 @@ def _wait_message(kickoff, now, window_minutes: int) -> str:
             f"而窗口是开球前 {window_minutes} 分钟。{opens:%H:%M} UTC 之后再跑。")
 
 
-def _ids_for(cfg: dict, root: Path, div: str, home: str, away: str) -> list[str]:
-    """Pick ids of open bets on one match, across both ledgers."""
-    out = []
+def _ids_for(cfg: dict, root: Path, div: str, home: str, away: str
+             ) -> list[tuple[str, str]]:
+    """(pick id, market) of open bets on one match, across both ledgers."""
+    out = set()
     for paper in (False, True):
         df = load(ledger_path(cfg, root, paper))
         if df.empty:
             continue
         m = df[(df["div"] == div) & (df["home"] == home) & (df["away"] == away)
                & (df["status"] == "open") & df["clv"].isna()]
-        out.extend(m["id"].tolist())
-    return sorted(set(out))
+        out.update(zip(m["id"], m["market"]))
+    return sorted(out)
 
 
 

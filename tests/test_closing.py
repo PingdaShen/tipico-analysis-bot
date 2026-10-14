@@ -430,3 +430,60 @@ def test_autoclose_says_the_match_was_missed(cfg, tmp_path, monkeypatch):
     r = ledger.autoclose(cfg, tmp_path, now="2026-10-13T21:00:00", window_minutes=60,
                          odds_fetcher=lambda *a: gone)
     assert r == 0 and "错过" in r.reason and "record-close" in r.reason
+
+
+def test_devig_uses_the_bet_s_own_market(cfg, tmp_path):
+    """Iterating in a fixed order returned 1X2 whenever it was complete, so an
+    over/under bet got the wrong table — and clv_novig is the headline."""
+    row = _row(pick_id="ou", outcome="U25", market="OU25", odds=3.54,
+               label="小于 2.5 球")
+    path = _write(cfg, tmp_path, True, [row])
+    values = {"close_h": 1.25, "close_d": 6.32, "close_a": 11.64,
+              "close_o25": 1.34, "close_u25": 3.32}
+    set_closing("ou", values, cfg, tmp_path)
+
+    out = ledger.load(path).iloc[0]
+    assert out["close_odds"] == 3.32
+    expected = devigged_close(values, "OU25")["U25"]
+    assert out["clv_novig"] == pytest.approx(round(3.54 * expected - 1, 4))
+    # the 1X2 table would have given a different, meaningless number
+    assert out["clv_novig"] != pytest.approx(
+        round(3.54 * devigged_close(values, "1X2")["A"] - 1, 4))
+
+
+def test_devig_without_the_matching_market_returns_nothing(cfg, tmp_path):
+    path = _write(cfg, tmp_path, True, [_row(pick_id="ou", outcome="U25",
+                                             market="OU25", label="小于 2.5 球")])
+    # only 1X2 was published; an over/under bet must not borrow it
+    set_closing("ou", {"close": 3.32, "close_h": 1.25, "close_d": 6.32,
+                       "close_a": 11.64}, cfg, tmp_path)
+    assert pd.isna(ledger.load(path).iloc[0]["clv_novig"])
+
+
+def test_autoclose_marks_the_source_per_market(cfg, tmp_path, monkeypatch):
+    """Pinnacle quotes 1X2 on everything but publishes only its own main
+    total, so calling an over/under bet "pinnacle" mixes a soft line into
+    sharp_clv."""
+    import json
+    monkeypatch.setenv("ODDS_API_KEY", "dummy")
+    base = dict(div="CL", home="Inter", away="Club Brugge",
+                date=pd.Timestamp("2026-10-13"),
+                kickoff_utc=pd.Timestamp("2026-10-13 19:00"))
+    h2h = _row(pick_id="h2h", outcome="A", odds=12.5, label="客胜 Club Brugge")
+    h2h.update(base)
+    ou = _row(pick_id="ou", outcome="U25", market="OU25", odds=3.54,
+              label="小于 2.5 球")
+    ou.update(base)
+    path = _write(cfg, tmp_path, True, [h2h, ou])
+
+    event = json.loads(json.dumps(UCL_EVENT))
+    event["bookmakers"].append({"key": "betsson", "title": "Betsson", "markets": [
+        {"key": "totals", "outcomes": [{"name": "Over", "price": 1.34, "point": 2.5},
+                                       {"name": "Under", "price": 3.32, "point": 2.5}]}]})
+    ledger.autoclose(cfg, tmp_path, now="2026-10-13T18:30:00", window_minutes=60,
+                     odds_fetcher=lambda *a: json.dumps([event]).encode())
+
+    df = ledger.load(path).set_index("id")
+    assert df.loc["h2h", "close_source"] == "pinnacle"
+    assert df.loc["ou", "close_source"] == "average", "大小球的锚是软庄"
+    assert pd.notna(df.loc["ou", "clv_novig"]), "两边都要有去水 CLV"
