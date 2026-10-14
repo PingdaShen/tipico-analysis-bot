@@ -23,9 +23,9 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261013-CL-Galatasaray-Barcelona-U25,2026-10-13,2026-10-13,CL,Galatasaray,Barcelona,OU25,U25,小于 2.5 球,4.34,1.0,0.2374,open,,,4.95,-0.1232,,average,single,,
 20261013-CL-Arsenal-Lille-U25,2026-10-13,2026-10-13,CL,Arsenal,Lille,OU25,U25,小于 2.5 球,2.54,1.0,0.4047,open,,,2.44,0.041,,average,single,,
 20261014-CL-Feyenoord-Como-H,2026-10-13,2026-10-14,CL,Feyenoord,Como,1X2,H,主胜 Feyenoord,2.87,1.0,0.3584,open,,,,,,,single,,
-20261014-CL-Roma-RealMadrid-U25,2026-10-13,2026-10-14,CL,Roma,Real Madrid,OU25,U25,小于 2.5 球,2.68,1.0,0.3842,open,,,,,,,single,,
-20261014-CL-ShakhtarDonetsk-AEK-U25,2026-10-13,2026-10-14,CL,Shakhtar Donetsk,AEK,OU25,U25,小于 2.5 球,1.89,1.0,0.5439,open,,,,,,,single,,
-20261014-CL-Betis-Porto-A,2026-10-13,2026-10-14,CL,Betis,Porto,1X2,A,客胜 Porto,3.35,1.0,0.3073,open,,,,,,,single,,
+20261014-CL-Roma-RealMadrid-U25,2026-10-13,2026-10-14,CL,Roma,Real Madrid,OU25,U25,小于 2.5 球,2.68,1.0,0.3842,open,,,2.79,-0.0394,-0.0835,average,single,,
+20261014-CL-ShakhtarDonetsk-AEK-U25,2026-10-13,2026-10-14,CL,Shakhtar Donetsk,AEK,OU25,U25,小于 2.5 球,1.89,1.0,0.5439,open,,,1.79,0.0559,0.009,average,single,,
+20261014-CL-Betis-Porto-A,2026-10-13,2026-10-14,CL,Betis,Porto,1X2,A,客胜 Porto,3.35,1.0,0.3073,open,,,3.43,-0.0233,-0.0511,pinnacle,single,,
 20261013-CL-Inter-ClubBrugge-U25,2026-10-13,2026-10-13,CL,Inter,Club Brugge,OU25,U25,小于 2.5 球,3.54,1.0,0.2912,open,,,4.22,-0.1611,,average,single,,2026-10-13 19:00:00
 20261013-CL-Lens-SpLisbon-H,2026-10-13,2026-10-13,CL,Lens,Sp Lisbon,1X2,H,主胜 Lens,3.99,1.0,0.2582,open,,,,,,,single,,2026-10-13 16:45:00
 20261015-UECL-Panathinaikos-BoracBanjaLuka-U25,2026-10-14,2026-10-15,UECL,Panathinaikos,Borac Banja Luka,OU25,U25,小于 2.5 球,2.33,1.0,0.4423,open,,,,,,,single,,2026-10-15 16:45:00
