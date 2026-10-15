@@ -17,8 +17,8 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261011-I1-Como-Roma-U25,2026-10-10,2026-10-11,I1,Como,Roma,OU25,U25,小于 2.5 球,2.22,1.0,0.465,settled,0-0 赢,1.22,2.43,-0.0864,-0.1457,average,single,,
 20261010-SC0-Hearts-StMirren-U25,2026-10-10,2026-10-10,SC0,Hearts,St Mirren,OU25,U25,小于 2.5 球,2.43,1.0,0.4239,settled,5-0 输,-1.0,2.46,-0.0122,-0.0757,average,single,,
 20261012-SP2-Tenerife-Girona-A,2026-10-11,2026-10-12,SP2,Tenerife,Girona,1X2,A,客胜 Girona,2.4,1.0,0.4287,settled,1-1 输,-1.0,2.46,-0.0244,-0.1065,average,single,,
-20261013-E1-Cardiff-Watford-A,2026-10-13,2026-10-13,E1,Cardiff,Watford,1X2,A,客胜 Watford,4.23,1.0,0.2432,open,,,,,,,single,,
-20261014-E1-QPR-Derby-A,2026-10-13,2026-10-14,E1,QPR,Derby,1X2,A,客胜 Derby,4.31,1.0,0.2387,open,,,,,,,single,,
+20261013-E1-Cardiff-Watford-A,2026-10-13,2026-10-13,E1,Cardiff,Watford,1X2,A,客胜 Watford,4.23,1.0,0.2432,settled,5-1 输,-1.0,4.62,-0.0844,-0.1392,average,single,,
+20261014-E1-QPR-Derby-A,2026-10-13,2026-10-14,E1,QPR,Derby,1X2,A,客胜 Derby,4.31,1.0,0.2387,settled,4-1 输,-1.0,4.25,0.0141,-0.0504,average,single,,
 20261013-CL-RBLeipzig-PSVEindhoven-A,2026-10-13,2026-10-13,CL,RB Leipzig,PSV Eindhoven,1X2,A,客胜 PSV Eindhoven,4.39,1.0,0.2345,open,,,5.25,-0.1638,-0.1943,pinnacle,single,,
 20261013-CL-Galatasaray-Barcelona-U25,2026-10-13,2026-10-13,CL,Galatasaray,Barcelona,OU25,U25,小于 2.5 球,4.34,1.0,0.2374,open,,,4.95,-0.1232,,average,single,,
 20261013-CL-Arsenal-Lille-U25,2026-10-13,2026-10-13,CL,Arsenal,Lille,OU25,U25,小于 2.5 球,2.54,1.0,0.4047,open,,,2.44,0.041,,average,single,,
@@ -33,3 +33,5 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261015-UECL-Hearts-Nordsjaelland-H,2026-10-14,2026-10-15,UECL,Hearts,Nordsjaelland,1X2,H,主胜 Hearts,2.91,1.0,0.3543,open,,,,,,,single,,2026-10-15 19:00:00
 20261015-EL-Benfica-Celtic-U25,2026-10-14,2026-10-15,EL,Benfica,Celtic,OU25,U25,小于 2.5 球,2.8,1.0,0.3674,open,,,,,,,single,,2026-10-15 19:00:00
 20261015-UECL-Gent-Aarhus-A,2026-10-14,2026-10-15,UECL,Gent,Aarhus,1X2,A,客胜 Aarhus,4.66,1.0,0.2212,open,,,,,,,single,,2026-10-15 16:45:00
+20261015-UECL-KuPS-Trabzonspor-H,2026-10-15,2026-10-15,UECL,KuPS,Trabzonspor,1X2,H,主胜 KuPS,4.81,1.0,0.2142,open,,,,,,,single,,2026-10-15 16:45:00
+20261015-EL-StGilloise-Sociedad-U25,2026-10-15,2026-10-15,EL,St. Gilloise,Sociedad,OU25,U25,小于 2.5 球,2.25,1.0,0.4572,open,,,,,,,single,,2026-10-15 16:45:00
