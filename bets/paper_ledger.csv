@@ -35,3 +35,13 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261015-UECL-Gent-Aarhus-A,2026-10-14,2026-10-15,UECL,Gent,Aarhus,1X2,A,客胜 Aarhus,4.66,1.0,0.2212,open,,,,,,,single,,2026-10-15 16:45:00
 20261015-UECL-KuPS-Trabzonspor-H,2026-10-15,2026-10-15,UECL,KuPS,Trabzonspor,1X2,H,主胜 KuPS,4.81,1.0,0.2142,open,,,,,,,single,,2026-10-15 16:45:00
 20261015-EL-StGilloise-Sociedad-U25,2026-10-15,2026-10-15,EL,St. Gilloise,Sociedad,OU25,U25,小于 2.5 球,2.25,1.0,0.4572,open,,,,,,,single,,2026-10-15 16:45:00
+20261016-E1-Burnley-Wolves-H,2026-10-16,2026-10-16,E1,Burnley,Wolves,1X2,H,主胜 Burnley,2.84,1.0,0.3629,open,,,,,,,single,,
+20261016-N1-Heerenveen-Excelsior-A,2026-10-16,2026-10-16,N1,Heerenveen,Excelsior,1X2,A,客胜 Excelsior,4.82,1.0,0.2137,open,,,,,,,single,,
+20261016-F2-Annecy-Nancy-H,2026-10-16,2026-10-16,F2,Annecy,Nancy,1X2,H,主胜 Annecy,2.68,1.0,0.3837,open,,,,,,,single,,
+20261016-D2-HolsteinKiel-Hertha-U25,2026-10-16,2026-10-16,D2,Holstein Kiel,Hertha,OU25,U25,小于 2.5 球,2.68,1.0,0.3838,open,,,,,,,single,,
+20261016-SC1-Ayr-Partick-U25,2026-10-16,2026-10-16,SC1,Ayr,Partick,OU25,U25,小于 2.5 球,1.99,1.0,0.5177,open,,,,,,,single,,
+20261017-F2-Nantes-Dunkerque-A,2026-10-16,2026-10-17,F2,Nantes,Dunkerque,1X2,A,客胜 Dunkerque,3.62,1.0,0.2847,open,,,,,,,single,,
+20261017-SC1-Stenhousemuir-RaithRvs-H,2026-10-16,2026-10-17,SC1,Stenhousemuir,Raith Rvs,1X2,H,主胜 Stenhousemuir,2.67,1.0,0.3864,open,,,,,,,single,,
+20261017-E3-Colchester-Exeter-U25,2026-10-16,2026-10-17,E3,Colchester,Exeter,OU25,U25,小于 2.5 球,1.63,1.0,0.6322,open,,,,,,,single,,
+20261017-E3-Grimsby-Northampton-U25,2026-10-16,2026-10-17,E3,Grimsby,Northampton,OU25,U25,小于 2.5 球,1.77,1.0,0.5807,open,,,,,,,single,,
+20261017-F2-Metz-Sochaux-U25,2026-10-16,2026-10-17,F2,Metz,Sochaux,OU25,U25,小于 2.5 球,1.75,1.0,0.5887,open,,,,,,,single,,
