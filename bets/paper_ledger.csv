@@ -45,3 +45,8 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261017-E3-Colchester-Exeter-U25,2026-10-16,2026-10-17,E3,Colchester,Exeter,OU25,U25,小于 2.5 球,1.63,1.0,0.6322,open,,,,,,,single,,
 20261017-E3-Grimsby-Northampton-U25,2026-10-16,2026-10-17,E3,Grimsby,Northampton,OU25,U25,小于 2.5 球,1.77,1.0,0.5807,open,,,,,,,single,,
 20261017-F2-Metz-Sochaux-U25,2026-10-16,2026-10-17,F2,Metz,Sochaux,OU25,U25,小于 2.5 球,1.75,1.0,0.5887,open,,,,,,,single,,
+20261018-G1-Panetolikos-Olympiakos-U25,2026-10-17,2026-10-18,G1,Panetolikos,Olympiakos,OU25,U25,小于 2.5 球,1.86,1.0,0.5526,open,,,,,,,single,,
+20261018-I1-Milan-Atalanta-A,2026-10-17,2026-10-18,I1,Milan,Atalanta,1X2,A,客胜 Atalanta,3.95,1.0,0.2605,open,,,,,,,single,,
+20261018-N1-Groningen-Ajax-U25,2026-10-17,2026-10-18,N1,Groningen,Ajax,OU25,U25,小于 2.5 球,2.97,1.0,0.3464,open,,,,,,,single,,
+20261018-SP1-Malaga-Sociedad-U25,2026-10-17,2026-10-18,SP1,Malaga,Sociedad,OU25,U25,小于 2.5 球,1.95,1.0,0.5284,open,,,,,,,single,,
+20261018-SP1-Osasuna-Santander-O25,2026-10-17,2026-10-18,SP1,Osasuna,Santander,OU25,O25,大于 2.5 球,1.6,1.0,0.6431,open,,,,,,,single,,
