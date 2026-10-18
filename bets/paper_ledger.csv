@@ -50,3 +50,6 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261018-N1-Groningen-Ajax-U25,2026-10-17,2026-10-18,N1,Groningen,Ajax,OU25,U25,小于 2.5 球,2.97,1.0,0.3464,open,,,,,,,single,,
 20261018-SP1-Malaga-Sociedad-U25,2026-10-17,2026-10-18,SP1,Malaga,Sociedad,OU25,U25,小于 2.5 球,1.95,1.0,0.5284,open,,,,,,,single,,
 20261018-SP1-Osasuna-Santander-O25,2026-10-17,2026-10-18,SP1,Osasuna,Santander,OU25,O25,大于 2.5 球,1.6,1.0,0.6431,open,,,,,,,single,,
+20261019-I1-Monza-Cagliari-A,2026-10-18,2026-10-19,I1,Monza,Cagliari,1X2,A,客胜 Cagliari,2.79,1.0,0.3687,open,,,,,,,single,,
+20261019-SP2-CeltaB-Tenerife-H,2026-10-18,2026-10-19,SP2,Celta B,Tenerife,1X2,H,主胜 Celta B,2.46,1.0,0.4192,open,,,,,,,single,,
+20261019-F2-Rodez-Montpellier-U25,2026-10-18,2026-10-19,F2,Rodez,Montpellier,OU25,U25,小于 2.5 球,2.11,1.0,0.4877,open,,,,,,,single,,
