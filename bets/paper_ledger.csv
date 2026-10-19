@@ -53,3 +53,7 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261019-I1-Monza-Cagliari-A,2026-10-18,2026-10-19,I1,Monza,Cagliari,1X2,A,客胜 Cagliari,2.79,1.0,0.3687,open,,,,,,,single,,
 20261019-SP2-CeltaB-Tenerife-H,2026-10-18,2026-10-19,SP2,Celta B,Tenerife,1X2,H,主胜 Celta B,2.46,1.0,0.4192,open,,,,,,,single,,
 20261019-F2-Rodez-Montpellier-U25,2026-10-18,2026-10-19,F2,Rodez,Montpellier,OU25,U25,小于 2.5 球,2.11,1.0,0.4877,open,,,,,,,single,,
+20261020-CL-ManCity-AEK-U25,2026-10-19,2026-10-20,CL,Man City,AEK,OU25,U25,小于 2.5 球,3.62,1.0,0.2843,open,,,,,,,single,,2026-10-20 19:00:00
+20261020-CL-ParisSG-Barcelona-U25,2026-10-19,2026-10-20,CL,Paris SG,Barcelona,OU25,U25,小于 2.5 球,4.51,1.0,0.2284,open,,,,,,,single,,2026-10-20 19:00:00
+20261020-CL-Napoli-BodoGlimt-A,2026-10-19,2026-10-20,CL,Napoli,Bodo/Glimt,1X2,A,客胜 Bodo/Glimt,4.77,1.0,0.2161,open,,,,,,,single,,2026-10-20 19:00:00
+20261020-CL-Porto-PSVEindhoven-A,2026-10-19,2026-10-20,CL,Porto,PSV Eindhoven,1X2,A,客胜 PSV Eindhoven,4.88,1.0,0.2112,open,,,,,,,single,,2026-10-20 19:00:00
