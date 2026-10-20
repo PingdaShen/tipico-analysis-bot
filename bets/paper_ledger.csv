@@ -35,25 +35,30 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261015-UECL-Gent-Aarhus-A,2026-10-14,2026-10-15,UECL,Gent,Aarhus,1X2,A,客胜 Aarhus,4.66,1.0,0.2212,open,,,,,,,single,,2026-10-15 16:45:00
 20261015-UECL-KuPS-Trabzonspor-H,2026-10-15,2026-10-15,UECL,KuPS,Trabzonspor,1X2,H,主胜 KuPS,4.81,1.0,0.2142,open,,,,,,,single,,2026-10-15 16:45:00
 20261015-EL-StGilloise-Sociedad-U25,2026-10-15,2026-10-15,EL,St. Gilloise,Sociedad,OU25,U25,小于 2.5 球,2.25,1.0,0.4572,open,,,,,,,single,,2026-10-15 16:45:00
-20261016-E1-Burnley-Wolves-H,2026-10-16,2026-10-16,E1,Burnley,Wolves,1X2,H,主胜 Burnley,2.84,1.0,0.3629,open,,,,,,,single,,
-20261016-N1-Heerenveen-Excelsior-A,2026-10-16,2026-10-16,N1,Heerenveen,Excelsior,1X2,A,客胜 Excelsior,4.82,1.0,0.2137,open,,,,,,,single,,
-20261016-F2-Annecy-Nancy-H,2026-10-16,2026-10-16,F2,Annecy,Nancy,1X2,H,主胜 Annecy,2.68,1.0,0.3837,open,,,,,,,single,,
-20261016-D2-HolsteinKiel-Hertha-U25,2026-10-16,2026-10-16,D2,Holstein Kiel,Hertha,OU25,U25,小于 2.5 球,2.68,1.0,0.3838,open,,,,,,,single,,
-20261016-SC1-Ayr-Partick-U25,2026-10-16,2026-10-16,SC1,Ayr,Partick,OU25,U25,小于 2.5 球,1.99,1.0,0.5177,open,,,,,,,single,,
-20261017-F2-Nantes-Dunkerque-A,2026-10-16,2026-10-17,F2,Nantes,Dunkerque,1X2,A,客胜 Dunkerque,3.62,1.0,0.2847,open,,,,,,,single,,
-20261017-SC1-Stenhousemuir-RaithRvs-H,2026-10-16,2026-10-17,SC1,Stenhousemuir,Raith Rvs,1X2,H,主胜 Stenhousemuir,2.67,1.0,0.3864,open,,,,,,,single,,
-20261017-E3-Colchester-Exeter-U25,2026-10-16,2026-10-17,E3,Colchester,Exeter,OU25,U25,小于 2.5 球,1.63,1.0,0.6322,open,,,,,,,single,,
-20261017-E3-Grimsby-Northampton-U25,2026-10-16,2026-10-17,E3,Grimsby,Northampton,OU25,U25,小于 2.5 球,1.77,1.0,0.5807,open,,,,,,,single,,
-20261017-F2-Metz-Sochaux-U25,2026-10-16,2026-10-17,F2,Metz,Sochaux,OU25,U25,小于 2.5 球,1.75,1.0,0.5887,open,,,,,,,single,,
-20261018-G1-Panetolikos-Olympiakos-U25,2026-10-17,2026-10-18,G1,Panetolikos,Olympiakos,OU25,U25,小于 2.5 球,1.86,1.0,0.5526,open,,,,,,,single,,
-20261018-I1-Milan-Atalanta-A,2026-10-17,2026-10-18,I1,Milan,Atalanta,1X2,A,客胜 Atalanta,3.95,1.0,0.2605,open,,,,,,,single,,
-20261018-N1-Groningen-Ajax-U25,2026-10-17,2026-10-18,N1,Groningen,Ajax,OU25,U25,小于 2.5 球,2.97,1.0,0.3464,open,,,,,,,single,,
-20261018-SP1-Malaga-Sociedad-U25,2026-10-17,2026-10-18,SP1,Malaga,Sociedad,OU25,U25,小于 2.5 球,1.95,1.0,0.5284,open,,,,,,,single,,
-20261018-SP1-Osasuna-Santander-O25,2026-10-17,2026-10-18,SP1,Osasuna,Santander,OU25,O25,大于 2.5 球,1.6,1.0,0.6431,open,,,,,,,single,,
-20261019-I1-Monza-Cagliari-A,2026-10-18,2026-10-19,I1,Monza,Cagliari,1X2,A,客胜 Cagliari,2.79,1.0,0.3687,open,,,,,,,single,,
-20261019-SP2-CeltaB-Tenerife-H,2026-10-18,2026-10-19,SP2,Celta B,Tenerife,1X2,H,主胜 Celta B,2.46,1.0,0.4192,open,,,,,,,single,,
-20261019-F2-Rodez-Montpellier-U25,2026-10-18,2026-10-19,F2,Rodez,Montpellier,OU25,U25,小于 2.5 球,2.11,1.0,0.4877,open,,,,,,,single,,
+20261016-E1-Burnley-Wolves-H,2026-10-16,2026-10-16,E1,Burnley,Wolves,1X2,H,主胜 Burnley,2.84,1.0,0.3629,settled,1-2 输,-1.0,2.87,-0.0105,-0.072,average,single,,
+20261016-N1-Heerenveen-Excelsior-A,2026-10-16,2026-10-16,N1,Heerenveen,Excelsior,1X2,A,客胜 Excelsior,4.82,1.0,0.2137,settled,4-0 输,-1.0,4.87,-0.0103,-0.0769,average,single,,
+20261016-F2-Annecy-Nancy-H,2026-10-16,2026-10-16,F2,Annecy,Nancy,1X2,H,主胜 Annecy,2.68,1.0,0.3837,settled,1-2 输,-1.0,3.21,-0.1651,-0.2375,average,single,,
+20261016-D2-HolsteinKiel-Hertha-U25,2026-10-16,2026-10-16,D2,Holstein Kiel,Hertha,OU25,U25,小于 2.5 球,2.68,1.0,0.3838,settled,0-0 赢,1.68,2.78,-0.036,-0.1067,average,single,,
+20261016-SC1-Ayr-Partick-U25,2026-10-16,2026-10-16,SC1,Ayr,Partick,OU25,U25,小于 2.5 球,1.99,1.0,0.5177,settled,0-1 赢,0.99,2.1,-0.0524,-0.1214,average,single,,
+20261017-F2-Nantes-Dunkerque-A,2026-10-16,2026-10-17,F2,Nantes,Dunkerque,1X2,A,客胜 Dunkerque,3.62,1.0,0.2847,settled,2-3 赢,2.62,4.96,-0.2702,-0.3343,average,single,,
+20261017-SC1-Stenhousemuir-RaithRvs-H,2026-10-16,2026-10-17,SC1,Stenhousemuir,Raith Rvs,1X2,H,主胜 Stenhousemuir,2.67,1.0,0.3864,settled,1-1 输,-1.0,3.32,-0.1958,-0.2694,average,single,,
+20261017-E3-Colchester-Exeter-U25,2026-10-16,2026-10-17,E3,Colchester,Exeter,OU25,U25,小于 2.5 球,1.63,1.0,0.6322,settled,0-0 赢,0.63,1.7,-0.0412,-0.1089,average,single,,
+20261017-E3-Grimsby-Northampton-U25,2026-10-16,2026-10-17,E3,Grimsby,Northampton,OU25,U25,小于 2.5 球,1.77,1.0,0.5807,settled,0-2 赢,0.77,1.82,-0.0275,-0.0913,average,single,,
+20261017-F2-Metz-Sochaux-U25,2026-10-16,2026-10-17,F2,Metz,Sochaux,OU25,U25,小于 2.5 球,1.75,1.0,0.5887,settled,3-2 输,-1.0,1.8,-0.0278,-0.0968,average,single,,
+20261018-G1-Panetolikos-Olympiakos-U25,2026-10-17,2026-10-18,G1,Panetolikos,Olympiakos,OU25,U25,小于 2.5 球,1.86,1.0,0.5526,settled,0-2 赢,0.86,1.91,-0.0262,-0.0976,average,single,,
+20261018-I1-Milan-Atalanta-A,2026-10-17,2026-10-18,I1,Milan,Atalanta,1X2,A,客胜 Atalanta,3.95,1.0,0.2605,settled,3-2 输,-1.0,4.92,-0.1972,-0.2441,average,single,,
+20261018-N1-Groningen-Ajax-U25,2026-10-17,2026-10-18,N1,Groningen,Ajax,OU25,U25,小于 2.5 球,2.97,1.0,0.3464,settled,2-5 输,-1.0,2.95,0.0068,-0.0628,average,single,,
+20261018-SP1-Malaga-Sociedad-U25,2026-10-17,2026-10-18,SP1,Malaga,Sociedad,OU25,U25,小于 2.5 球,1.95,1.0,0.5284,settled,2-5 输,-1.0,2.25,-0.1333,-0.1867,average,single,,
+20261018-SP1-Osasuna-Santander-O25,2026-10-17,2026-10-18,SP1,Osasuna,Santander,OU25,O25,大于 2.5 球,1.6,1.0,0.6431,settled,2-0 输,-1.0,1.64,-0.0244,-0.0833,average,single,,
+20261019-I1-Monza-Cagliari-A,2026-10-18,2026-10-19,I1,Monza,Cagliari,1X2,A,客胜 Cagliari,2.79,1.0,0.3687,settled,4-0 输,-1.0,2.85,-0.0211,-0.0782,average,single,,
+20261019-SP2-CeltaB-Tenerife-H,2026-10-18,2026-10-19,SP2,Celta B,Tenerife,1X2,H,主胜 Celta B,2.46,1.0,0.4192,settled,1-1 输,-1.0,2.79,-0.1183,-0.193,average,single,,
+20261019-F2-Rodez-Montpellier-U25,2026-10-18,2026-10-19,F2,Rodez,Montpellier,OU25,U25,小于 2.5 球,2.11,1.0,0.4877,settled,0-3 输,-1.0,2.15,-0.0186,-0.0901,average,single,,
 20261020-CL-ManCity-AEK-U25,2026-10-19,2026-10-20,CL,Man City,AEK,OU25,U25,小于 2.5 球,3.62,1.0,0.2843,open,,,,,,,single,,2026-10-20 19:00:00
 20261020-CL-ParisSG-Barcelona-U25,2026-10-19,2026-10-20,CL,Paris SG,Barcelona,OU25,U25,小于 2.5 球,4.51,1.0,0.2284,open,,,,,,,single,,2026-10-20 19:00:00
 20261020-CL-Napoli-BodoGlimt-A,2026-10-19,2026-10-20,CL,Napoli,Bodo/Glimt,1X2,A,客胜 Bodo/Glimt,4.77,1.0,0.2161,open,,,,,,,single,,2026-10-20 19:00:00
 20261020-CL-Porto-PSVEindhoven-A,2026-10-19,2026-10-20,CL,Porto,PSV Eindhoven,1X2,A,客胜 PSV Eindhoven,4.88,1.0,0.2112,open,,,,,,,single,,2026-10-20 19:00:00
+20261021-CL-Inter-ShakhtarDonetsk-U25,2026-10-20,2026-10-21,CL,Inter,Shakhtar Donetsk,OU25,U25,小于 2.5 球,3.07,1.0,0.3353,open,,,,,,,single,,2026-10-21 19:00:00
+20261021-CL-RealMadrid-RBLeipzig-U25,2026-10-20,2026-10-21,CL,Real Madrid,RB Leipzig,OU25,U25,小于 2.5 球,4.0,1.0,0.2574,open,,,,,,,single,,2026-10-21 19:00:00
+20261021-CL-Como-ManUnited-A,2026-10-20,2026-10-21,CL,Como,Man United,1X2,A,客胜 Man United,2.71,1.0,0.3798,open,,,,,,,single,,2026-10-21 16:45:00
+20261021-CL-Betis-Feyenoord-A,2026-10-20,2026-10-21,CL,Betis,Feyenoord,1X2,A,客胜 Feyenoord,4.78,1.0,0.2156,open,,,,,,,single,,2026-10-21 19:00:00
+20261021-CL-BayernMunich-Arsenal-A,2026-10-20,2026-10-21,CL,Bayern Munich,Arsenal,1X2,A,客胜 Arsenal,3.25,1.0,0.3167,open,,,,,,,single,,2026-10-21 19:00:00
