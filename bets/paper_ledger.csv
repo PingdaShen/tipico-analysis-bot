@@ -62,3 +62,9 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261021-CL-Como-ManUnited-A,2026-10-20,2026-10-21,CL,Como,Man United,1X2,A,客胜 Man United,2.71,1.0,0.3798,open,,,,,,,single,,2026-10-21 16:45:00
 20261021-CL-Betis-Feyenoord-A,2026-10-20,2026-10-21,CL,Betis,Feyenoord,1X2,A,客胜 Feyenoord,4.78,1.0,0.2156,open,,,,,,,single,,2026-10-21 19:00:00
 20261021-CL-BayernMunich-Arsenal-A,2026-10-20,2026-10-21,CL,Bayern Munich,Arsenal,1X2,A,客胜 Arsenal,3.25,1.0,0.3167,open,,,,,,,single,,2026-10-21 19:00:00
+20261021-CL-ClubBrugge-Lens-U25,2026-10-21,2026-10-21,CL,Club Brugge,Lens,OU25,U25,小于 2.5 球,2.96,1.0,0.3475,open,,,,,,,single,,2026-10-21 19:00:00
+20261022-EL-LechPoznan-Sunderland-H,2026-10-21,2026-10-22,EL,Lech Poznan,Sunderland,1X2,H,主胜 Lech Poznan,3.94,1.0,0.2614,open,,,,,,,single,,2026-10-22 16:45:00
+20261022-EL-Besiktas-CrystalPalace-A,2026-10-21,2026-10-22,EL,Besiktas,Crystal Palace,1X2,A,客胜 Crystal Palace,2.78,1.0,0.3708,open,,,,,,,single,,2026-10-22 19:00:00
+20261022-EL-NKCelje-Salzburg-H,2026-10-21,2026-10-22,EL,NK Celje,Salzburg,1X2,H,主胜 NK Celje,4.8,1.0,0.2148,open,,,,,,,single,,2026-10-22 19:00:00
+20261022-EL-Celtic-Celta-H,2026-10-21,2026-10-22,EL,Celtic,Celta,1X2,H,主胜 Celtic,2.53,1.0,0.4076,open,,,,,,,single,,2026-10-22 19:00:00
+20261022-EL-Hoffenheim-Lyon-A,2026-10-21,2026-10-22,EL,Hoffenheim,Lyon,1X2,A,客胜 Lyon,3.14,1.0,0.3282,open,,,,,,,single,,2026-10-22 19:00:00
