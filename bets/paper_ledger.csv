@@ -68,3 +68,5 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261022-EL-NKCelje-Salzburg-H,2026-10-21,2026-10-22,EL,NK Celje,Salzburg,1X2,H,主胜 NK Celje,4.8,1.0,0.2148,open,,,,,,,single,,2026-10-22 19:00:00
 20261022-EL-Celtic-Celta-H,2026-10-21,2026-10-22,EL,Celtic,Celta,1X2,H,主胜 Celtic,2.53,1.0,0.4076,open,,,,,,,single,,2026-10-22 19:00:00
 20261022-EL-Hoffenheim-Lyon-A,2026-10-21,2026-10-22,EL,Hoffenheim,Lyon,1X2,A,客胜 Lyon,3.14,1.0,0.3282,open,,,,,,,single,,2026-10-22 19:00:00
+20261022-UECL-Trabzonspor-Hearts-U25,2026-10-22,2026-10-22,UECL,Trabzonspor,Hearts,OU25,U25,小于 2.5 球,2.83,1.0,0.3645,open,,,,,,,single,,2026-10-22 16:45:00
+20261022-UECL-FKKairat-Panathinaikos-U25,2026-10-22,2026-10-22,UECL,FK Kairat,Panathinaikos,OU25,U25,小于 2.5 球,1.9,1.0,0.5433,open,,,,,,,single,,2026-10-22 14:30:00
