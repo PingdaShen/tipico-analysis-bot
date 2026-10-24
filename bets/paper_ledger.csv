@@ -70,3 +70,13 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261022-EL-Hoffenheim-Lyon-A,2026-10-21,2026-10-22,EL,Hoffenheim,Lyon,1X2,A,客胜 Lyon,3.14,1.0,0.3282,open,,,,,,,single,,2026-10-22 19:00:00
 20261022-UECL-Trabzonspor-Hearts-U25,2026-10-22,2026-10-22,UECL,Trabzonspor,Hearts,OU25,U25,小于 2.5 球,2.83,1.0,0.3645,open,,,,,,,single,,2026-10-22 16:45:00
 20261022-UECL-FKKairat-Panathinaikos-U25,2026-10-22,2026-10-22,UECL,FK Kairat,Panathinaikos,OU25,U25,小于 2.5 球,1.9,1.0,0.5433,open,,,,,,,single,,2026-10-22 14:30:00
+20261024-SC1-Partick-Stenhousemuir-A,2026-10-24,2026-10-24,SC1,Partick,Stenhousemuir,1X2,A,客胜 Stenhousemuir,4.91,1.0,0.2099,open,,,,,,,single,,
+20261024-E3-BristolRvs-Swindon-A,2026-10-24,2026-10-24,E3,Bristol Rvs,Swindon,1X2,A,客胜 Swindon,4.25,1.0,0.2424,open,,,,,,,single,,
+20261024-B1-Oud-HeverleeLeuven-LommelSK-U25,2026-10-24,2026-10-24,B1,Oud-Heverlee Leuven,Lommel SK,OU25,U25,小于 2.5 球,2.05,1.0,0.5018,open,,,,,,,single,,
+20261024-T1-Eyupspor-Kasimpasa-H,2026-10-24,2026-10-24,T1,Eyupspor,Kasimpasa,1X2,H,主胜 Eyupspor,4.95,1.0,0.2081,open,,,,,,,single,,
+20261024-E3-Exeter-FleetwoodTown-U25,2026-10-24,2026-10-24,E3,Exeter,Fleetwood Town,OU25,U25,小于 2.5 球,1.61,1.0,0.6415,open,,,,,,,single,,
+20261025-SP1-Barcelona-RealMadrid-U25,2026-10-24,2026-10-25,SP1,Barcelona,Real Madrid,OU25,U25,小于 2.5 球,4.6,1.0,0.224,open,,,,,,,single,,
+20261025-SP1-AthBilbao-Getafe-D,2026-10-24,2026-10-25,SP1,Ath Bilbao,Getafe,1X2,D,平局,3.72,1.0,0.2768,open,,,,,,,single,,
+20261025-D2-Braunschweig-Hannover-U25,2026-10-24,2026-10-25,D2,Braunschweig,Hannover,OU25,U25,小于 2.5 球,2.57,1.0,0.4008,open,,,,,,,single,,
+20261025-B1-Genk-Standard-U25,2026-10-24,2026-10-25,B1,Genk,Standard,OU25,U25,小于 2.5 球,2.26,1.0,0.4564,open,,,,,,,single,,
+20261025-F1-Rennes-Strasbourg-A,2026-10-24,2026-10-25,F1,Rennes,Strasbourg,1X2,A,客胜 Strasbourg,3.91,1.0,0.2638,open,,,,,,,single,,
