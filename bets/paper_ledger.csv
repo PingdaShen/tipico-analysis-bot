@@ -80,3 +80,5 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261025-D2-Braunschweig-Hannover-U25,2026-10-24,2026-10-25,D2,Braunschweig,Hannover,OU25,U25,小于 2.5 球,2.57,1.0,0.4008,open,,,,,,,single,,
 20261025-B1-Genk-Standard-U25,2026-10-24,2026-10-25,B1,Genk,Standard,OU25,U25,小于 2.5 球,2.26,1.0,0.4564,open,,,,,,,single,,
 20261025-F1-Rennes-Strasbourg-A,2026-10-24,2026-10-25,F1,Rennes,Strasbourg,1X2,A,客胜 Strasbourg,3.91,1.0,0.2638,open,,,,,,,single,,
+20261026-F2-Montpellier-RedStar-U25,2026-10-25,2026-10-26,F2,Montpellier,Red Star,OU25,U25,小于 2.5 球,1.87,1.0,0.5495,open,,,,,,,single,,
+20261026-E3-Walsall-Salford-H,2026-10-25,2026-10-26,E3,Walsall,Salford,1X2,H,主胜 Walsall,3.19,1.0,0.3224,open,,,,,,,single,,
