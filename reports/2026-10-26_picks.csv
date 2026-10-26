@@ -1,0 +1,3 @@
+pick_id,div,date,time,home,away,market,outcome,label,p_model,p_market,p_final,market_source,price_source,kickoff_utc,fair_odds,min_odds,best_odds,avg_odds,edge_best,stake,is_candidate,naive_odds,league,manual
+20261026-F2-Montpellier-RedStar-U25,F2,2026-10-26,20:45,Montpellier,Red Star,OU25,U25,小于 2.5 球,0.6932516022778645,0.4878706199460916,0.5494849146456234,average,market_avg,,1.8198861758469294,1.8744827611223374,1.9,1.9,0.04402133782668449,1.0,True,,法乙,False
+20261026-E3-Walsall-Salford-H,E3,2026-10-26,21:00,Walsall,Salford,1X2,H,主胜 Walsall,0.40374674965214596,0.28754484879548947,0.32240541905248643,average,market_avg,,3.1016848381112467,3.194735383254584,3.2,3.2,0.03169734096795662,1.0,True,,英乙,False
