@@ -1,11 +1,61 @@
-# 投注建议 · 2026-10-27
+# 投注建议 · 2026-10-28
 
-覆盖 10-27 至 10-28 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 0 场比赛
+覆盖 10-28 至 10-29 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 19 场比赛
 
-**今天没有符合条件的投注。** 不下注也是策略的一部分。
+## 联赛
 
-## 备注
-- 赛程源里没有 10-27 起 2 天内的联赛比赛。fixtures.csv 最新的一场是 2026-10-26（已经是 1 天前），只覆盖 21 个联赛：B1、D1、D2、E0、E1、E2、E3、EC、F1、F2、G1、I1、I2、N1、P1、SC0、SC1、SC2、SP1、SP2、T1。football-data.co.uk 的赛程是周五下午发布周末场次、周二下午发布周中场次，国际比赛周没有联赛可发就不会更新。等不及可以用 manual_fixtures.csv 手填。
+| # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Carrarese vs Arezzo | 意乙 | 10-28 20:00 | 主胜 Carrarese | 2.10 | **2.16** | 2.22* | €1.00 |
+| 2 | Fiorentina vs Atalanta | 意甲 | 10-29 20:45 | 客胜 Atalanta | 2.73 | **2.81** | 3.01* | €1.00 |
+
+## 投注 ID
+
+record-bet 表单要填这个（点代码块右上角可直接复制）：
+
+**1. Carrarese vs Arezzo — 主胜 Carrarese**
+
+```
+20261028-I2-Carrarese-Arezzo-H
+```
+
+**2. Fiorentina vs Atalanta — 客胜 Atalanta**
+
+```
+20261029-I1-Fiorentina-Atalanta-A
+```
+
+## 怎么用
+
+1. 在 Tipico App 里找到比赛和对应选项。
+2. **只有 Tipico 赔率 ≥ 最低赔率时才下注**，否则跳过这一注。
+3. 下注后在 Actions 页面跑 **record-bet**，填 ID、实际赔率、注额。
+
+<details><summary>用终端的话</summary>
+
+```bash
+python -m src.ledger add 20261028-I2-Carrarese-Arezzo-H --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261029-I1-Fiorentina-Atalanta-A --odds <Tipico赔率> --stake 1.00
+```
+
+</details>
+
+「可得赔率」带 * 的是市场最高赔率（只说明这个价格在市场上存在，
+不一定在 Tipico）；不带 * 的是你自己填进来的 Tipico 赔率。
+
+## 同场组合参考（胜负 + 大小球）
+
+没有数据源报组合赔率，所以这些**不是推荐**，只是阈值：
+在 Tipico 的组合投注里找到对应选项，**赔率 ≥ 最低赔率才值得下**。
+注意组合的公平赔率不等于两个盘口相乘——平局和大球强烈负相关。
+
+| 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |
+|---|---|---|---|---|
+| Fiorentina vs Atalanta | 客胜 Atalanta + 大于 2.5 球 | 4.05 | **4.17** | 4.79 |
+| Fiorentina vs Atalanta | 平局 + 小于 2.5 球 | 5.80 | **5.97** | 9.15 |
+| Fiorentina vs Atalanta | 客胜 Atalanta + 小于 2.5 球 | 8.41 | **8.67** | 6.36 |
+| Carrarese vs Arezzo | 主胜 Carrarese + 大于 2.5 球 | 3.34 | **3.44** | 4.21 |
+| Carrarese vs Arezzo | 主胜 Carrarese + 小于 2.5 球 | 5.67 | **5.84** | 4.20 |
 
 ---
 开球时间已换算成德国时间（report.kickoff_offset_hours），仍请以 Tipico 显示为准。本报告是模型输出，不保证盈利；只用亏得起的钱。

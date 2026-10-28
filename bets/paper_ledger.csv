@@ -82,3 +82,5 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261025-F1-Rennes-Strasbourg-A,2026-10-24,2026-10-25,F1,Rennes,Strasbourg,1X2,A,客胜 Strasbourg,3.91,1.0,0.2638,settled,3-0 输,-1.0,3.96,-0.0126,-0.0696,average,single,,
 20261026-F2-Montpellier-RedStar-U25,2026-10-25,2026-10-26,F2,Montpellier,Red Star,OU25,U25,小于 2.5 球,1.87,1.0,0.5495,settled,2-1 输,-1.0,1.96,-0.0459,-0.1153,average,single,,
 20261026-E3-Walsall-Salford-H,2026-10-25,2026-10-26,E3,Walsall,Salford,1X2,H,主胜 Walsall,3.19,1.0,0.3224,settled,2-4 输,-1.0,3.13,0.0192,-0.0549,average,single,,
+20261028-I2-Carrarese-Arezzo-H,2026-10-28,2026-10-28,I2,Carrarese,Arezzo,1X2,H,主胜 Carrarese,2.16,1.0,0.4758,open,,,,,,,single,,
+20261029-I1-Fiorentina-Atalanta-A,2026-10-28,2026-10-29,I1,Fiorentina,Atalanta,1X2,A,客胜 Atalanta,2.81,1.0,0.3659,open,,,,,,,single,,

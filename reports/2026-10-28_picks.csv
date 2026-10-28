@@ -1,0 +1,3 @@
+pick_id,div,date,time,home,away,market,outcome,label,p_model,p_market,p_final,market_source,price_source,kickoff_utc,fair_odds,min_odds,best_odds,avg_odds,edge_best,stake,is_candidate,naive_odds,league,manual
+20261028-I2-Carrarese-Arezzo-H,I2,2026-10-28,20:00,Carrarese,Arezzo,1X2,H,主胜 Carrarese,0.6214283698070395,0.4134519609001739,0.47584488357223353,average,market_avg,,2.1015251703304263,2.1645709254403394,2.22,2.22,0.056375641530358456,1.0,True,,意乙,False
+20261029-I1-Fiorentina-Atalanta-A,I1,2026-10-29,20:45,Fiorentina,Atalanta,1X2,A,客胜 Atalanta,0.4933927831860823,0.3113106321204279,0.3659352774401242,average,market_avg,,2.732723685443593,2.814705396006901,3.01,3.01,0.10146518509477387,1.0,True,,意甲,False
