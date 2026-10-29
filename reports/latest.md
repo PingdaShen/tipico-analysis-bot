@@ -1,25 +1,18 @@
-# 投注建议 · 2026-10-28
+# 投注建议 · 2026-10-29
 
-覆盖 10-28 至 10-29 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 19 场比赛
+覆盖 10-29 至 10-30 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 2 场比赛
 
 ## 联赛
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Carrarese vs Arezzo | 意乙 | 10-28 20:00 | 主胜 Carrarese | 2.10 | **2.16** | 2.22* | €1.00 |
-| 2 | Fiorentina vs Atalanta | 意甲 | 10-29 20:45 | 客胜 Atalanta | 2.73 | **2.81** | 3.01* | €1.00 |
+| 1 | Fiorentina vs Atalanta | 意甲 | 10-29 20:45 | 客胜 Atalanta | 2.73 | **2.81** | 3.01* | €1.00 |
 
 ## 投注 ID
 
 record-bet 表单要填这个（点代码块右上角可直接复制）：
 
-**1. Carrarese vs Arezzo — 主胜 Carrarese**
-
-```
-20261028-I2-Carrarese-Arezzo-H
-```
-
-**2. Fiorentina vs Atalanta — 客胜 Atalanta**
+**1. Fiorentina vs Atalanta — 客胜 Atalanta**
 
 ```
 20261029-I1-Fiorentina-Atalanta-A
@@ -34,7 +27,6 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 <details><summary>用终端的话</summary>
 
 ```bash
-python -m src.ledger add 20261028-I2-Carrarese-Arezzo-H --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261029-I1-Fiorentina-Atalanta-A --odds <Tipico赔率> --stake 1.00
 ```
 
@@ -51,11 +43,9 @@ python -m src.ledger add 20261029-I1-Fiorentina-Atalanta-A --odds <Tipico赔率>
 
 | 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |
 |---|---|---|---|---|
-| Fiorentina vs Atalanta | 客胜 Atalanta + 大于 2.5 球 | 4.05 | **4.17** | 4.79 |
-| Fiorentina vs Atalanta | 平局 + 小于 2.5 球 | 5.80 | **5.97** | 9.15 |
-| Fiorentina vs Atalanta | 客胜 Atalanta + 小于 2.5 球 | 8.41 | **8.67** | 6.36 |
-| Carrarese vs Arezzo | 主胜 Carrarese + 大于 2.5 球 | 3.34 | **3.44** | 4.21 |
-| Carrarese vs Arezzo | 主胜 Carrarese + 小于 2.5 球 | 5.67 | **5.84** | 4.20 |
+| Fiorentina vs Atalanta | 客胜 Atalanta + 大于 2.5 球 | 4.05 | **4.17** | 4.81 |
+| Fiorentina vs Atalanta | 平局 + 小于 2.5 球 | 5.75 | **5.92** | 9.08 |
+| Fiorentina vs Atalanta | 客胜 Atalanta + 小于 2.5 球 | 8.39 | **8.64** | 6.33 |
 
 ---
 开球时间已换算成德国时间（report.kickoff_offset_hours），仍请以 Tipico 显示为准。本报告是模型输出，不保证盈利；只用亏得起的钱。

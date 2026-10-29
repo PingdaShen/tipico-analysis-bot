@@ -1,0 +1,2 @@
+pick_id,div,date,time,home,away,market,outcome,label,p_model,p_market,p_final,market_source,price_source,kickoff_utc,fair_odds,min_odds,best_odds,avg_odds,edge_best,stake,is_candidate,naive_odds,league,manual
+20261029-I1-Fiorentina-Atalanta-A,I1,2026-10-29,20:45,Fiorentina,Atalanta,1X2,A,客胜 Atalanta,0.4937884839621911,0.3113106321204279,0.3660539876729568,average,market_avg,,2.7318374711804227,2.8137925953158356,3.01,3.01,0.10182250289559991,1.0,True,,意甲,False
