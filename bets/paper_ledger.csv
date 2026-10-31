@@ -93,3 +93,8 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261031-E0-Hull-Ipswich-H,2026-10-30,2026-10-31,E0,Hull,Ipswich,1X2,H,主胜 Hull,2.36,1.0,0.4368,open,,,,,,,single,,
 20261031-SC2-EastFife-QueenofSth-A,2026-10-30,2026-10-31,SC2,East Fife,Queen of Sth,1X2,A,客胜 Queen of Sth,3.25,1.0,0.3169,open,,,,,,,single,,
 20261031-E1-Middlesbrough-Charlton-U25,2026-10-30,2026-10-31,E1,Middlesbrough,Charlton,OU25,U25,小于 2.5 球,2.66,1.0,0.3866,open,,,,,,,single,,
+20261101-I2-Arezzo-Ascoli-A,2026-10-31,2026-11-01,I2,Arezzo,Ascoli,1X2,A,客胜 Ascoli,1.92,1.0,0.5352,open,,,,,,,single,,
+20261101-B1-LommelSK-Gent-H,2026-10-31,2026-11-01,B1,Lommel SK,Gent,1X2,H,主胜 Lommel SK,3.69,1.0,0.2789,open,,,,,,,single,,
+20261101-I1-Frosinone-Torino-H,2026-10-31,2026-11-01,I1,Frosinone,Torino,1X2,H,主胜 Frosinone,1.99,1.0,0.5184,open,,,,,,,single,,
+20261101-I1-Como-Venezia-U25,2026-10-31,2026-11-01,I1,Como,Venezia,OU25,U25,小于 2.5 球,2.72,1.0,0.3781,open,,,,,,,single,,
+20261101-D2-StPauli-Nurnberg-U25,2026-10-31,2026-11-01,D2,St Pauli,Nurnberg,OU25,U25,小于 2.5 球,2.12,1.0,0.4863,open,,,,,,,single,,
