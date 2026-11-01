@@ -98,3 +98,6 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261101-I1-Frosinone-Torino-H,2026-10-31,2026-11-01,I1,Frosinone,Torino,1X2,H,主胜 Frosinone,1.99,1.0,0.5184,open,,,,,,,single,,
 20261101-I1-Como-Venezia-U25,2026-10-31,2026-11-01,I1,Como,Venezia,OU25,U25,小于 2.5 球,2.72,1.0,0.3781,open,,,,,,,single,,
 20261101-D2-StPauli-Nurnberg-U25,2026-10-31,2026-11-01,D2,St Pauli,Nurnberg,OU25,U25,小于 2.5 球,2.12,1.0,0.4863,open,,,,,,,single,,
+20261102-G1-Kalamata-Iraklis-O25,2026-11-01,2026-11-02,G1,Kalamata,Iraklis,OU25,O25,大于 2.5 球,1.99,1.0,0.5175,open,,,,,,,single,,
+20261102-SP2-Mallorca-Cadiz-U25,2026-11-01,2026-11-02,SP2,Mallorca,Cadiz,OU25,U25,小于 2.5 球,1.82,1.0,0.5668,open,,,,,,,single,,
+20261102-I1-Atalanta-Parma-U25,2026-11-01,2026-11-02,I1,Atalanta,Parma,OU25,U25,小于 2.5 球,2.22,1.0,0.4642,open,,,,,,,single,,
