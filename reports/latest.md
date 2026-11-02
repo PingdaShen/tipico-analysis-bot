@@ -1,70 +1,65 @@
-# 投注建议 · 2026-11-01
+# 投注建议 · 2026-11-02
 
-覆盖 11-01 至 11-02 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 65 场比赛
+覆盖 11-02 至 11-03 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 23 场比赛
 
 ## 联赛
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Arezzo vs Ascoli | 意乙 | 11-01 15:00 | 客胜 Ascoli | 1.87 | **1.92** | 2.13* | €1.00 |
-| 2 | Lommel SK vs Gent | 比甲 | 11-01 18:30 | 主胜 Lommel SK | 3.59 | **3.69** | 4.04* | €1.00 |
-| 3 | Frosinone vs Torino | 意甲 | 11-01 15:00 | 主胜 Frosinone | 1.93 | **1.99** | 2.14* | €1.00 |
-| 4 | Como vs Venezia | 意甲 | 11-01 12:30 | 小于 2.5 球 | 2.64 | **2.72** | 2.91* | €1.00 |
-| 5 | St Pauli vs Nurnberg | 德乙 | 11-01 13:30 | 小于 2.5 球 | 2.06 | **2.12** | 2.21* | €1.00 |
-| 6 | Kalamata vs Iraklis | 希超 | 11-02 18:30 | 大于 2.5 球 | 1.93 | **1.99** | 2.10* | €1.00 |
-| 7 | Mallorca vs Cadiz | 西乙 | 11-02 21:00 | 小于 2.5 球 | 1.76 | **1.82** | 1.84* | €1.00 |
-| 8 | Atalanta vs Parma | 意甲 | 11-02 20:45 | 小于 2.5 球 | 2.15 | **2.22** | 2.23* | €1.00 |
+| 1 | Kalamata vs Iraklis | 希超 | 11-02 18:30 | 大于 2.5 球 | 1.93 | **1.99** | 2.10* | €1.00 |
+| 2 | Mallorca vs Cadiz | 西乙 | 11-02 21:00 | 小于 2.5 球 | 1.77 | **1.82** | 1.84* | €1.00 |
+| 3 | Atalanta vs Parma | 意甲 | 11-02 20:45 | 小于 2.5 球 | 2.15 | **2.22** | 2.23* | €1.00 |
+
+## 欧战 / 国家队
+
+赛程和赔率来自 the-odds-api，1X2 锚定 Pinnacle。
+**开球前再跑一次就能取到收盘价**，所以这些注的 CLV 是算得出来的。
+不过跨联赛的实力值本身比联赛模型不确定得多，请当作次要参考。
+
+| # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
+|---|---|---|---|---|---|---|---|---|
+| 4 | Barcelona vs Aston Villa | 欧冠 | 11-03 21:00 | 小于 2.5 球 | 4.16 | **4.28** | 4.52* | €1.00 |
+| 5 | Shakhtar Donetsk vs Sp Lisbon | 欧冠 | 11-03 18:45 | 小于 2.5 球 | 2.08 | **2.14** | 2.17* | €1.00 |
+| 6 | Villarreal vs Paris SG | 欧冠 | 11-03 21:00 | 主胜 Villarreal | 4.72 | **4.86** | 4.91* | €1.00 |
 
 ## 投注 ID
 
-record-bet 表单要填这个（点代码块右上角可直接复制）：
+record-bet 和 record-close 表单要填这个（点代码块右上角可直接复制）：
 
-**1. Arezzo vs Ascoli — 客胜 Ascoli**
-
-```
-20261101-I2-Arezzo-Ascoli-A
-```
-
-**2. Lommel SK vs Gent — 主胜 Lommel SK**
-
-```
-20261101-B1-LommelSK-Gent-H
-```
-
-**3. Frosinone vs Torino — 主胜 Frosinone**
-
-```
-20261101-I1-Frosinone-Torino-H
-```
-
-**4. Como vs Venezia — 小于 2.5 球**
-
-```
-20261101-I1-Como-Venezia-U25
-```
-
-**5. St Pauli vs Nurnberg — 小于 2.5 球**
-
-```
-20261101-D2-StPauli-Nurnberg-U25
-```
-
-**6. Kalamata vs Iraklis — 大于 2.5 球**
+**1. Kalamata vs Iraklis — 大于 2.5 球**
 
 ```
 20261102-G1-Kalamata-Iraklis-O25
 ```
 
-**7. Mallorca vs Cadiz — 小于 2.5 球**
+**2. Mallorca vs Cadiz — 小于 2.5 球**
 
 ```
 20261102-SP2-Mallorca-Cadiz-U25
 ```
 
-**8. Atalanta vs Parma — 小于 2.5 球**
+**3. Atalanta vs Parma — 小于 2.5 球**
 
 ```
 20261102-I1-Atalanta-Parma-U25
+```
+
+**4. Barcelona vs Aston Villa — 小于 2.5 球**
+
+```
+20261103-CL-Barcelona-AstonVilla-U25
+```
+
+**5. Shakhtar Donetsk vs Sp Lisbon — 小于 2.5 球**
+
+```
+20261103-CL-ShakhtarDonetsk-SpLisbon-U25
+```
+
+**6. Villarreal vs Paris SG — 主胜 Villarreal**
+
+```
+20261103-CL-Villarreal-ParisSG-H
 ```
 
 ## 怎么用
@@ -72,18 +67,17 @@ record-bet 表单要填这个（点代码块右上角可直接复制）：
 1. 在 Tipico App 里找到比赛和对应选项。
 2. **只有 Tipico 赔率 ≥ 最低赔率时才下注**，否则跳过这一注。
 3. 下注后在 Actions 页面跑 **record-bet**，填 ID、实际赔率、注额。
+4. 收盘赔率不用管：`record-close-auto` 每半小时跑一次，开球前 45 分钟内会自动抓 Pinnacle 的价格；联赛的收盘价随赛果自动取。
 
 <details><summary>用终端的话</summary>
 
 ```bash
-python -m src.ledger add 20261101-I2-Arezzo-Ascoli-A --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261101-B1-LommelSK-Gent-H --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261101-I1-Frosinone-Torino-H --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261101-I1-Como-Venezia-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261101-D2-StPauli-Nurnberg-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261102-G1-Kalamata-Iraklis-O25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261102-SP2-Mallorca-Cadiz-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261102-I1-Atalanta-Parma-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261103-CL-Barcelona-AstonVilla-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261103-CL-ShakhtarDonetsk-SpLisbon-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261103-CL-Villarreal-ParisSG-H --odds <Tipico赔率> --stake 1.00
 ```
 
 </details>
@@ -99,26 +93,32 @@ python -m src.ledger add 20261102-I1-Atalanta-Parma-U25 --odds <Tipico赔率> --
 
 | 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |
 |---|---|---|---|---|
-| Lommel SK vs Gent | 平局 + 小于 2.5 球 | 4.73 | **4.87** | 7.17 |
-| Lommel SK vs Gent | 主胜 Lommel SK + 大于 2.5 球 | 6.07 | **6.25** | 7.44 |
-| Lommel SK vs Gent | 主胜 Lommel SK + 小于 2.5 球 | 8.76 | **9.02** | 6.92 |
-| St Pauli vs Nurnberg | 平局 + 小于 2.5 球 | 4.77 | **4.91** | 7.54 |
-| St Pauli vs Nurnberg | 主胜 St Pauli + 小于 2.5 球 | 6.20 | **6.38** | 4.67 |
-| St Pauli vs Nurnberg | 客胜 Nurnberg + 小于 2.5 球 | 8.67 | **8.93** | 7.16 |
-| Kalamata vs Iraklis | 主胜 Kalamata + 大于 2.5 球 | 3.76 | **3.88** | 4.56 |
-| Kalamata vs Iraklis | 客胜 Iraklis + 大于 2.5 球 | 5.41 | **5.58** | 6.44 |
-| Kalamata vs Iraklis | 平局 + 大于 2.5 球 | 14.93 | **15.38** | 7.00 |
-| Como vs Venezia | 主胜 Como + 小于 2.5 球 | 4.87 | **5.01** | 3.62 |
-| Como vs Venezia | 平局 + 小于 2.5 球 | 7.77 | **8.00** | 15.65 |
-| Como vs Venezia | 客胜 Venezia + 小于 2.5 球 | 22.72 | **23.41** | 26.44 |
-| Frosinone vs Torino | 主胜 Frosinone + 大于 2.5 球 | 2.37 | **2.44** | 2.68 |
-| Atalanta vs Parma | 主胜 Atalanta + 小于 2.5 球 | 4.44 | **4.57** | 3.40 |
-| Atalanta vs Parma | 平局 + 小于 2.5 球 | 5.92 | **6.10** | 9.94 |
-| Atalanta vs Parma | 客胜 Parma + 小于 2.5 球 | 14.32 | **14.75** | 14.32 |
-| Arezzo vs Ascoli | 客胜 Ascoli + 大于 2.5 球 | 2.79 | **2.87** | 3.57 |
-| Arezzo vs Ascoli | 客胜 Ascoli + 小于 2.5 球 | 5.67 | **5.84** | 3.92 |
-| Mallorca vs Cadiz | 主胜 Mallorca + 小于 2.5 球 | 3.64 | **3.75** | 2.80 |
-| Mallorca vs Cadiz | 平局 + 小于 2.5 球 | 4.72 | **4.86** | 7.45 |
+| Kalamata vs Iraklis | 主胜 Kalamata + 大于 2.5 球 | 3.75 | **3.86** | 4.55 |
+| Kalamata vs Iraklis | 客胜 Iraklis + 大于 2.5 球 | 5.45 | **5.61** | 6.48 |
+| Kalamata vs Iraklis | 平局 + 大于 2.5 球 | 14.97 | **15.42** | 7.00 |
+| Atalanta vs Parma | 主胜 Atalanta + 小于 2.5 球 | 4.43 | **4.56** | 3.40 |
+| Atalanta vs Parma | 平局 + 小于 2.5 球 | 5.94 | **6.11** | 9.97 |
+| Atalanta vs Parma | 客胜 Parma + 小于 2.5 球 | 14.27 | **14.70** | 14.35 |
+| Mallorca vs Cadiz | 主胜 Mallorca + 小于 2.5 球 | 3.64 | **3.75** | 2.81 |
+| Mallorca vs Cadiz | 平局 + 小于 2.5 球 | 4.72 | **4.86** | 7.44 |
+| Shakhtar Donetsk vs Sp Lisbon | 平局 + 小于 2.5 球 | 5.11 | **5.26** | 7.95 |
+| Shakhtar Donetsk vs Sp Lisbon | 客胜 Sp Lisbon + 小于 2.5 球 | 5.76 | **5.93** | 4.58 |
+| Shakhtar Donetsk vs Sp Lisbon | 主胜 Shakhtar Donetsk + 小于 2.5 球 | 8.93 | **9.20** | 7.30 |
+| Barcelona vs Aston Villa | 主胜 Barcelona + 小于 2.5 球 | 7.66 | **7.89** | 5.89 |
+| Barcelona vs Aston Villa | 客胜 Aston Villa + 大于 2.5 球 | 9.24 | **9.52** | 9.47 |
+| Barcelona vs Aston Villa | 平局 + 小于 2.5 球 | 12.66 | **13.04** | 26.79 |
+| Barcelona vs Aston Villa | 平局 + 大于 2.5 球 | 13.11 | **13.51** | 8.48 |
+| Villarreal vs Paris SG | 主胜 Villarreal + 大于 2.5 球 | 6.35 | **6.54** | 6.74 |
+| Villarreal vs Paris SG | 客胜 Paris SG + 小于 2.5 球 | 7.71 | **7.94** | 5.73 |
+| Villarreal vs Paris SG | 平局 + 小于 2.5 球 | 8.63 | **8.89** | 16.13 |
+| Villarreal vs Paris SG | 主胜 Villarreal + 小于 2.5 球 | 18.37 | **18.93** | 15.74 |
+
+## 备注
+- 从 the-odds-api 取到 9 场带赔率的赛程（1X2 锚定 Pinnacle）。
+- 其中 9 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
+- the-odds-api 免费额度还剩 496 次（每月 500）。
+- 欧战：已合并 13 场手录赛果（数据源已经收录的重复行自动忽略）。
+- LASK vs ŠK Slovan Bratislava：球队比赛数不够（门槛 min_team_matches），跳过
 
 ---
 开球时间已换算成德国时间（report.kickoff_offset_hours），仍请以 Tipico 显示为准。本报告是模型输出，不保证盈利；只用亏得起的钱。
