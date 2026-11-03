@@ -98,9 +98,16 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261101-I1-Frosinone-Torino-H,2026-10-31,2026-11-01,I1,Frosinone,Torino,1X2,H,主胜 Frosinone,1.99,1.0,0.5184,settled,2-0 赢,0.99,2.07,-0.0386,-0.0955,average,single,,
 20261101-I1-Como-Venezia-U25,2026-10-31,2026-11-01,I1,Como,Venezia,OU25,U25,小于 2.5 球,2.72,1.0,0.3781,settled,1-0 赢,1.72,2.98,-0.0872,-0.1434,average,single,,
 20261101-D2-StPauli-Nurnberg-U25,2026-10-31,2026-11-01,D2,St Pauli,Nurnberg,OU25,U25,小于 2.5 球,2.12,1.0,0.4863,settled,1-3 输,-1.0,2.18,-0.0275,-0.0994,average,single,,
-20261102-G1-Kalamata-Iraklis-O25,2026-11-01,2026-11-02,G1,Kalamata,Iraklis,OU25,O25,大于 2.5 球,1.99,1.0,0.5175,open,,,,,,,single,,
-20261102-SP2-Mallorca-Cadiz-U25,2026-11-01,2026-11-02,SP2,Mallorca,Cadiz,OU25,U25,小于 2.5 球,1.82,1.0,0.5668,open,,,,,,,single,,
-20261102-I1-Atalanta-Parma-U25,2026-11-01,2026-11-02,I1,Atalanta,Parma,OU25,U25,小于 2.5 球,2.22,1.0,0.4642,open,,,,,,,single,,
+20261102-G1-Kalamata-Iraklis-O25,2026-11-01,2026-11-02,G1,Kalamata,Iraklis,OU25,O25,大于 2.5 球,1.99,1.0,0.5175,settled,1-1 输,-1.0,2.05,-0.0293,-0.1008,average,single,,
+20261102-SP2-Mallorca-Cadiz-U25,2026-11-01,2026-11-02,SP2,Mallorca,Cadiz,OU25,U25,小于 2.5 球,1.82,1.0,0.5668,settled,2-1 输,-1.0,1.93,-0.057,-0.1242,average,single,,
+20261102-I1-Atalanta-Parma-U25,2026-11-01,2026-11-02,I1,Atalanta,Parma,OU25,U25,小于 2.5 球,2.22,1.0,0.4642,settled,0-3 输,-1.0,2.56,-0.1328,-0.1867,average,single,,
 20261103-CL-Barcelona-AstonVilla-U25,2026-11-02,2026-11-03,CL,Barcelona,Aston Villa,OU25,U25,小于 2.5 球,4.28,1.0,0.2404,open,,,,,,,single,,2026-11-03 20:00:00
 20261103-CL-ShakhtarDonetsk-SpLisbon-U25,2026-11-02,2026-11-03,CL,Shakhtar Donetsk,Sp Lisbon,OU25,U25,小于 2.5 球,2.14,1.0,0.4813,open,,,,,,,single,,2026-11-03 17:45:00
 20261103-CL-Villarreal-ParisSG-H,2026-11-02,2026-11-03,CL,Villarreal,Paris SG,1X2,H,主胜 Villarreal,4.86,1.0,0.2118,open,,,,,,,single,,2026-11-03 20:00:00
+20261103-E3-Northampton-Oldham-U25,2026-11-03,2026-11-03,E3,Northampton,Oldham,OU25,U25,小于 2.5 球,1.6,1.0,0.6449,open,,,,,,,single,,
+20261103-E1-QPR-Burnley-A,2026-11-03,2026-11-03,E1,QPR,Burnley,1X2,A,客胜 Burnley,3.36,1.0,0.3066,open,,,,,,,single,,
+20261103-E1-Derby-Norwich-H,2026-11-03,2026-11-03,E1,Derby,Norwich,1X2,H,主胜 Derby,3.34,1.0,0.308,open,,,,,,,single,,
+20261104-CL-Lens-Como-H,2026-11-03,2026-11-04,CL,Lens,Como,1X2,H,主胜 Lens,2.74,1.0,0.3756,open,,,,,,,single,,2026-11-04 20:00:00
+20261104-CL-AEK-RealMadrid-U25,2026-11-03,2026-11-04,CL,AEK,Real Madrid,OU25,U25,小于 2.5 球,3.17,1.0,0.325,open,,,,,,,single,,2026-11-04 17:45:00
+20261104-E1-Wrexham-Middlesbrough-H,2026-11-03,2026-11-04,E1,Wrexham,Middlesbrough,1X2,H,主胜 Wrexham,3.95,1.0,0.2606,open,,,,,,,single,,
+20261104-CL-Porto-Napoli-U25,2026-11-03,2026-11-04,CL,Porto,Napoli,OU25,U25,小于 2.5 球,2.08,1.0,0.4952,open,,,,,,,single,,2026-11-04 20:00:00
