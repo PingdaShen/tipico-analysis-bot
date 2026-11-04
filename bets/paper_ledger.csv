@@ -111,3 +111,9 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261104-CL-AEK-RealMadrid-U25,2026-11-03,2026-11-04,CL,AEK,Real Madrid,OU25,U25,小于 2.5 球,3.17,1.0,0.325,open,,,,,,,single,,2026-11-04 17:45:00
 20261104-E1-Wrexham-Middlesbrough-H,2026-11-03,2026-11-04,E1,Wrexham,Middlesbrough,1X2,H,主胜 Wrexham,3.95,1.0,0.2606,open,,,,,,,single,,
 20261104-CL-Porto-Napoli-U25,2026-11-03,2026-11-04,CL,Porto,Napoli,OU25,U25,小于 2.5 球,2.08,1.0,0.4952,open,,,,,,,single,,2026-11-04 20:00:00
+20261104-CL-RBLeipzig-ManCity-U25,2026-11-04,2026-11-04,CL,RB Leipzig,Man City,OU25,U25,小于 2.5 球,3.57,1.0,0.2888,open,,,,,,,single,,2026-11-04 20:00:00
+20261105-EL-Celtic-Besiktas-H,2026-11-04,2026-11-05,EL,Celtic,Besiktas,1X2,H,主胜 Celtic,2.43,1.0,0.4236,open,,,,,,,single,,2026-11-05 20:00:00
+20261105-UECL-StTruiden-Brann-A,2026-11-04,2026-11-05,UECL,St Truiden,Brann,1X2,A,客胜 Brann,3.92,1.0,0.2627,open,,,,,,,single,,2026-11-05 20:00:00
+20261105-UECL-KuPS-Gent-H,2026-11-04,2026-11-05,UECL,KuPS,Gent,1X2,H,主胜 KuPS,4.61,1.0,0.2234,open,,,,,,,single,,2026-11-05 17:45:00
+20261105-EL-Benfica-LechPoznan-U25,2026-11-04,2026-11-05,EL,Benfica,Lech Poznan,OU25,U25,小于 2.5 球,3.41,1.0,0.3023,open,,,,,,,single,,2026-11-05 20:00:00
+20261105-UECL-Atalanta-FKKairat-U25,2026-11-04,2026-11-05,UECL,Atalanta,FK Kairat,OU25,U25,小于 2.5 球,2.84,1.0,0.3632,open,,,,,,,single,,2026-11-05 17:45:00
