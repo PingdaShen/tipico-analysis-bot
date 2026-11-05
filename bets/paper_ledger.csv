@@ -104,12 +104,12 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261103-CL-Barcelona-AstonVilla-U25,2026-11-02,2026-11-03,CL,Barcelona,Aston Villa,OU25,U25,小于 2.5 球,4.28,1.0,0.2404,open,,,,,,,single,,2026-11-03 20:00:00
 20261103-CL-ShakhtarDonetsk-SpLisbon-U25,2026-11-02,2026-11-03,CL,Shakhtar Donetsk,Sp Lisbon,OU25,U25,小于 2.5 球,2.14,1.0,0.4813,open,,,,,,,single,,2026-11-03 17:45:00
 20261103-CL-Villarreal-ParisSG-H,2026-11-02,2026-11-03,CL,Villarreal,Paris SG,1X2,H,主胜 Villarreal,4.86,1.0,0.2118,open,,,,,,,single,,2026-11-03 20:00:00
-20261103-E3-Northampton-Oldham-U25,2026-11-03,2026-11-03,E3,Northampton,Oldham,OU25,U25,小于 2.5 球,1.6,1.0,0.6449,open,,,,,,,single,,
-20261103-E1-QPR-Burnley-A,2026-11-03,2026-11-03,E1,QPR,Burnley,1X2,A,客胜 Burnley,3.36,1.0,0.3066,open,,,,,,,single,,
-20261103-E1-Derby-Norwich-H,2026-11-03,2026-11-03,E1,Derby,Norwich,1X2,H,主胜 Derby,3.34,1.0,0.308,open,,,,,,,single,,
+20261103-E3-Northampton-Oldham-U25,2026-11-03,2026-11-03,E3,Northampton,Oldham,OU25,U25,小于 2.5 球,1.6,1.0,0.6449,settled,0-1 赢,0.6,1.52,0.0526,-0.022,average,single,,
+20261103-E1-QPR-Burnley-A,2026-11-03,2026-11-03,E1,QPR,Burnley,1X2,A,客胜 Burnley,3.36,1.0,0.3066,settled,1-1 输,-1.0,3.69,-0.0894,-0.1502,average,single,,
+20261103-E1-Derby-Norwich-H,2026-11-03,2026-11-03,E1,Derby,Norwich,1X2,H,主胜 Derby,3.34,1.0,0.308,settled,0-4 输,-1.0,3.68,-0.0924,-0.1526,average,single,,
 20261104-CL-Lens-Como-H,2026-11-03,2026-11-04,CL,Lens,Como,1X2,H,主胜 Lens,2.74,1.0,0.3756,open,,,,,,,single,,2026-11-04 20:00:00
 20261104-CL-AEK-RealMadrid-U25,2026-11-03,2026-11-04,CL,AEK,Real Madrid,OU25,U25,小于 2.5 球,3.17,1.0,0.325,open,,,,,,,single,,2026-11-04 17:45:00
-20261104-E1-Wrexham-Middlesbrough-H,2026-11-03,2026-11-04,E1,Wrexham,Middlesbrough,1X2,H,主胜 Wrexham,3.95,1.0,0.2606,open,,,,,,,single,,
+20261104-E1-Wrexham-Middlesbrough-H,2026-11-03,2026-11-04,E1,Wrexham,Middlesbrough,1X2,H,主胜 Wrexham,3.95,1.0,0.2606,settled,2-0 赢,2.95,4.32,-0.0856,-0.1434,average,single,,
 20261104-CL-Porto-Napoli-U25,2026-11-03,2026-11-04,CL,Porto,Napoli,OU25,U25,小于 2.5 球,2.08,1.0,0.4952,open,,,,,,,single,,2026-11-04 20:00:00
 20261104-CL-RBLeipzig-ManCity-U25,2026-11-04,2026-11-04,CL,RB Leipzig,Man City,OU25,U25,小于 2.5 球,3.57,1.0,0.2888,open,,,,,,,single,,2026-11-04 20:00:00
 20261105-EL-Celtic-Besiktas-H,2026-11-04,2026-11-05,EL,Celtic,Besiktas,1X2,H,主胜 Celtic,2.43,1.0,0.4236,open,,,,,,,single,,2026-11-05 20:00:00
@@ -117,3 +117,4 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261105-UECL-KuPS-Gent-H,2026-11-04,2026-11-05,UECL,KuPS,Gent,1X2,H,主胜 KuPS,4.61,1.0,0.2234,open,,,,,,,single,,2026-11-05 17:45:00
 20261105-EL-Benfica-LechPoznan-U25,2026-11-04,2026-11-05,EL,Benfica,Lech Poznan,OU25,U25,小于 2.5 球,3.41,1.0,0.3023,open,,,,,,,single,,2026-11-05 20:00:00
 20261105-UECL-Atalanta-FKKairat-U25,2026-11-04,2026-11-05,UECL,Atalanta,FK Kairat,OU25,U25,小于 2.5 球,2.84,1.0,0.3632,open,,,,,,,single,,2026-11-05 17:45:00
+20261105-EL-Sociedad-Lyon-A,2026-11-05,2026-11-05,EL,Sociedad,Lyon,1X2,A,客胜 Lyon,4.55,1.0,0.2266,open,,,,,,,single,,2026-11-05 17:45:00
