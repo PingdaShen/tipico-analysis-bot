@@ -1,6 +1,6 @@
-# 投注建议 · 2026-11-11
+# 投注建议 · 2026-11-12
 
-覆盖 11-11 至 11-12 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 8 场比赛
+覆盖 11-12 至 11-13 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 18 场比赛
 
 ## 欧战 / 国家队
 
@@ -10,16 +10,30 @@
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Montenegro vs Latvia | 国家队 | 11-12 20:45 | 平局 | 4.76 | **4.90** | 5.18* | €1.00 |
+| 1 | Armenia vs Cyprus | 国家队 | 11-12 18:00 | 主胜 Armenia | 2.71 | **2.79** | 2.87* | €1.00 |
+| 2 | Montenegro vs Latvia | 国家队 | 11-12 20:45 | 小于 2.5 球 | 1.94 | **2.00** | 2.01* | €1.00 |
+| 3 | Liechtenstein vs Azerbaijan | 国家队 | 11-13 20:45 | 平局 | 4.69 | **4.83** | 5.02* | €1.00 |
 
 ## 投注 ID
 
 record-bet 和 record-close 表单要填这个（点代码块右上角可直接复制）：
 
-**1. Montenegro vs Latvia — 平局**
+**1. Armenia vs Cyprus — 主胜 Armenia**
 
 ```
-20261112-INT-Montenegro-Latvia-D
+20261112-INT-Armenia-Cyprus-H
+```
+
+**2. Montenegro vs Latvia — 小于 2.5 球**
+
+```
+20261112-INT-Montenegro-Latvia-U25
+```
+
+**3. Liechtenstein vs Azerbaijan — 平局**
+
+```
+20261113-INT-Liechtenstein-Azerbaijan-D
 ```
 
 ## 怎么用
@@ -32,7 +46,9 @@ record-bet 和 record-close 表单要填这个（点代码块右上角可直接�
 <details><summary>用终端的话</summary>
 
 ```bash
-python -m src.ledger add 20261112-INT-Montenegro-Latvia-D --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261112-INT-Armenia-Cyprus-H --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261112-INT-Montenegro-Latvia-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261113-INT-Liechtenstein-Azerbaijan-D --odds <Tipico赔率> --stake 1.00
 ```
 
 </details>
@@ -48,17 +64,22 @@ python -m src.ledger add 20261112-INT-Montenegro-Latvia-D --odds <Tipico赔率> 
 
 | 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |
 |---|---|---|---|---|
-| Montenegro vs Latvia | 主胜 Montenegro + 小于 2.5 球 | 3.62 | **3.72** | 2.92 |
-| Montenegro vs Latvia | 平局 + 小于 2.5 球 | 5.77 | **5.94** | 9.34 |
-| Montenegro vs Latvia | 客胜 Latvia + 小于 2.5 球 | 16.75 | **17.25** | 16.60 |
-| Montenegro vs Latvia | 客胜 Latvia + 大于 2.5 球 | 17.09 | **17.60** | 17.25 |
+| Armenia vs Cyprus | 主胜 Armenia + 大于 2.5 球 | 4.64 | **4.78** | 5.81 |
+| Armenia vs Cyprus | 主胜 Armenia + 小于 2.5 球 | 6.50 | **6.70** | 5.07 |
+| Montenegro vs Latvia | 平局 + 小于 2.5 球 | 6.14 | **6.32** | 9.91 |
+| Montenegro vs Latvia | 客胜 Latvia + 小于 2.5 球 | 18.09 | **18.63** | 18.23 |
+| Montenegro vs Latvia | 客胜 Latvia + 大于 2.5 球 | 19.62 | **20.21** | 19.45 |
+| Montenegro vs Latvia | 平局 + 大于 2.5 球 | 30.65 | **31.57** | 10.57 |
+| Liechtenstein vs Azerbaijan | 客胜 Azerbaijan + 小于 2.5 球 | 2.82 | **2.91** | 2.31 |
+| Liechtenstein vs Azerbaijan | 平局 + 小于 2.5 球 | 4.96 | **5.11** | 7.72 |
+| Liechtenstein vs Azerbaijan | 主胜 Liechtenstein + 小于 2.5 球 | 19.38 | **19.96** | 21.78 |
 
 ## 备注
-- 赛程源里没有 11-11 起 2 天内的联赛比赛。fixtures.csv 最新的一场是 2026-11-09（已经是 2 天前），只覆盖 19 个联赛：B1、D1、D2、E0、E1、F1、F2、G1、I1、I2、N1、P1、SC0、SC1、SC2、SC3、SP1、SP2、T1。football-data.co.uk 的赛程是周五下午发布周末场次、周二下午发布周中场次，国际比赛周没有联赛可发就不会更新。等不及可以用 manual_fixtures.csv 手填。
-- 从 the-odds-api 取到 8 场带赔率的赛程（1X2 锚定 Pinnacle）。
-- 其中 8 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
-- the-odds-api 免费额度还剩 464 次（每月 500）。
-- 国家队：赛果数据最新到 2026-10-06（距今 36 天），这之后的比赛模型还没看到。
+- 赛程源里没有 11-12 起 2 天内的联赛比赛。fixtures.csv 最新的一场是 2026-11-09（已经是 3 天前），只覆盖 19 个联赛：B1、D1、D2、E0、E1、F1、F2、G1、I1、I2、N1、P1、SC0、SC1、SC2、SC3、SP1、SP2、T1。football-data.co.uk 的赛程是周五下午发布周末场次、周二下午发布周中场次，国际比赛周没有联赛可发就不会更新。等不及可以用 manual_fixtures.csv 手填。
+- 从 the-odds-api 取到 18 场带赔率的赛程（1X2 锚定 Pinnacle）。
+- 其中 16 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
+- the-odds-api 免费额度还剩 462 次（每月 500）。
+- 国家队：赛果数据最新到 2026-10-06（距今 37 天），这之后的比赛模型还没看到。
 
 ---
 开球时间已换算成德国时间（report.kickoff_offset_hours），仍请以 Tipico 显示为准。本报告是模型输出，不保证盈利；只用亏得起的钱。

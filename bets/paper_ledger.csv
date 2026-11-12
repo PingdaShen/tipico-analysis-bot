@@ -132,3 +132,5 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261108-T1-Corum-Fenerbahce-H,2026-11-07,2026-11-08,T1,Corum,Fenerbahce,1X2,H,主胜 Corum,3.95,1.0,0.2606,settled,0-5 输,-1.0,3.41,0.1584,0.0695,average,single,,
 20261108-T1-Besiktas-Genclerbirligi-U25,2026-11-07,2026-11-08,T1,Besiktas,Genclerbirligi,OU25,U25,小于 2.5 球,2.83,1.0,0.364,settled,3-0 输,-1.0,3.12,-0.0929,-0.1542,average,single,,
 20261112-INT-Montenegro-Latvia-D,2026-11-11,2026-11-12,INT,Montenegro,Latvia,1X2,D,平局,4.9,1.0,0.2102,open,,,,,,,single,,2026-11-12 19:45:00
+20261112-INT-Armenia-Cyprus-H,2026-11-12,2026-11-12,INT,Armenia,Cyprus,1X2,H,主胜 Armenia,2.79,1.0,0.3694,open,,,,,,,single,,2026-11-12 17:00:00
+20261113-INT-Liechtenstein-Azerbaijan-D,2026-11-12,2026-11-13,INT,Liechtenstein,Azerbaijan,1X2,D,平局,4.83,1.0,0.2131,open,,,,,,,single,,2026-11-13 19:45:00
