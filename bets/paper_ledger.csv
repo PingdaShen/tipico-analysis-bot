@@ -138,3 +138,7 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261113-INT-Moldova-Kazakhstan-A,2026-11-13,2026-11-13,INT,Moldova,Kazakhstan,1X2,A,客胜 Kazakhstan,2.94,1.0,0.3499,open,,,,,,,single,,2026-11-13 17:00:00
 20261114-INT-Romania-Poland-H,2026-11-13,2026-11-14,INT,Romania,Poland,1X2,H,主胜 Romania,3.78,1.0,0.2722,open,,,,,,,single,,2026-11-14 19:45:00
 20261114-INT-Norway-Wales-U25,2026-11-13,2026-11-14,INT,Norway,Wales,OU25,U25,小于 2.5 球,2.83,1.0,0.3634,open,,,,,,,single,,2026-11-14 17:00:00
+20261114-E3-Salford-Northampton-U25,2026-11-14,2026-11-14,E3,Salford,Northampton,OU25,U25,小于 2.5 球,1.73,1.0,0.5959,open,,,,,,,single,,
+20261114-SP2-Mallorca-Cordoba-U25,2026-11-14,2026-11-14,SP2,Mallorca,Cordoba,OU25,U25,小于 2.5 球,2.24,1.0,0.4599,open,,,,,,,single,,
+20261114-EC-Kidderminster-Halifax-U25,2026-11-14,2026-11-14,EC,Kidderminster,Halifax,OU25,U25,小于 2.5 球,1.87,1.0,0.5499,open,,,,,,,single,,
+20261114-E3-Exeter-Cheltenham-U25,2026-11-14,2026-11-14,E3,Exeter,Cheltenham,OU25,U25,小于 2.5 球,1.74,1.0,0.5912,open,,,,,,,single,,

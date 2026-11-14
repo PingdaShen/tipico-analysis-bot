@@ -1,6 +1,15 @@
-# 投注建议 · 2026-11-13
+# 投注建议 · 2026-11-14
 
-覆盖 11-13 至 11-14 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 18 场比赛
+覆盖 11-14 至 11-15 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 65 场比赛
+
+## 联赛
+
+| # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Salford vs Northampton | 英乙 | 11-14 16:00 | 小于 2.5 球 | 1.68 | **1.73** | 1.84* | €1.00 |
+| 2 | Mallorca vs Cordoba | 西乙 | 11-14 18:30 | 小于 2.5 球 | 2.17 | **2.24** | 2.32* | €1.00 |
+| 3 | Kidderminster vs Halifax | 英格兰国家联赛 | 11-14 16:00 | 小于 2.5 球 | 1.82 | **1.87** | 1.94* | €1.00 |
+| 4 | Exeter vs Cheltenham | 英乙 | 11-14 13:30 | 小于 2.5 球 | 1.69 | **1.74** | 1.80* | €1.00 |
 
 ## 欧战 / 国家队
 
@@ -10,44 +19,40 @@
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Netherlands vs Greece | 国家队 | 11-13 20:45 | 小于 2.5 球 | 2.32 | **2.39** | 2.41* | €1.00 |
-| 2 | Liechtenstein vs Azerbaijan | 国家队 | 11-13 20:45 | 小于 2.5 球 | 1.61 | **1.66** | 1.66* | €1.00 |
-| 3 | Moldova vs Kazakhstan | 国家队 | 11-13 18:00 | 客胜 Kazakhstan | 2.86 | **2.94** | 2.95* | €1.00 |
-| 4 | Romania vs Poland | 国家队 | 11-14 20:45 | 主胜 Romania | 3.67 | **3.78** | 3.88* | €1.00 |
-| 5 | Norway vs Wales | 国家队 | 11-14 18:00 | 小于 2.5 球 | 2.75 | **2.83** | 2.90* | €1.00 |
+| 5 | Romania vs Poland | 国家队 | 11-14 20:45 | 主胜 Romania | 4.14 | **4.26** | 4.58* | €1.00 |
 
 ## 投注 ID
 
 record-bet 和 record-close 表单要填这个（点代码块右上角可直接复制）：
 
-**1. Netherlands vs Greece — 小于 2.5 球**
-
-```
-20261113-INT-Netherlands-Greece-U25
-```
-
-**2. Liechtenstein vs Azerbaijan — 小于 2.5 球**
-
-```
-20261113-INT-Liechtenstein-Azerbaijan-U25
-```
-
-**3. Moldova vs Kazakhstan — 客胜 Kazakhstan**
-
-```
-20261113-INT-Moldova-Kazakhstan-A
-```
-
-**4. Romania vs Poland — 主胜 Romania**
+**1. Romania vs Poland — 主胜 Romania**
 
 ```
 20261114-INT-Romania-Poland-H
 ```
 
-**5. Norway vs Wales — 小于 2.5 球**
+**2. Salford vs Northampton — 小于 2.5 球**
 
 ```
-20261114-INT-Norway-Wales-U25
+20261114-E3-Salford-Northampton-U25
+```
+
+**3. Mallorca vs Cordoba — 小于 2.5 球**
+
+```
+20261114-SP2-Mallorca-Cordoba-U25
+```
+
+**4. Kidderminster vs Halifax — 小于 2.5 球**
+
+```
+20261114-EC-Kidderminster-Halifax-U25
+```
+
+**5. Exeter vs Cheltenham — 小于 2.5 球**
+
+```
+20261114-E3-Exeter-Cheltenham-U25
 ```
 
 ## 怎么用
@@ -60,11 +65,11 @@ record-bet 和 record-close 表单要填这个（点代码块右上角可直接�
 <details><summary>用终端的话</summary>
 
 ```bash
-python -m src.ledger add 20261113-INT-Netherlands-Greece-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261113-INT-Liechtenstein-Azerbaijan-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261113-INT-Moldova-Kazakhstan-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261114-INT-Romania-Poland-H --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261114-INT-Norway-Wales-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261114-E3-Salford-Northampton-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261114-SP2-Mallorca-Cordoba-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261114-EC-Kidderminster-Halifax-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261114-E3-Exeter-Cheltenham-U25 --odds <Tipico赔率> --stake 1.00
 ```
 
 </details>
@@ -80,28 +85,27 @@ python -m src.ledger add 20261114-INT-Norway-Wales-U25 --odds <Tipico赔率> --s
 
 | 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |
 |---|---|---|---|---|
-| Moldova vs Kazakhstan | 客胜 Kazakhstan + 大于 2.5 球 | 5.67 | **5.84** | 7.31 |
-| Moldova vs Kazakhstan | 客胜 Kazakhstan + 小于 2.5 球 | 5.76 | **5.93** | 4.69 |
-| Liechtenstein vs Azerbaijan | 客胜 Azerbaijan + 小于 2.5 球 | 2.51 | **2.59** | 2.14 |
-| Liechtenstein vs Azerbaijan | 平局 + 小于 2.5 球 | 5.46 | **5.62** | 8.37 |
-| Liechtenstein vs Azerbaijan | 主胜 Liechtenstein + 小于 2.5 球 | 24.92 | **25.66** | 28.54 |
-| Netherlands vs Greece | 主胜 Netherlands + 小于 2.5 球 | 5.04 | **5.19** | 3.85 |
-| Netherlands vs Greece | 平局 + 小于 2.5 球 | 6.31 | **6.50** | 10.77 |
-| Netherlands vs Greece | 客胜 Greece + 小于 2.5 球 | 13.54 | **13.94** | 12.80 |
-| Norway vs Wales | 平局 + 小于 2.5 球 | 9.06 | **9.33** | 16.83 |
-| Norway vs Wales | 客胜 Wales + 大于 2.5 球 | 12.68 | **13.06** | 13.01 |
-| Norway vs Wales | 平局 + 大于 2.5 球 | 18.83 | **19.40** | 9.61 |
-| Norway vs Wales | 客胜 Wales + 小于 2.5 球 | 23.89 | **24.61** | 22.80 |
-| Romania vs Poland | 平局 + 小于 2.5 球 | 5.40 | **5.56** | 8.39 |
-| Romania vs Poland | 主胜 Romania + 大于 2.5 球 | 5.96 | **6.14** | 6.90 |
-| Romania vs Poland | 主胜 Romania + 小于 2.5 球 | 9.57 | **9.85** | 7.85 |
+| Exeter vs Cheltenham | 平局 + 小于 2.5 球 | 4.03 | **4.15** | 5.93 |
+| Exeter vs Cheltenham | 主胜 Exeter + 小于 2.5 球 | 4.48 | **4.62** | 3.47 |
+| Exeter vs Cheltenham | 客胜 Cheltenham + 小于 2.5 球 | 8.35 | **8.60** | 7.44 |
+| Salford vs Northampton | 主胜 Salford + 小于 2.5 球 | 3.93 | **4.04** | 3.06 |
+| Salford vs Northampton | 平局 + 小于 2.5 球 | 4.06 | **4.19** | 6.09 |
+| Salford vs Northampton | 客胜 Northampton + 小于 2.5 球 | 10.51 | **10.83** | 9.55 |
+| Kidderminster vs Halifax | 平局 + 小于 2.5 球 | 4.26 | **4.38** | 6.28 |
+| Kidderminster vs Halifax | 主胜 Kidderminster + 小于 2.5 球 | 6.24 | **6.43** | 4.95 |
+| Kidderminster vs Halifax | 客胜 Halifax + 小于 2.5 球 | 6.47 | **6.66** | 5.30 |
+| Mallorca vs Cordoba | 平局 + 小于 2.5 球 | 5.33 | **5.49** | 8.94 |
+| Mallorca vs Cordoba | 主胜 Mallorca + 小于 2.5 球 | 5.80 | **5.97** | 4.08 |
+| Romania vs Poland | 平局 + 小于 2.5 球 | 5.77 | **5.94** | 9.08 |
+| Romania vs Poland | 主胜 Romania + 大于 2.5 球 | 6.70 | **6.90** | 7.67 |
+| Romania vs Poland | 主胜 Romania + 小于 2.5 球 | 10.83 | **11.15** | 8.99 |
+| Romania vs Poland | 平局 + 大于 2.5 球 | 15.17 | **15.62** | 7.75 |
 
 ## 备注
-- 赛程源里没有 11-13 起 2 天内的联赛比赛。fixtures.csv 最新的一场是 2026-11-09（已经是 4 天前），只覆盖 19 个联赛：B1、D1、D2、E0、E1、F1、F2、G1、I1、I2、N1、P1、SC0、SC1、SC2、SC3、SP1、SP2、T1。football-data.co.uk 的赛程是周五下午发布周末场次、周二下午发布周中场次，国际比赛周没有联赛可发就不会更新。等不及可以用 manual_fixtures.csv 手填。
-- 从 the-odds-api 取到 19 场带赔率的赛程（1X2 锚定 Pinnacle）。
-- 其中 15 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
-- the-odds-api 免费额度还剩 460 次（每月 500）。
-- 国家队：赛果数据最新到 2026-10-06（距今 38 天），这之后的比赛模型还没看到。
+- 从 the-odds-api 取到 17 场带赔率的赛程（1X2 锚定 Pinnacle）。
+- 其中 14 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
+- the-odds-api 免费额度还剩 458 次（每月 500）。
+- 国家队：赛果数据最新到 2026-10-06（距今 39 天），这之后的比赛模型还没看到。
 - 手填赛程里的球队「Bosnia & Herzegovina」模型不认识，可能是「Bosnia and Herzegovina」，这场跳过。
 
 ---
