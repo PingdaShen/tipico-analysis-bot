@@ -1,15 +1,6 @@
-# 投注建议 · 2026-11-14
+# 投注建议 · 2026-11-15
 
-覆盖 11-14 至 11-15 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 65 场比赛
-
-## 联赛
-
-| # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
-|---|---|---|---|---|---|---|---|---|
-| 1 | Salford vs Northampton | 英乙 | 11-14 16:00 | 小于 2.5 球 | 1.68 | **1.73** | 1.84* | €1.00 |
-| 2 | Mallorca vs Cordoba | 西乙 | 11-14 18:30 | 小于 2.5 球 | 2.17 | **2.24** | 2.32* | €1.00 |
-| 3 | Kidderminster vs Halifax | 英格兰国家联赛 | 11-14 16:00 | 小于 2.5 球 | 1.82 | **1.87** | 1.94* | €1.00 |
-| 4 | Exeter vs Cheltenham | 英乙 | 11-14 13:30 | 小于 2.5 球 | 1.69 | **1.74** | 1.80* | €1.00 |
+覆盖 11-15 至 11-16 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 23 场比赛
 
 ## 欧战 / 国家队
 
@@ -19,40 +10,30 @@
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 5 | Romania vs Poland | 国家队 | 11-14 20:45 | 主胜 Romania | 4.14 | **4.26** | 4.58* | €1.00 |
+| 1 | Lithuania vs Liechtenstein | 国家队 | 11-16 18:00 | 小于 2.5 球 | 1.85 | **1.90** | 2.01* | €1.00 |
+| 2 | Greece vs Serbia | 国家队 | 11-16 20:45 | 小于 2.5 球 | 2.01 | **2.07** | 2.14* | €1.00 |
+| 3 | Estonia vs Bulgaria | 国家队 | 11-16 18:00 | 客胜 Bulgaria | 3.56 | **3.67** | 3.68* | €1.00 |
 
 ## 投注 ID
 
 record-bet 和 record-close 表单要填这个（点代码块右上角可直接复制）：
 
-**1. Romania vs Poland — 主胜 Romania**
+**1. Lithuania vs Liechtenstein — 小于 2.5 球**
 
 ```
-20261114-INT-Romania-Poland-H
+20261116-INT-Lithuania-Liechtenstein-U25
 ```
 
-**2. Salford vs Northampton — 小于 2.5 球**
+**2. Greece vs Serbia — 小于 2.5 球**
 
 ```
-20261114-E3-Salford-Northampton-U25
+20261116-INT-Greece-Serbia-U25
 ```
 
-**3. Mallorca vs Cordoba — 小于 2.5 球**
+**3. Estonia vs Bulgaria — 客胜 Bulgaria**
 
 ```
-20261114-SP2-Mallorca-Cordoba-U25
-```
-
-**4. Kidderminster vs Halifax — 小于 2.5 球**
-
-```
-20261114-EC-Kidderminster-Halifax-U25
-```
-
-**5. Exeter vs Cheltenham — 小于 2.5 球**
-
-```
-20261114-E3-Exeter-Cheltenham-U25
+20261116-INT-Estonia-Bulgaria-A
 ```
 
 ## 怎么用
@@ -65,11 +46,9 @@ record-bet 和 record-close 表单要填这个（点代码块右上角可直接�
 <details><summary>用终端的话</summary>
 
 ```bash
-python -m src.ledger add 20261114-INT-Romania-Poland-H --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261114-E3-Salford-Northampton-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261114-SP2-Mallorca-Cordoba-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261114-EC-Kidderminster-Halifax-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261114-E3-Exeter-Cheltenham-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261116-INT-Lithuania-Liechtenstein-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261116-INT-Greece-Serbia-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261116-INT-Estonia-Bulgaria-A --odds <Tipico赔率> --stake 1.00
 ```
 
 </details>
@@ -85,28 +64,21 @@ python -m src.ledger add 20261114-E3-Exeter-Cheltenham-U25 --odds <Tipico赔率>
 
 | 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |
 |---|---|---|---|---|
-| Exeter vs Cheltenham | 平局 + 小于 2.5 球 | 4.03 | **4.15** | 5.93 |
-| Exeter vs Cheltenham | 主胜 Exeter + 小于 2.5 球 | 4.48 | **4.62** | 3.47 |
-| Exeter vs Cheltenham | 客胜 Cheltenham + 小于 2.5 球 | 8.35 | **8.60** | 7.44 |
-| Salford vs Northampton | 主胜 Salford + 小于 2.5 球 | 3.93 | **4.04** | 3.06 |
-| Salford vs Northampton | 平局 + 小于 2.5 球 | 4.06 | **4.19** | 6.09 |
-| Salford vs Northampton | 客胜 Northampton + 小于 2.5 球 | 10.51 | **10.83** | 9.55 |
-| Kidderminster vs Halifax | 平局 + 小于 2.5 球 | 4.26 | **4.38** | 6.28 |
-| Kidderminster vs Halifax | 主胜 Kidderminster + 小于 2.5 球 | 6.24 | **6.43** | 4.95 |
-| Kidderminster vs Halifax | 客胜 Halifax + 小于 2.5 球 | 6.47 | **6.66** | 5.30 |
-| Mallorca vs Cordoba | 平局 + 小于 2.5 球 | 5.33 | **5.49** | 8.94 |
-| Mallorca vs Cordoba | 主胜 Mallorca + 小于 2.5 球 | 5.80 | **5.97** | 4.08 |
-| Romania vs Poland | 平局 + 小于 2.5 球 | 5.77 | **5.94** | 9.08 |
-| Romania vs Poland | 主胜 Romania + 大于 2.5 球 | 6.70 | **6.90** | 7.67 |
-| Romania vs Poland | 主胜 Romania + 小于 2.5 球 | 10.83 | **11.15** | 8.99 |
-| Romania vs Poland | 平局 + 大于 2.5 球 | 15.17 | **15.62** | 7.75 |
+| Estonia vs Bulgaria | 平局 + 小于 2.5 球 | 3.79 | **3.91** | 5.13 |
+| Estonia vs Bulgaria | 客胜 Bulgaria + 小于 2.5 球 | 6.61 | **6.81** | 5.59 |
+| Estonia vs Bulgaria | 客胜 Bulgaria + 大于 2.5 球 | 7.74 | **7.97** | 9.82 |
+| Lithuania vs Liechtenstein | 主胜 Lithuania + 小于 2.5 球 | 2.62 | **2.70** | 2.25 |
+| Lithuania vs Liechtenstein | 平局 + 小于 2.5 球 | 7.74 | **7.98** | 13.57 |
+| Lithuania vs Liechtenstein | 客胜 Liechtenstein + 小于 2.5 球 | 32.71 | **33.69** | 42.68 |
+| Greece vs Serbia | 平局 + 小于 2.5 球 | 5.57 | **5.73** | 8.81 |
+| Greece vs Serbia | 客胜 Serbia + 大于 2.5 球 | 10.32 | **10.63** | 11.46 |
+| Greece vs Serbia | 客胜 Serbia + 小于 2.5 球 | 13.06 | **13.46** | 11.60 |
 
 ## 备注
-- 从 the-odds-api 取到 17 场带赔率的赛程（1X2 锚定 Pinnacle）。
-- 其中 14 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
-- the-odds-api 免费额度还剩 458 次（每月 500）。
-- 国家队：赛果数据最新到 2026-10-06（距今 39 天），这之后的比赛模型还没看到。
-- 手填赛程里的球队「Bosnia & Herzegovina」模型不认识，可能是「Bosnia and Herzegovina」，这场跳过。
+- 从 the-odds-api 取到 18 场带赔率的赛程（1X2 锚定 Pinnacle）。
+- 其中 15 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
+- the-odds-api 免费额度还剩 454 次（每月 500）。
+- 国家队：赛果数据最新到 2026-10-06（距今 40 天），这之后的比赛模型还没看到。
 
 ---
 开球时间已换算成德国时间（report.kickoff_offset_hours），仍请以 Tipico 显示为准。本报告是模型输出，不保证盈利；只用亏得起的钱。
