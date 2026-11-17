@@ -147,3 +147,4 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261116-INT-Estonia-Bulgaria-A,2026-11-15,2026-11-16,INT,Estonia,Bulgaria,1X2,A,客胜 Bulgaria,3.67,1.0,0.2806,open,,,,,,,single,,2026-11-16 17:00:00
 20261117-INT-Denmark-Norway-H,2026-11-16,2026-11-17,INT,Denmark,Norway,1X2,H,主胜 Denmark,2.31,1.0,0.4465,open,,,,,,,single,,2026-11-17 19:45:00
 20261117-INT-Ukraine-Georgia-H,2026-11-16,2026-11-17,INT,Ukraine,Georgia,1X2,H,主胜 Ukraine,2.17,1.0,0.4739,open,,,,,,,single,,2026-11-17 19:45:00
+20261117-INT-Wales-Portugal-U25,2026-11-17,2026-11-17,INT,Wales,Portugal,OU25,U25,小于 2.5 球,2.46,1.0,0.4193,open,,,,,,,single,,2026-11-17 19:45:00

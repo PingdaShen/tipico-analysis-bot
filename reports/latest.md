@@ -1,6 +1,6 @@
-# 投注建议 · 2026-11-16
+# 投注建议 · 2026-11-17
 
-覆盖 11-16 至 11-17 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 18 场比赛
+覆盖 11-17 至 11-18 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 7 场比赛
 
 ## 欧战 / 国家队
 
@@ -10,44 +10,23 @@
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Greece vs Serbia | 国家队 | 11-16 20:45 | 小于 2.5 球 | 2.07 | **2.13** | 2.22* | €1.00 |
-| 2 | Lithuania vs Liechtenstein | 国家队 | 11-16 18:00 | 小于 2.5 球 | 1.76 | **1.81** | 1.87* | €1.00 |
-| 3 | Estonia vs Bulgaria | 国家队 | 11-16 18:00 | 客胜 Bulgaria | 3.91 | **4.03** | 4.09* | €1.00 |
-| 4 | Denmark vs Norway | 国家队 | 11-17 20:45 | 主胜 Denmark | 2.24 | **2.31** | 2.37* | €1.00 |
-| 5 | Ukraine vs Georgia | 国家队 | 11-17 20:45 | 主胜 Ukraine | 2.11 | **2.17** | 2.18* | €1.00 |
+| 1 | Wales vs Portugal | 国家队 | 11-17 20:45 | 小于 2.5 球 | 2.38 | **2.46** | 2.62* | €1.00 |
+| 2 | Denmark vs Norway | 国家队 | 11-17 20:45 | 主胜 Denmark | 2.35 | **2.42** | 2.53* | €1.00 |
 
 ## 投注 ID
 
 record-bet 和 record-close 表单要填这个（点代码块右上角可直接复制）：
 
-**1. Greece vs Serbia — 小于 2.5 球**
+**1. Wales vs Portugal — 小于 2.5 球**
 
 ```
-20261116-INT-Greece-Serbia-U25
+20261117-INT-Wales-Portugal-U25
 ```
 
-**2. Lithuania vs Liechtenstein — 小于 2.5 球**
-
-```
-20261116-INT-Lithuania-Liechtenstein-U25
-```
-
-**3. Estonia vs Bulgaria — 客胜 Bulgaria**
-
-```
-20261116-INT-Estonia-Bulgaria-A
-```
-
-**4. Denmark vs Norway — 主胜 Denmark**
+**2. Denmark vs Norway — 主胜 Denmark**
 
 ```
 20261117-INT-Denmark-Norway-H
-```
-
-**5. Ukraine vs Georgia — 主胜 Ukraine**
-
-```
-20261117-INT-Ukraine-Georgia-H
 ```
 
 ## 怎么用
@@ -60,11 +39,8 @@ record-bet 和 record-close 表单要填这个（点代码块右上角可直接�
 <details><summary>用终端的话</summary>
 
 ```bash
-python -m src.ledger add 20261116-INT-Greece-Serbia-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261116-INT-Lithuania-Liechtenstein-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261116-INT-Estonia-Bulgaria-A --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261117-INT-Wales-Portugal-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261117-INT-Denmark-Norway-H --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261117-INT-Ukraine-Georgia-H --odds <Tipico赔率> --stake 1.00
 ```
 
 </details>
@@ -80,27 +56,19 @@ python -m src.ledger add 20261117-INT-Ukraine-Georgia-H --odds <Tipico赔率> --
 
 | 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |
 |---|---|---|---|---|
-| Estonia vs Bulgaria | 平局 + 小于 2.5 球 | 3.96 | **4.07** | 5.44 |
-| Estonia vs Bulgaria | 客胜 Bulgaria + 小于 2.5 球 | 7.47 | **7.69** | 6.30 |
-| Estonia vs Bulgaria | 客胜 Bulgaria + 大于 2.5 球 | 8.22 | **8.46** | 10.32 |
-| Lithuania vs Liechtenstein | 主胜 Lithuania + 小于 2.5 球 | 2.42 | **2.49** | 2.12 |
-| Lithuania vs Liechtenstein | 平局 + 小于 2.5 球 | 7.68 | **7.91** | 12.91 |
-| Lithuania vs Liechtenstein | 客胜 Liechtenstein + 小于 2.5 球 | 39.90 | **41.09** | 51.45 |
-| Lithuania vs Liechtenstein | 平局 + 大于 2.5 球 | 163.57 | **168.48** | 17.01 |
-| Greece vs Serbia | 主胜 Greece + 小于 2.5 球 | 4.24 | **4.37** | 3.41 |
-| Greece vs Serbia | 平局 + 小于 2.5 球 | 5.69 | **5.86** | 9.15 |
-| Greece vs Serbia | 客胜 Serbia + 大于 2.5 球 | 10.49 | **10.81** | 11.63 |
-| Greece vs Serbia | 客胜 Serbia + 小于 2.5 球 | 14.10 | **14.52** | 12.47 |
-| Denmark vs Norway | 主胜 Denmark + 大于 2.5 球 | 3.13 | **3.23** | 3.64 |
-| Denmark vs Norway | 主胜 Denmark + 小于 2.5 球 | 7.86 | **8.10** | 5.82 |
-| Ukraine vs Georgia | 主胜 Ukraine + 大于 2.5 球 | 3.69 | **3.80** | 4.69 |
-| Ukraine vs Georgia | 主胜 Ukraine + 小于 2.5 球 | 4.93 | **5.08** | 3.83 |
+| Denmark vs Norway | 主胜 Denmark + 大于 2.5 球 | 3.18 | **3.28** | 3.66 |
+| Denmark vs Norway | 平局 + 小于 2.5 球 | 7.01 | **7.22** | 12.15 |
+| Denmark vs Norway | 主胜 Denmark + 小于 2.5 球 | 9.02 | **9.29** | 6.57 |
+| Wales vs Portugal | 客胜 Portugal + 小于 2.5 球 | 4.66 | **4.80** | 3.64 |
+| Wales vs Portugal | 平局 + 小于 2.5 球 | 6.90 | **7.11** | 12.15 |
+| Wales vs Portugal | 主胜 Wales + 小于 2.5 球 | 16.74 | **17.25** | 16.00 |
 
 ## 备注
-- 从 the-odds-api 取到 18 场带赔率的赛程（1X2 锚定 Pinnacle）。
-- 其中 15 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
-- the-odds-api 免费额度还剩 452 次（每月 500）。
-- 国家队：赛果数据最新到 2026-10-06（距今 41 天），这之后的比赛模型还没看到。
+- 赛程源里没有 11-17 起 2 天内的联赛比赛。fixtures.csv 最新的一场是 2026-11-16（已经是 1 天前），只覆盖 7 个联赛：E2、E3、EC、SC1、SC2、SC3、SP2。football-data.co.uk 的赛程是周五下午发布周末场次、周二下午发布周中场次，国际比赛周没有联赛可发就不会更新。等不及可以用 manual_fixtures.csv 手填。
+- 从 the-odds-api 取到 8 场带赔率的赛程（1X2 锚定 Pinnacle）。
+- 其中 8 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
+- the-odds-api 免费额度还剩 450 次（每月 500）。
+- 国家队：赛果数据最新到 2026-10-06（距今 42 天），这之后的比赛模型还没看到。
 - 手填赛程里的球队「Bosnia & Herzegovina」模型不认识，可能是「Bosnia and Herzegovina」，这场跳过。
 
 ---

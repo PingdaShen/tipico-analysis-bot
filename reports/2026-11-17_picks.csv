@@ -1,0 +1,3 @@
+pick_id,div,date,time,home,away,market,outcome,label,p_model,p_market,p_final,market_source,price_source,kickoff_utc,fair_odds,min_odds,best_odds,avg_odds,edge_best,stake,is_candidate,naive_odds,league,manual
+20261117-INT-Wales-Portugal-U25,INT,2026-11-17,20:45,Wales,Portugal,OU25,U25,小于 2.5 球,0.5448916623201079,0.36548223350253806,0.41930506214780894,pinnacle,market_avg,2026-11-17 19:45:00,2.3848984671868587,2.4564454212024645,2.62,2.62,0.09857926282725948,1.0,True,,国家队,True
+20261117-INT-Denmark-Norway-H,INT,2026-11-17,20:45,Denmark,Norway,1X2,H,主胜 Denmark,0.537176468630258,0.37722509005561133,0.4252105036280053,pinnacle,market_avg,2026-11-17 19:45:00,2.3517763354097396,2.422329625472032,2.528,2.528,0.0749321531715974,1.0,True,,国家队,True
