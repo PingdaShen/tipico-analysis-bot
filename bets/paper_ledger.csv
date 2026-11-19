@@ -131,20 +131,20 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261108-I1-Monza-Atalanta-A,2026-11-07,2026-11-08,I1,Monza,Atalanta,1X2,A,客胜 Atalanta,1.98,1.0,0.5195,settled,0-1 赢,0.98,1.9,0.0421,-0.0161,average,single,,
 20261108-T1-Corum-Fenerbahce-H,2026-11-07,2026-11-08,T1,Corum,Fenerbahce,1X2,H,主胜 Corum,3.95,1.0,0.2606,settled,0-5 输,-1.0,3.41,0.1584,0.0695,average,single,,
 20261108-T1-Besiktas-Genclerbirligi-U25,2026-11-07,2026-11-08,T1,Besiktas,Genclerbirligi,OU25,U25,小于 2.5 球,2.83,1.0,0.364,settled,3-0 输,-1.0,3.12,-0.0929,-0.1542,average,single,,
-20261112-INT-Montenegro-Latvia-D,2026-11-11,2026-11-12,INT,Montenegro,Latvia,1X2,D,平局,4.9,1.0,0.2102,open,,,,,,,single,,2026-11-12 19:45:00
-20261112-INT-Armenia-Cyprus-H,2026-11-12,2026-11-12,INT,Armenia,Cyprus,1X2,H,主胜 Armenia,2.79,1.0,0.3694,open,,,,,,,single,,2026-11-12 17:00:00
-20261113-INT-Liechtenstein-Azerbaijan-D,2026-11-12,2026-11-13,INT,Liechtenstein,Azerbaijan,1X2,D,平局,4.83,1.0,0.2131,open,,,,,,,single,,2026-11-13 19:45:00
-20261113-INT-Netherlands-Greece-U25,2026-11-13,2026-11-13,INT,Netherlands,Greece,OU25,U25,小于 2.5 球,2.39,1.0,0.4309,open,,,,,,,single,,2026-11-13 19:45:00
-20261113-INT-Moldova-Kazakhstan-A,2026-11-13,2026-11-13,INT,Moldova,Kazakhstan,1X2,A,客胜 Kazakhstan,2.94,1.0,0.3499,open,,,,,,,single,,2026-11-13 17:00:00
-20261114-INT-Romania-Poland-H,2026-11-13,2026-11-14,INT,Romania,Poland,1X2,H,主胜 Romania,3.78,1.0,0.2722,open,,,,,,,single,,2026-11-14 19:45:00
-20261114-INT-Norway-Wales-U25,2026-11-13,2026-11-14,INT,Norway,Wales,OU25,U25,小于 2.5 球,2.83,1.0,0.3634,open,,,2.95,-0.0407,-0.0936,average,single,,2026-11-14 17:00:00
+20261112-INT-Montenegro-Latvia-D,2026-11-11,2026-11-12,INT,Montenegro,Latvia,1X2,D,平局,4.9,1.0,0.2102,settled,2-1 输,-1.0,,,,,single,,2026-11-12 19:45:00
+20261112-INT-Armenia-Cyprus-H,2026-11-12,2026-11-12,INT,Armenia,Cyprus,1X2,H,主胜 Armenia,2.79,1.0,0.3694,settled,1-1 输,-1.0,,,,,single,,2026-11-12 17:00:00
+20261113-INT-Liechtenstein-Azerbaijan-D,2026-11-12,2026-11-13,INT,Liechtenstein,Azerbaijan,1X2,D,平局,4.83,1.0,0.2131,settled,0-1 输,-1.0,,,,,single,,2026-11-13 19:45:00
+20261113-INT-Netherlands-Greece-U25,2026-11-13,2026-11-13,INT,Netherlands,Greece,OU25,U25,小于 2.5 球,2.39,1.0,0.4309,settled,7-0 输,-1.0,,,,,single,,2026-11-13 19:45:00
+20261113-INT-Moldova-Kazakhstan-A,2026-11-13,2026-11-13,INT,Moldova,Kazakhstan,1X2,A,客胜 Kazakhstan,2.94,1.0,0.3499,settled,2-1 输,-1.0,,,,,single,,2026-11-13 17:00:00
+20261114-INT-Romania-Poland-H,2026-11-13,2026-11-14,INT,Romania,Poland,1X2,H,主胜 Romania,3.78,1.0,0.2722,settled,2-1 赢,2.78,,,,,single,,2026-11-14 19:45:00
+20261114-INT-Norway-Wales-U25,2026-11-13,2026-11-14,INT,Norway,Wales,OU25,U25,小于 2.5 球,2.83,1.0,0.3634,settled,3-1 输,-1.0,2.95,-0.0407,-0.0936,average,single,,2026-11-14 17:00:00
 20261114-E3-Salford-Northampton-U25,2026-11-14,2026-11-14,E3,Salford,Northampton,OU25,U25,小于 2.5 球,1.73,1.0,0.5959,settled,1-1 赢,0.73,1.9,-0.0895,-0.1536,average,single,,
 20261114-SP2-Mallorca-Cordoba-U25,2026-11-14,2026-11-14,SP2,Mallorca,Cordoba,OU25,U25,小于 2.5 球,2.24,1.0,0.4599,settled,3-3 输,-1.0,2.33,-0.0386,-0.1052,average,single,,
 20261114-EC-Kidderminster-Halifax-U25,2026-11-14,2026-11-14,EC,Kidderminster,Halifax,OU25,U25,小于 2.5 球,1.87,1.0,0.5499,settled,1-1 赢,0.87,1.93,-0.0311,-0.1002,average,single,,
 20261114-E3-Exeter-Cheltenham-U25,2026-11-14,2026-11-14,E3,Exeter,Cheltenham,OU25,U25,小于 2.5 球,1.74,1.0,0.5912,settled,1-0 赢,0.74,1.84,-0.0543,-0.123,average,single,,
-20261116-INT-Lithuania-Liechtenstein-U25,2026-11-15,2026-11-16,INT,Lithuania,Liechtenstein,OU25,U25,小于 2.5 球,1.9,1.0,0.5418,open,,,,,,,single,,2026-11-16 17:00:00
-20261116-INT-Greece-Serbia-U25,2026-11-15,2026-11-16,INT,Greece,Serbia,OU25,U25,小于 2.5 球,2.07,1.0,0.4969,open,,,,,,,single,,2026-11-16 19:45:00
-20261116-INT-Estonia-Bulgaria-A,2026-11-15,2026-11-16,INT,Estonia,Bulgaria,1X2,A,客胜 Bulgaria,3.67,1.0,0.2806,open,,,,,,,single,,2026-11-16 17:00:00
-20261117-INT-Denmark-Norway-H,2026-11-16,2026-11-17,INT,Denmark,Norway,1X2,H,主胜 Denmark,2.31,1.0,0.4465,open,,,2.54,-0.0906,-0.1171,pinnacle,single,,2026-11-17 19:45:00
-20261117-INT-Ukraine-Georgia-H,2026-11-16,2026-11-17,INT,Ukraine,Georgia,1X2,H,主胜 Ukraine,2.17,1.0,0.4739,open,,,2.13,0.0188,-0.0113,pinnacle,single,,2026-11-17 19:45:00
-20261117-INT-Wales-Portugal-U25,2026-11-17,2026-11-17,INT,Wales,Portugal,OU25,U25,小于 2.5 球,2.46,1.0,0.4193,open,,,2.62,-0.0611,-0.1275,average,single,,2026-11-17 19:45:00
+20261116-INT-Lithuania-Liechtenstein-U25,2026-11-15,2026-11-16,INT,Lithuania,Liechtenstein,OU25,U25,小于 2.5 球,1.9,1.0,0.5418,settled,2-1 输,-1.0,,,,,single,,2026-11-16 17:00:00
+20261116-INT-Greece-Serbia-U25,2026-11-15,2026-11-16,INT,Greece,Serbia,OU25,U25,小于 2.5 球,2.07,1.0,0.4969,settled,1-0 赢,1.07,,,,,single,,2026-11-16 19:45:00
+20261116-INT-Estonia-Bulgaria-A,2026-11-15,2026-11-16,INT,Estonia,Bulgaria,1X2,A,客胜 Bulgaria,3.67,1.0,0.2806,settled,2-1 输,-1.0,,,,,single,,2026-11-16 17:00:00
+20261117-INT-Denmark-Norway-H,2026-11-16,2026-11-17,INT,Denmark,Norway,1X2,H,主胜 Denmark,2.31,1.0,0.4465,settled,2-3 输,-1.0,2.54,-0.0906,-0.1171,pinnacle,single,,2026-11-17 19:45:00
+20261117-INT-Ukraine-Georgia-H,2026-11-16,2026-11-17,INT,Ukraine,Georgia,1X2,H,主胜 Ukraine,2.17,1.0,0.4739,settled,1-0 赢,1.17,2.13,0.0188,-0.0113,pinnacle,single,,2026-11-17 19:45:00
+20261117-INT-Wales-Portugal-U25,2026-11-17,2026-11-17,INT,Wales,Portugal,OU25,U25,小于 2.5 球,2.46,1.0,0.4193,settled,2-3 输,-1.0,2.62,-0.0611,-0.1275,average,single,,2026-11-17 19:45:00
