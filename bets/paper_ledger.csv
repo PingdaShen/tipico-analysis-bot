@@ -148,3 +148,12 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261117-INT-Denmark-Norway-H,2026-11-16,2026-11-17,INT,Denmark,Norway,1X2,H,主胜 Denmark,2.31,1.0,0.4465,settled,2-3 输,-1.0,2.54,-0.0906,-0.1171,pinnacle,single,,2026-11-17 19:45:00
 20261117-INT-Ukraine-Georgia-H,2026-11-16,2026-11-17,INT,Ukraine,Georgia,1X2,H,主胜 Ukraine,2.17,1.0,0.4739,settled,1-0 赢,1.17,2.13,0.0188,-0.0113,pinnacle,single,,2026-11-17 19:45:00
 20261117-INT-Wales-Portugal-U25,2026-11-17,2026-11-17,INT,Wales,Portugal,OU25,U25,小于 2.5 球,2.46,1.0,0.4193,settled,2-3 输,-1.0,2.62,-0.0611,-0.1275,average,single,,2026-11-17 19:45:00
+20261120-F2-Nancy-Dijon-A,2026-11-20,2026-11-20,F2,Nancy,Dijon,1X2,A,客胜 Dijon,3.65,1.0,0.2826,open,,,,,,,single,,
+20261120-D2-Darmstadt-Heidenheim-H,2026-11-20,2026-11-20,D2,Darmstadt,Heidenheim,1X2,H,主胜 Darmstadt,3.03,1.0,0.34,open,,,,,,,single,,
+20261120-SP1-AthBilbao-Espanol-U25,2026-11-20,2026-11-20,SP1,Ath Bilbao,Espanol,OU25,U25,小于 2.5 球,2.09,1.0,0.4937,open,,,,,,,single,,
+20261120-F1-Troyes-LeHavre-U25,2026-11-20,2026-11-20,F1,Troyes,Le Havre,OU25,U25,小于 2.5 球,1.87,1.0,0.551,open,,,,,,,single,,
+20261121-D1-Schalke04-Stuttgart-U25,2026-11-20,2026-11-21,D1,Schalke 04,Stuttgart,OU25,U25,小于 2.5 球,2.19,1.0,0.4697,open,,,,,,,single,,
+20261121-D1-Leverkusen-Paderborn-U25,2026-11-20,2026-11-21,D1,Leverkusen,Paderborn,OU25,U25,小于 2.5 球,2.76,1.0,0.3738,open,,,,,,,single,,
+20261121-D1-Elversberg-Freiburg-H,2026-11-20,2026-11-21,D1,Elversberg,Freiburg,1X2,H,主胜 Elversberg,3.03,1.0,0.34,open,,,,,,,single,,
+20261121-E3-NewportCounty-Swindon-A,2026-11-20,2026-11-21,E3,Newport County,Swindon,1X2,A,客胜 Swindon,3.53,1.0,0.2918,open,,,,,,,single,,
+20261121-E3-Oldham-Exeter-U25,2026-11-20,2026-11-21,E3,Oldham,Exeter,OU25,U25,小于 2.5 球,1.62,1.0,0.6366,open,,,,,,,single,,
