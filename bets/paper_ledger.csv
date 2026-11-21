@@ -157,3 +157,8 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261121-D1-Elversberg-Freiburg-H,2026-11-20,2026-11-21,D1,Elversberg,Freiburg,1X2,H,主胜 Elversberg,3.03,1.0,0.34,open,,,,,,,single,,
 20261121-E3-NewportCounty-Swindon-A,2026-11-20,2026-11-21,E3,Newport County,Swindon,1X2,A,客胜 Swindon,3.53,1.0,0.2918,open,,,,,,,single,,
 20261121-E3-Oldham-Exeter-U25,2026-11-20,2026-11-21,E3,Oldham,Exeter,OU25,U25,小于 2.5 球,1.62,1.0,0.6366,open,,,,,,,single,,
+20261122-I1-Milan-Frosinone-A,2026-11-21,2026-11-22,I1,Milan,Frosinone,1X2,A,客胜 Frosinone,4.36,1.0,0.2364,open,,,,,,,single,,
+20261122-B1-LommelSK-Standard-U25,2026-11-21,2026-11-22,B1,Lommel SK,Standard,OU25,U25,小于 2.5 球,2.17,1.0,0.4753,open,,,,,,,single,,
+20261122-G1-Olympiakos-Iraklis-U25,2026-11-21,2026-11-22,G1,Olympiakos,Iraklis,OU25,U25,小于 2.5 球,2.31,1.0,0.4461,open,,,,,,,single,,
+20261122-D2-Cottbus-Hertha-H,2026-11-21,2026-11-22,D2,Cottbus,Hertha,1X2,H,主胜 Cottbus,4.13,1.0,0.2493,open,,,,,,,single,,
+20261122-E0-Hull-Brighton-U25,2026-11-21,2026-11-22,E0,Hull,Brighton,OU25,U25,小于 2.5 球,2.12,1.0,0.4854,open,,,,,,,single,,
