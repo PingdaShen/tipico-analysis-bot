@@ -148,18 +148,22 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261117-INT-Denmark-Norway-H,2026-11-16,2026-11-17,INT,Denmark,Norway,1X2,H,主胜 Denmark,2.31,1.0,0.4465,settled,2-3 输,-1.0,2.54,-0.0906,-0.1171,pinnacle,single,,2026-11-17 19:45:00
 20261117-INT-Ukraine-Georgia-H,2026-11-16,2026-11-17,INT,Ukraine,Georgia,1X2,H,主胜 Ukraine,2.17,1.0,0.4739,settled,1-0 赢,1.17,2.13,0.0188,-0.0113,pinnacle,single,,2026-11-17 19:45:00
 20261117-INT-Wales-Portugal-U25,2026-11-17,2026-11-17,INT,Wales,Portugal,OU25,U25,小于 2.5 球,2.46,1.0,0.4193,settled,2-3 输,-1.0,2.62,-0.0611,-0.1275,average,single,,2026-11-17 19:45:00
-20261120-F2-Nancy-Dijon-A,2026-11-20,2026-11-20,F2,Nancy,Dijon,1X2,A,客胜 Dijon,3.65,1.0,0.2826,open,,,,,,,single,,
-20261120-D2-Darmstadt-Heidenheim-H,2026-11-20,2026-11-20,D2,Darmstadt,Heidenheim,1X2,H,主胜 Darmstadt,3.03,1.0,0.34,open,,,,,,,single,,
-20261120-SP1-AthBilbao-Espanol-U25,2026-11-20,2026-11-20,SP1,Ath Bilbao,Espanol,OU25,U25,小于 2.5 球,2.09,1.0,0.4937,open,,,,,,,single,,
-20261120-F1-Troyes-LeHavre-U25,2026-11-20,2026-11-20,F1,Troyes,Le Havre,OU25,U25,小于 2.5 球,1.87,1.0,0.551,open,,,,,,,single,,
-20261121-D1-Schalke04-Stuttgart-U25,2026-11-20,2026-11-21,D1,Schalke 04,Stuttgart,OU25,U25,小于 2.5 球,2.19,1.0,0.4697,open,,,,,,,single,,
-20261121-D1-Leverkusen-Paderborn-U25,2026-11-20,2026-11-21,D1,Leverkusen,Paderborn,OU25,U25,小于 2.5 球,2.76,1.0,0.3738,open,,,,,,,single,,
-20261121-D1-Elversberg-Freiburg-H,2026-11-20,2026-11-21,D1,Elversberg,Freiburg,1X2,H,主胜 Elversberg,3.03,1.0,0.34,open,,,,,,,single,,
-20261121-E3-NewportCounty-Swindon-A,2026-11-20,2026-11-21,E3,Newport County,Swindon,1X2,A,客胜 Swindon,3.53,1.0,0.2918,open,,,,,,,single,,
-20261121-E3-Oldham-Exeter-U25,2026-11-20,2026-11-21,E3,Oldham,Exeter,OU25,U25,小于 2.5 球,1.62,1.0,0.6366,open,,,,,,,single,,
-20261122-I1-Milan-Frosinone-A,2026-11-21,2026-11-22,I1,Milan,Frosinone,1X2,A,客胜 Frosinone,4.36,1.0,0.2364,open,,,,,,,single,,
-20261122-B1-LommelSK-Standard-U25,2026-11-21,2026-11-22,B1,Lommel SK,Standard,OU25,U25,小于 2.5 球,2.17,1.0,0.4753,open,,,,,,,single,,
-20261122-G1-Olympiakos-Iraklis-U25,2026-11-21,2026-11-22,G1,Olympiakos,Iraklis,OU25,U25,小于 2.5 球,2.31,1.0,0.4461,open,,,,,,,single,,
-20261122-D2-Cottbus-Hertha-H,2026-11-21,2026-11-22,D2,Cottbus,Hertha,1X2,H,主胜 Cottbus,4.13,1.0,0.2493,open,,,,,,,single,,
-20261122-E0-Hull-Brighton-U25,2026-11-21,2026-11-22,E0,Hull,Brighton,OU25,U25,小于 2.5 球,2.12,1.0,0.4854,open,,,,,,,single,,
+20261120-F2-Nancy-Dijon-A,2026-11-20,2026-11-20,F2,Nancy,Dijon,1X2,A,客胜 Dijon,3.65,1.0,0.2826,settled,1-0 输,-1.0,4.15,-0.1205,-0.1934,average,single,,
+20261120-D2-Darmstadt-Heidenheim-H,2026-11-20,2026-11-20,D2,Darmstadt,Heidenheim,1X2,H,主胜 Darmstadt,3.03,1.0,0.34,settled,3-1 赢,2.03,3.3,-0.0818,-0.1559,average,single,,
+20261120-SP1-AthBilbao-Espanol-U25,2026-11-20,2026-11-20,SP1,Ath Bilbao,Espanol,OU25,U25,小于 2.5 球,2.09,1.0,0.4937,settled,0-1 赢,1.09,2.14,-0.0234,-0.087,average,single,,
+20261120-F1-Troyes-LeHavre-U25,2026-11-20,2026-11-20,F1,Troyes,Le Havre,OU25,U25,小于 2.5 球,1.87,1.0,0.551,settled,3-1 输,-1.0,1.88,-0.0053,-0.0725,average,single,,
+20261121-D1-Schalke04-Stuttgart-U25,2026-11-20,2026-11-21,D1,Schalke 04,Stuttgart,OU25,U25,小于 2.5 球,2.19,1.0,0.4697,settled,0-0 赢,1.19,2.74,-0.2007,-0.2525,average,single,,
+20261121-D1-Leverkusen-Paderborn-U25,2026-11-20,2026-11-21,D1,Leverkusen,Paderborn,OU25,U25,小于 2.5 球,2.76,1.0,0.3738,settled,4-0 输,-1.0,3.5,-0.2114,-0.2609,average,single,,
+20261121-D1-Elversberg-Freiburg-H,2026-11-20,2026-11-21,D1,Elversberg,Freiburg,1X2,H,主胜 Elversberg,3.03,1.0,0.34,settled,0-1 输,-1.0,3.4,-0.1088,-0.166,average,single,,
+20261121-E3-NewportCounty-Swindon-A,2026-11-20,2026-11-21,E3,Newport County,Swindon,1X2,A,客胜 Swindon,3.53,1.0,0.2918,settled,2-0 输,-1.0,4.02,-0.1219,-0.1857,average,single,,
+20261121-E3-Oldham-Exeter-U25,2026-11-20,2026-11-21,E3,Oldham,Exeter,OU25,U25,小于 2.5 球,1.62,1.0,0.6366,settled,1-1 赢,0.62,1.71,-0.0526,-0.1187,average,single,,
+20261122-I1-Milan-Frosinone-A,2026-11-21,2026-11-22,I1,Milan,Frosinone,1X2,A,客胜 Frosinone,4.36,1.0,0.2364,settled,5-1 输,-1.0,4.48,-0.0268,-0.0853,average,single,,
+20261122-B1-LommelSK-Standard-U25,2026-11-21,2026-11-22,B1,Lommel SK,Standard,OU25,U25,小于 2.5 球,2.17,1.0,0.4753,settled,1-2 输,-1.0,2.48,-0.125,-0.1856,average,single,,
+20261122-G1-Olympiakos-Iraklis-U25,2026-11-21,2026-11-22,G1,Olympiakos,Iraklis,OU25,U25,小于 2.5 球,2.31,1.0,0.4461,settled,6-2 输,-1.0,2.32,-0.0043,-0.0748,average,single,,
+20261122-D2-Cottbus-Hertha-H,2026-11-21,2026-11-22,D2,Cottbus,Hertha,1X2,H,主胜 Cottbus,4.13,1.0,0.2493,settled,0-4 输,-1.0,5.01,-0.1756,-0.2444,average,single,,
+20261122-E0-Hull-Brighton-U25,2026-11-21,2026-11-22,E0,Hull,Brighton,OU25,U25,小于 2.5 球,2.12,1.0,0.4854,settled,2-0 赢,1.12,2.21,-0.0407,-0.1033,average,single,,
 20261123-F2-Sochaux-Dunkerque-A,2026-11-22,2026-11-23,F2,Sochaux,Dunkerque,1X2,A,客胜 Dunkerque,2.77,1.0,0.3718,open,,,,,,,single,,
+20261124-CL-Como-AEK-U25,2026-11-23,2026-11-24,CL,Como,AEK,OU25,U25,小于 2.5 球,2.84,1.0,0.3623,open,,,,,,,single,,2026-11-24 20:00:00
+20261124-CL-RBLeipzig-Lens-U25,2026-11-23,2026-11-24,CL,RB Leipzig,Lens,OU25,U25,小于 2.5 球,3.31,1.0,0.3107,open,,,,,,,single,,2026-11-24 20:00:00
+20261124-CL-Galatasaray-AstonVilla-U25,2026-11-23,2026-11-24,CL,Galatasaray,Aston Villa,OU25,U25,小于 2.5 球,2.99,1.0,0.3442,open,,,,,,,single,,2026-11-24 17:45:00
+20261124-CL-ManCity-Napoli-U25,2026-11-23,2026-11-24,CL,Man City,Napoli,OU25,U25,小于 2.5 球,3.27,1.0,0.3154,open,,,,,,,single,,2026-11-24 20:00:00
