@@ -1,12 +1,12 @@
-# 投注建议 · 2026-11-23
+# 投注建议 · 2026-11-24
 
-覆盖 11-23 至 11-24 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 16 场比赛
+覆盖 11-24 至 11-25 开赛的比赛 · 本金 €10 · 最低赔率 1.50 · 最低优势 3% · 分析了 58 场比赛
 
 ## 联赛
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Sochaux vs Dunkerque | 法乙 | 11-23 20:45 | 客胜 Dunkerque | 2.68 | **2.77** | 2.87* | €1.00 |
+| 1 | Bradford vs Barnsley | 英甲 | 11-24 20:45 | 小于 2.5 球 | 2.37 | **2.44** | 2.58* | €1.00 |
 
 ## 欧战 / 国家队
 
@@ -16,43 +16,57 @@
 
 | # | 比赛 | 赛事 | 日期 | 选项 | 公平赔率 | **Tipico 最低赔率** | 可得赔率 | 注额 |
 |---|---|---|---|---|---|---|---|---|
-| 2 | Como vs AEK | 欧冠 | 11-24 21:00 | 小于 2.5 球 | 2.76 | **2.84** | 3.37* | €1.00 |
-| 3 | RB Leipzig vs Lens | 欧冠 | 11-24 21:00 | 小于 2.5 球 | 3.22 | **3.31** | 3.54* | €1.00 |
-| 4 | Galatasaray vs Aston Villa | 欧冠 | 11-24 18:45 | 小于 2.5 球 | 2.91 | **2.99** | 3.13* | €1.00 |
-| 5 | Man City vs Napoli | 欧冠 | 11-24 21:00 | 小于 2.5 球 | 3.17 | **3.27** | 3.41* | €1.00 |
+| 2 | Como vs AEK | 欧冠 | 11-24 21:00 | 小于 2.5 球 | 2.79 | **2.87** | 3.41* | €1.00 |
+| 3 | RB Leipzig vs Lens | 欧冠 | 11-24 21:00 | 小于 2.5 球 | 3.35 | **3.45** | 3.79* | €1.00 |
+| 4 | Man City vs Napoli | 欧冠 | 11-24 21:00 | 小于 2.5 球 | 3.39 | **3.49** | 3.71* | €1.00 |
+| 5 | Bodo/Glimt vs LASK | 欧冠 | 11-24 18:45 | 小于 2.5 球 | 3.96 | **4.08** | 4.26* | €1.00 |
+| 6 | Inter vs Stuttgart | 欧冠 | 11-25 21:00 | 小于 2.5 球 | 3.75 | **3.87** | 4.08* | €1.00 |
+| 7 | Paris SG vs Roma | 欧冠 | 11-25 21:00 | 小于 2.5 球 | 3.11 | **3.20** | 3.34* | €1.00 |
 
 ## 投注 ID
 
 record-bet 和 record-close 表单要填这个（点代码块右上角可直接复制）：
 
-**1. Sochaux vs Dunkerque — 客胜 Dunkerque**
-
-```
-20261123-F2-Sochaux-Dunkerque-A
-```
-
-**2. Como vs AEK — 小于 2.5 球**
+**1. Como vs AEK — 小于 2.5 球**
 
 ```
 20261124-CL-Como-AEK-U25
 ```
 
-**3. RB Leipzig vs Lens — 小于 2.5 球**
+**2. RB Leipzig vs Lens — 小于 2.5 球**
 
 ```
 20261124-CL-RBLeipzig-Lens-U25
 ```
 
-**4. Galatasaray vs Aston Villa — 小于 2.5 球**
-
-```
-20261124-CL-Galatasaray-AstonVilla-U25
-```
-
-**5. Man City vs Napoli — 小于 2.5 球**
+**3. Man City vs Napoli — 小于 2.5 球**
 
 ```
 20261124-CL-ManCity-Napoli-U25
+```
+
+**4. Bradford vs Barnsley — 小于 2.5 球**
+
+```
+20261124-E2-Bradford-Barnsley-U25
+```
+
+**5. Bodo/Glimt vs LASK — 小于 2.5 球**
+
+```
+20261124-CL-BodoGlimt-LASK-U25
+```
+
+**6. Inter vs Stuttgart — 小于 2.5 球**
+
+```
+20261125-CL-Inter-Stuttgart-U25
+```
+
+**7. Paris SG vs Roma — 小于 2.5 球**
+
+```
+20261125-CL-ParisSG-Roma-U25
 ```
 
 ## 怎么用
@@ -65,11 +79,13 @@ record-bet 和 record-close 表单要填这个（点代码块右上角可直接�
 <details><summary>用终端的话</summary>
 
 ```bash
-python -m src.ledger add 20261123-F2-Sochaux-Dunkerque-A --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261124-CL-Como-AEK-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261124-CL-RBLeipzig-Lens-U25 --odds <Tipico赔率> --stake 1.00
-python -m src.ledger add 20261124-CL-Galatasaray-AstonVilla-U25 --odds <Tipico赔率> --stake 1.00
 python -m src.ledger add 20261124-CL-ManCity-Napoli-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261124-E2-Bradford-Barnsley-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261124-CL-BodoGlimt-LASK-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261125-CL-Inter-Stuttgart-U25 --odds <Tipico赔率> --stake 1.00
+python -m src.ledger add 20261125-CL-ParisSG-Roma-U25 --odds <Tipico赔率> --stake 1.00
 ```
 
 </details>
@@ -85,31 +101,39 @@ python -m src.ledger add 20261124-CL-ManCity-Napoli-U25 --odds <Tipico赔率> --
 
 | 比赛 | 组合 | 公平赔率 | **最低赔率** | 相乘会误算成 |
 |---|---|---|---|---|
-| Sochaux vs Dunkerque | 平局 + 小于 2.5 球 | 4.40 | **4.54** | 6.51 |
-| Sochaux vs Dunkerque | 客胜 Dunkerque + 大于 2.5 球 | 4.54 | **4.68** | 5.88 |
-| Sochaux vs Dunkerque | 客胜 Dunkerque + 小于 2.5 球 | 6.57 | **6.77** | 4.94 |
-| Galatasaray vs Aston Villa | 平局 + 小于 2.5 球 | 6.74 | **6.95** | 11.69 |
-| Galatasaray vs Aston Villa | 客胜 Aston Villa + 小于 2.5 球 | 9.09 | **9.36** | 6.64 |
-| Galatasaray vs Aston Villa | 主胜 Galatasaray + 小于 2.5 球 | 11.64 | **11.99** | 9.25 |
-| Como vs AEK | 主胜 Como + 小于 2.5 球 | 5.24 | **5.39** | 4.18 |
-| Como vs AEK | 平局 + 小于 2.5 球 | 8.08 | **8.32** | 14.77 |
-| Como vs AEK | 客胜 AEK + 大于 2.5 球 | 9.56 | **9.84** | 10.31 |
-| Como vs AEK | 客胜 AEK + 小于 2.5 球 | 21.06 | **21.70** | 18.15 |
-| Man City vs Napoli | 主胜 Man City + 小于 2.5 球 | 5.78 | **5.95** | 4.37 |
-| Man City vs Napoli | 平局 + 小于 2.5 球 | 9.50 | **9.79** | 19.61 |
-| Man City vs Napoli | 客胜 Napoli + 大于 2.5 球 | 13.29 | **13.69** | 13.01 |
-| Man City vs Napoli | 客胜 Napoli + 小于 2.5 球 | 27.02 | **27.83** | 28.24 |
-| RB Leipzig vs Lens | 主胜 RB Leipzig + 小于 2.5 球 | 6.58 | **6.78** | 5.07 |
-| RB Leipzig vs Lens | 客胜 Lens + 大于 2.5 球 | 7.63 | **7.86** | 8.04 |
-| RB Leipzig vs Lens | 平局 + 小于 2.5 球 | 9.15 | **9.43** | 17.41 |
-| RB Leipzig vs Lens | 平局 + 大于 2.5 球 | 13.23 | **13.63** | 7.85 |
+| Bradford vs Barnsley | 主胜 Bradford + 小于 2.5 球 | 5.41 | **5.57** | 4.13 |
+| Bradford vs Barnsley | 平局 + 小于 2.5 球 | 6.14 | **6.32** | 10.39 |
+| Bradford vs Barnsley | 客胜 Barnsley + 小于 2.5 球 | 13.37 | **13.77** | 11.91 |
+| Bodo/Glimt vs LASK | 主胜 Bodo/Glimt + 小于 2.5 球 | 7.71 | **7.94** | 5.56 |
+| Bodo/Glimt vs LASK | 平局 + 小于 2.5 球 | 11.11 | **11.44** | 24.50 |
+| Bodo/Glimt vs LASK | 客胜 LASK + 小于 2.5 球 | 30.50 | **31.41** | 31.37 |
+| Como vs AEK | 主胜 Como + 小于 2.5 球 | 5.32 | **5.48** | 4.24 |
+| Como vs AEK | 平局 + 小于 2.5 球 | 8.19 | **8.44** | 15.05 |
+| Como vs AEK | 客胜 AEK + 大于 2.5 球 | 9.14 | **9.41** | 9.84 |
+| Como vs AEK | 客胜 AEK + 小于 2.5 球 | 20.39 | **21.00** | 17.57 |
+| Man City vs Napoli | 主胜 Man City + 小于 2.5 球 | 6.16 | **6.34** | 4.61 |
+| Man City vs Napoli | 平局 + 小于 2.5 球 | 10.04 | **10.34** | 21.38 |
+| Man City vs Napoli | 客胜 Napoli + 大于 2.5 球 | 13.52 | **13.93** | 13.26 |
+| Man City vs Napoli | 客胜 Napoli + 小于 2.5 球 | 30.30 | **31.21** | 31.69 |
+| RB Leipzig vs Lens | 主胜 RB Leipzig + 小于 2.5 球 | 6.63 | **6.83** | 5.10 |
+| RB Leipzig vs Lens | 客胜 Lens + 大于 2.5 球 | 8.46 | **8.71** | 8.88 |
+| RB Leipzig vs Lens | 平局 + 小于 2.5 球 | 9.48 | **9.77** | 18.35 |
+| RB Leipzig vs Lens | 平局 + 大于 2.5 球 | 12.96 | **13.35** | 7.81 |
+| Paris SG vs Roma | 主胜 Paris SG + 小于 2.5 球 | 6.40 | **6.59** | 4.73 |
+| Paris SG vs Roma | 平局 + 小于 2.5 球 | 8.28 | **8.53** | 15.94 |
+| Paris SG vs Roma | 客胜 Roma + 大于 2.5 球 | 9.69 | **9.99** | 9.97 |
+| Paris SG vs Roma | 客胜 Roma + 小于 2.5 球 | 22.34 | **23.01** | 21.01 |
+| Inter vs Stuttgart | 主胜 Inter + 小于 2.5 球 | 7.73 | **7.97** | 5.56 |
+| Inter vs Stuttgart | 平局 + 小于 2.5 球 | 10.23 | **10.54** | 21.58 |
+| Inter vs Stuttgart | 客胜 Stuttgart + 小于 2.5 球 | 25.35 | **26.11** | 24.80 |
 
 ## 备注
-- 从 the-odds-api 取到 9 场带赔率的赛程（1X2 锚定 Pinnacle）。
-- 其中 9 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
-- the-odds-api 免费额度还剩 442 次（每月 500）。
+- 从 the-odds-api 取到 18 场带赔率的赛程（1X2 锚定 Pinnacle）。
+- 其中 18 场的大小球 2.5 锚定的是软庄——Pinnacle 只挂主盘，欧战常常不是 2.5。
+- the-odds-api 免费额度还剩 436 次（每月 500）。
 - 欧战：已合并 13 场手录赛果（数据源已经收录的重复行自动忽略）。
 - ŠK Slovan Bratislava vs Betis：球队比赛数不够（门槛 min_team_matches），跳过
+- Slavia Praha vs Villarreal：球队比赛数不够（门槛 min_team_matches），跳过
 
 ---
 开球时间已换算成德国时间（report.kickoff_offset_hours），仍请以 Tipico 显示为准。本报告是模型输出，不保证盈利；只用亏得起的钱。
