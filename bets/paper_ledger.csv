@@ -171,3 +171,10 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261124-CL-BodoGlimt-LASK-U25,2026-11-24,2026-11-24,CL,Bodo/Glimt,LASK,OU25,U25,小于 2.5 球,4.08,1.0,0.2525,open,,,,,,,single,,2026-11-24 17:45:00
 20261125-CL-Inter-Stuttgart-U25,2026-11-24,2026-11-25,CL,Inter,Stuttgart,OU25,U25,小于 2.5 球,3.87,1.0,0.2665,open,,,,,,,single,,2026-11-25 20:00:00
 20261125-CL-ParisSG-Roma-U25,2026-11-24,2026-11-25,CL,Paris SG,Roma,OU25,U25,小于 2.5 球,3.2,1.0,0.3218,open,,,,,,,single,,2026-11-25 20:00:00
+20261125-CL-SpLisbon-ManUnited-H,2026-11-25,2026-11-25,CL,Sp Lisbon,Man United,1X2,H,主胜 Sp Lisbon,2.6,1.0,0.3964,open,,,,,,,single,,2026-11-25 20:00:00
+20261125-CL-ShakhtarDonetsk-Fenerbahce-H,2026-11-25,2026-11-25,CL,Shakhtar Donetsk,Fenerbahce,1X2,H,主胜 Shakhtar Donetsk,2.62,1.0,0.3932,open,,,,,,,single,,2026-11-25 20:00:00
+20261126-UECL-SpBraga-KuPS-U25,2026-11-25,2026-11-26,UECL,Sp Braga,KuPS,OU25,U25,小于 2.5 球,2.78,1.0,0.3706,open,,,,,,,single,,2026-11-26 20:00:00
+20261126-UECL-Hearts-Monaco-H,2026-11-25,2026-11-26,UECL,Hearts,Monaco,1X2,H,主胜 Hearts,4.88,1.0,0.211,open,,,,,,,single,,2026-11-26 17:45:00
+20261126-UECL-FKKairat-Mjallby-U25,2026-11-25,2026-11-26,UECL,FK Kairat,Mjallby,OU25,U25,小于 2.5 球,1.85,1.0,0.5566,open,,,,,,,single,,2026-11-26 15:30:00
+20261126-EL-StGilloise-LechPoznan-U25,2026-11-25,2026-11-26,EL,St. Gilloise,Lech Poznan,OU25,U25,小于 2.5 球,2.67,1.0,0.3851,open,,,,,,,single,,2026-11-26 17:45:00
+20261126-EL-CrystalPalace-Sociedad-U25,2026-11-25,2026-11-26,EL,Crystal Palace,Sociedad,OU25,U25,小于 2.5 球,2.33,1.0,0.4429,open,,,,,,,single,,2026-11-26 20:00:00
