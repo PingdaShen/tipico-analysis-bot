@@ -179,3 +179,13 @@ id,created,date,div,home,away,market,outcome,label,odds,stake,p_final,status,res
 20261126-EL-StGilloise-LechPoznan-U25,2026-11-25,2026-11-26,EL,St. Gilloise,Lech Poznan,OU25,U25,小于 2.5 球,2.67,1.0,0.3851,open,,,,,,,single,,2026-11-26 17:45:00
 20261126-EL-CrystalPalace-Sociedad-U25,2026-11-25,2026-11-26,EL,Crystal Palace,Sociedad,OU25,U25,小于 2.5 球,2.33,1.0,0.4429,open,,,,,,,single,,2026-11-26 20:00:00
 20261126-UECL-BoracBanjaLuka-Atalanta-U25,2026-11-26,2026-11-26,UECL,Borac Banja Luka,Atalanta,OU25,U25,小于 2.5 球,2.56,1.0,0.4023,open,,,,,,,single,,2026-11-26 20:00:00
+20261127-P1-Maritimo-Nacional-A,2026-11-27,2026-11-27,P1,Maritimo,Nacional,1X2,A,客胜 Nacional,3.17,1.0,0.3254,open,,,,,,,single,,
+20261127-E1-Southampton-Middlesbrough-H,2026-11-27,2026-11-27,E1,Southampton,Middlesbrough,1X2,H,主胜 Southampton,2.78,1.0,0.3711,open,,,,,,,single,,
+20261127-B1-Oud-HeverleeLeuven-Kortrijk-U25,2026-11-27,2026-11-27,B1,Oud-Heverlee Leuven,Kortrijk,OU25,U25,小于 2.5 球,2.09,1.0,0.4934,open,,,,,,,single,,
+20261127-I1-Venezia-Bologna-A,2026-11-27,2026-11-27,I1,Venezia,Bologna,1X2,A,客胜 Bologna,2.31,1.0,0.4463,open,,,,,,,single,,
+20261127-SP1-Levante-Santander-H,2026-11-27,2026-11-27,SP1,Levante,Santander,1X2,H,主胜 Levante,2.0,1.0,0.5151,open,,,,,,,single,,
+20261128-D1-Paderborn-Schalke04-U25,2026-11-27,2026-11-28,D1,Paderborn,Schalke 04,OU25,U25,小于 2.5 球,1.71,1.0,0.603,open,,,,,,,single,,
+20261128-E2-Luton-Oxford-A,2026-11-27,2026-11-28,E2,Luton,Oxford,1X2,A,客胜 Oxford,3.57,1.0,0.2884,open,,,,,,,single,,
+20261128-E3-Exeter-CrawleyTown-U25,2026-11-27,2026-11-28,E3,Exeter,Crawley Town,OU25,U25,小于 2.5 球,1.71,1.0,0.602,open,,,,,,,single,,
+20261128-E3-Walsall-Northampton-U25,2026-11-27,2026-11-28,E3,Walsall,Northampton,OU25,U25,小于 2.5 球,1.83,1.0,0.5635,open,,,,,,,single,,
+20261128-E1-Preston-Norwich-H,2026-11-27,2026-11-28,E1,Preston,Norwich,1X2,H,主胜 Preston,4.31,1.0,0.2387,open,,,,,,,single,,
